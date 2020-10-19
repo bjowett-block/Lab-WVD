@@ -1,0 +1,29 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "hubNamePrefix":{
+            "value": "acw"
+        },
+        "customerDesktopNetwork":{
+            "value": "172.19.4.0/24"
+        },
+        "tagCostcentreId":{
+            "value":"Cloud"
+        },
+        "tagSalesOrderId": {
+            "value":"123456"
+        },
+        "hubIpPrefix":{
+            "value":"172.19.0.0/23"
+        },
+        "lowerHubnetThirdOctet":{
+            "value":"172.19.0"
+        
+        },
+        "upperHubnetThirdOctet":{
+            "value":"172.19.1.0"
+        }
+    }
+
+    }
