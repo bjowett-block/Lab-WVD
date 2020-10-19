@@ -336,11 +336,8 @@
       },
       "tagCostCentreId": {
         "value": "[parameters('tagCostCentreId')]"
-      },
-      "hubNsgName": {
-        "value": "[variables('hubNsgName')]"
-    }
-
+      }
+     
 
   }
 }   
