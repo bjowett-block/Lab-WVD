@@ -25,12 +25,6 @@
       "hubUksDc02VmIp": {
         "type": "string"
       },
-      "hubUkwDc01VmIp": {
-        "type": "string"
-      },
-      "hubUkwDc02VmIp": {
-        "type": "string"
-      },
       "customerDesktopNetwork" : {
         "type": "string"
       },
@@ -228,9 +222,7 @@
                 "sourceAddressPrefixes": [],
                 "destinationAddressPrefixes": [
                   "[parameters('hubUksDc01VmIp')]",
-                  "[parameters('hubUksDc02VmIp')]",
-                  "[parameters('hubUkwDc01VmIp')]",
-                  "[parameters('hubUkwDc02VmIp')]"
+                  "[parameters('hubUksDc02VmIp')]"
                 ]
               }
             },
@@ -258,9 +250,7 @@
                 "sourceAddressPrefixes": [],
                 "destinationAddressPrefixes": [
                   "[parameters('hubUksDc01VmIp')]",
-                  "[parameters('hubUksDc02VmIp')]",
-                  "[parameters('hubUkwDc01VmIp')]",
-                  "[parameters('hubUkwDc02VmIp')]"
+                  "[parameters('hubUksDc02VmIp')]"
                 ]
               }
             },
