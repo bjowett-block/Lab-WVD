@@ -17,7 +17,7 @@
     "tagCostCentreId":{
             "type": "string"
         },
-        "tagSalesOrderId":{
+    "tagSalesOrderId":{
             "type": "string"
         }
   },

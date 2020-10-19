@@ -110,8 +110,10 @@
     "hubVnetName": "[concat(parameters('hubNamePrefix'),'hub-vnet01')]",
     "hubLawName": "[concat(parameters('hubNamePrefix'),'hub-law01')]",
     "hubDsaName": "[concat(parameters('hubNamePrefix'),'hubdsa01')]",
+    "hubFirewallName": "[concat(parameters('hubNamePrefix'),'hub-afw01')]",
     
-    "hubFirewallName": "[concat(parameters('hubNamePrefix'),'hub-afw')]",
+
+
     "hubSharedServicesSubnetRange": "[concat(parameters('upperHubNetThirdOctet'),'.0/24')]",
     "hubDomainServicesSubnetRange": "[concat(parameters('lowerHubNetThirdOctet'),'.0/28')]",
     "hubBastionSubnetRange": "[concat(parameters('lowerHubNetThirdOctet'),'.16/29')]",
@@ -307,7 +309,42 @@
       }
     }
   }
-} 
+},
+{
+ "name": "Deploy_HubPublicIPAddresses",
+  "type": "Microsoft.Resources/deployments",
+  "apiVersion": "2019-10-01",
+  "properties": {
+    "mode": "Incremental",
+    "templateLink": {
+      "uri": "[variables('Templates')['Hub-PIP'].Link]",
+      "contentVersion": "1.0.0.0"
+    },
+    "parameters": {
+"hubFirewallPipName": {
+      "value":"[variables('hubFirewallPipName')]"
+    },
+    "hubVngPipName01": {
+      "value":"[variables('hubVngPipName01')]"
+    },
+    "hubVngPipName02": {
+      "value":"[variables('hubVngPipName02')]"
+    },
+    "location": {
+      "value":"[parameters('location')]"
+    },
+    "tagCostCentreId":{
+      "value": "[parameters('tagCostCentreId')]"
+        },
+    "tagSalesOrderId":{
+      "value": "[parameters('tagSalesOrderId')]"
+        }
+
+    }
+    
+    }
+  
+}
     
     
    
