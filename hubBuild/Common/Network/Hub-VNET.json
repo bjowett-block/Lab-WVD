@@ -164,8 +164,7 @@
         "apiVersion": "2019-04-01",
         "name": "[concat(parameters('hubVnetName'),'/DMZ')]",
         "dependsOn": [
-          "[resourceId('Microsoft.Network/virtualNetworks',parameters('hubVnetName'))]",
-          "[resourceId('Microsoft.Network/networkSecurityGroups',parameters('hubNsgName'))]"
+          "[resourceId('Microsoft.Network/virtualNetworks',parameters('hubVnetName'))]"
         ],
         "properties": {
           "addressPrefix": "[parameters('hubDmzSubnetRange')]",
@@ -182,8 +181,7 @@
         "apiVersion": "2019-04-01",
         "name": "[concat(parameters('hubVnetName'),'/DomainServices')]",
         "dependsOn": [
-          "[resourceId('Microsoft.Network/virtualNetworks',parameters('hubVnetName'))]",
-          "[resourceId('Microsoft.Network/networkSecurityGroups',parameters('hubNsgName'))]"
+          "[resourceId('Microsoft.Network/virtualNetworks',parameters('hubVnetName'))]"
         ],
         "properties": {
           "addressPrefix": "[parameters('hubDomainServicesSubnetRange')]",
@@ -214,8 +212,7 @@
         "apiVersion": "2019-04-01",
         "name": "[concat(parameters('hubVnetName'),'/SharedServices')]",
         "dependsOn": [
-          "[resourceId('Microsoft.Network/virtualNetworks',parameters('hubVnetName'))]",
-          "[resourceId('Microsoft.Network/networkSecurityGroups',parameters('hubNsgName'))]"
+          "[resourceId('Microsoft.Network/virtualNetworks',parameters('hubVnetName'))]"
         ],
         "properties": {
           "addressPrefix": "[parameters('hubSharedServicesSubnetRange')]",
