@@ -1,0 +1,77 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "hubName": {
+        "type": "string"
+    },
+    "tagCustomerName": {
+      "type": "string"
+    },
+    "customerRuleId001" : {
+      "type" : "int"
+
+    },
+    "customerRuleId002" : {
+      "type" : "int"
+
+    },
+    "customerRuleId003" : {
+      "type" : "int"
+
+    },
+    "customerDesktopPrefix": {
+      "type": "string"
+    },
+    "customerInfrastructurePrefix": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "hubNsgName":  "[concat(parameters('hubName'),'nsg01')]",
+       
+                            
+
+
+
+   },
+  "resources": [
+    {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2020-04-01",
+            "name": "[concat (variables('hubNsgName'), '/pcwdevcust03-Allow-to-ADDS-TCP-In')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('hubNsgName'))]"
+            ],
+            "properties": {
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "access": "Allow",
+                "priority": 420,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                    "53",
+                    "88",
+                    "135",
+                    "139",
+                    "389",
+                    "445",
+                    "464",
+                    "636",
+                    "3268",
+                    "3269",
+                    "49152-65535"
+                ],
+                "sourceAddressPrefixes": [
+                    "172.18.24.0/21",
+                    "172.18.226.0/24"
+                ],
+                "destinationAddressPrefixes": [
+                    "172.18.0.4",
+                    "172.18.0.5"
+                ]
+            }
+        },
+  ]
+}

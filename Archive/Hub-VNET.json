@@ -1,0 +1,285 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string"
+    },
+    "hubVnetName": {
+      "type": "string"
+    },
+    "hubIpPrefix": {
+      "type": "string"
+    },
+    "lowerHubNetThirdOctet": {
+      "type": "string"
+    },
+    "upperHubNetThirdOctet": {
+      "type": "string"
+    },
+    "hubSharedServicesSubnetRange": {
+      "type": "string"
+    },
+    "hubDomainServicesSubnetRange": {
+      "type": "string"
+    },
+    "hubBastionSubnetRange": {
+      "type": "string"
+    },
+    "hubGatewayServicesSubnetRange": {
+      "type": "string"
+    },
+    "hubDmzSubnetRange": {
+      "type": "string"
+    },
+    "hubAzureFirewallSubnetRange": {
+      "type": "string"
+    },
+    "hubAddsIp01": {
+      "type": "string"
+    },
+    "hubAddsIp02": {
+      "type": "string"
+    },
+    "serviceEnvironment": {
+      "type": "string"
+    },
+    "serviceCostCentre": {
+      "type": "string"
+    },
+    "hubNsgName": {
+      "type": "string"
+    }
+
+
+
+  },
+  "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-04-01",
+            "name": "[parameters('hubVnetName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "[parameters('serviceEnvironment')]",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('serviceCostCentre')]"
+            },
+          "properties": {
+            "addressSpace": {
+              "addressPrefixes": [
+                "[parameters('hubIpPrefix')]"
+              ]
+            },
+            "dhcpOptions": {
+              "dnsServers": [
+                "[parameters('hubAddsIp01')]",
+                "[parameters('hubAddsIp02')]"
+              ]
+            },
+            "subnets": [
+              {
+                "name": "DomainServices",
+                "properties": {
+                  "addressPrefix": "[parameters('hubDomainServicesSubnetRange')]",
+                  "serviceEndpoints": [
+                    {
+                      "service": "Microsoft.AzureActiveDirectory",
+                      "locations": [
+                        "*"
+                      ]
+                    }
+                  ],
+                  "delegations": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled"
+                }
+              },
+              {
+                "name": "BastionServices",
+                "properties": {
+                  "addressPrefix": "[parameters('hubBastionSubnetRange')]",
+                  "delegations": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled"
+                }
+              },
+              {
+                "name": "GatewayServices",
+                "properties": {
+                  "addressPrefix": "[parameters('hubGatewayServicesSubnetRange')]",
+                  "delegations": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled"
+                }
+              },
+              {
+                "name": "DMZ",
+                "properties": {
+                  "addressPrefix": "[parameters('hubDmzSubnetRange')]",
+                  "delegations": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled"
+                }
+              },
+              {
+                "name": "AzureFirewallSubnet",
+                "properties": {
+                  "addressPrefix": "[parameters('hubAzureFirewallSubnetRange')]",
+                  "delegations": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled"
+                }
+              },
+              {
+                "name": "SharedServices",
+                "properties": {
+                  "addressPrefix": "[parameters('hubSharedServicesSubnetRange')]",
+                  "serviceEndpoints": [
+                    {
+                      "service": "Microsoft.KeyVault",
+                      "locations": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "service": "Microsoft.Storage",
+                      "locations": [
+                        "westeurope",
+                        "northeurope",
+                        "uksouth",
+                        "ukwest"
+                      ]
+                    }
+                  ],
+                  "delegations": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled"
+                }
+              }
+            ],
+            "virtualNetworkPeerings": [],
+            "enableDdosProtection": false,
+            "enableVmProtection": false
+          }
+        },
+      {
+        "type": "Microsoft.Network/virtualNetworks/subnets",
+        "apiVersion": "2019-04-01",
+        "name": "[concat(parameters('hubVnetName'),'/AzureFirewallSubnet')]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Network/virtualNetworks',parameters('hubVnetName'))]"
+        ],
+        "properties": {
+          "addressPrefix": "[parameters('hubAzureFirewallSubnetRange')]",
+          "delegations": [],
+          "privateEndpointNetworkPolicies": "Enabled",
+          "privateLinkServiceNetworkPolicies": "Enabled"
+        }
+      },
+      {
+        "type": "Microsoft.Network/virtualNetworks/subnets",
+        "apiVersion": "2019-04-01",
+        "name": "[concat(parameters('hubVnetName'),'/BastionServices')]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Network/virtualNetworks',parameters('hubVnetName'))]"
+        ],
+        "properties": {
+          "addressPrefix": "[parameters('hubBastionSubnetRange')]",
+          "delegations": [],
+          "privateEndpointNetworkPolicies": "Enabled",
+          "privateLinkServiceNetworkPolicies": "Enabled"
+        }
+      },
+      {
+        "type": "Microsoft.Network/virtualNetworks/subnets",
+        "apiVersion": "2019-04-01",
+        "name": "[concat(parameters('hubVnetName'),'/DMZ')]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Network/virtualNetworks',parameters('hubVnetName'))]"
+        ],
+        "properties": {
+          "addressPrefix": "[parameters('hubDmzSubnetRange')]",
+          "networkSecurityGroup": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups',parameters('hubNsgName'))]"
+          },
+          "delegations": [],
+          "privateEndpointNetworkPolicies": "Enabled",
+          "privateLinkServiceNetworkPolicies": "Enabled"
+        }
+      },
+      {
+        "type": "Microsoft.Network/virtualNetworks/subnets",
+        "apiVersion": "2019-04-01",
+        "name": "[concat(parameters('hubVnetName'),'/DomainServices')]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Network/virtualNetworks',parameters('hubVnetName'))]"
+        ],
+        "properties": {
+          "addressPrefix": "[parameters('hubDomainServicesSubnetRange')]",
+          "serviceEndpoints": [
+            {
+              "service": "Microsoft.AzureActiveDirectory",
+              "locations": [
+                "*"
+              ]
+            }
+          ],
+          "delegations": [],
+          "privateEndpointNetworkPolicies": "Enabled",
+          "privateLinkServiceNetworkPolicies": "Enabled"
+        }
+      },
+      {
+        "type": "Microsoft.Network/virtualNetworks/subnets",
+        "apiVersion": "2019-04-01",
+        "name": "[concat(parameters('hubVnetName'),'/GatewayServices')]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Network/virtualNetworks',parameters('hubVnetName'))]"
+        ],
+        "properties": {
+          "addressPrefix": "[parameters('hubGatewayServicesSubnetRange')]",
+          "delegations": [],
+          "privateEndpointNetworkPolicies": "Enabled",
+          "privateLinkServiceNetworkPolicies": "Enabled"
+        }
+      },
+      {
+        "type": "Microsoft.Network/virtualNetworks/subnets",
+        "apiVersion": "2019-04-01",
+        "name": "[concat(parameters('hubVnetName'),'/SharedServices')]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Network/virtualNetworks',parameters('hubVnetName'))]"
+        ],
+        "properties": {
+          "addressPrefix": "[parameters('hubSharedServicesSubnetRange')]",
+          "networkSecurityGroup": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups',parameters('hubNsgName'))]"
+          },
+          "serviceEndpoints": [
+            {
+              "service": "Microsoft.KeyVault",
+              "locations": [
+                "*"
+              ]
+            },
+            {
+              "service": "Microsoft.Storage",
+              "locations": [
+                "westeurope",
+                "northeurope",
+                "uksouth",
+                "ukwest"
+              ]
+            }
+          ],
+          "delegations": [],
+          "privateEndpointNetworkPolicies": "Enabled",
+          "privateLinkServiceNetworkPolicies": "Enabled"
+        }
+      }
+    ]
+}

@@ -1,0 +1,183 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+    
+    "hubName": {
+        "type": "string"
+    },
+    "tagCustomerName": {
+        "type": "string"
+    },
+    "customerDesktopPrefix": {
+        "type": "string"
+    },
+    "customerInfrastructurePrefix": {
+        "type": "string"
+    },
+    "firewallGatewayIp":{
+        "type": "string"
+    }   
+    },
+    "variables": {
+        
+        "hubrtname01" : "[concat(parameters('hubName'),'rt01')]",
+        "hubrtname02" : "[concat(parameters('hubName'),'rt02')]",
+        "hubVnetName" : "[concat(parameters('hubName'),'vnet01')]",
+        "hubDesktopIpgName": "[concat(parameters('hubName'),'custdkipg01')]",
+        "hubInfraIpgName": "[concat(parameters('hubName'), 'custinfraipg01')]",
+        "customerRgName": "[concat(parameters('hubName'),'rg01')]",
+        "customerVnetName" : "[concat(parameters('tagCustomerName'),'vnet01')]",
+        "CustomerDesktopRouteName": "[concat(parameters('tagCustomerName'), '-Desktop-Prefix')]",
+        "CustomerInfrastructureRouteName": "[concat(parameters('tagCustomerName'), '-Infrastructure-Prefix')]",
+        "vnetPeerNameHubtoSpoke" : "[concat(variables('hubVnetName'),'/',variables('hubVnetName'),'-to-',variables('customerVnetName'),'-vnet-peer')]"
+      
+        
+    
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/routeTables",
+            "apiVersion": "2020-04-01",
+            "name": "[variables('hubrtname01')]",
+            "location": "uksouth",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "[variables('CustomerDesktopRouteName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('customerDesktopPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('firewallGatewayIp')]"
+                        }
+                    },
+                    {
+                        "name": "[variables('CustomerInfrastructureRouteName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('customerInfrastructurePrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('firewallGatewayIp')]"
+                        }
+                    }
+                ]
+            }
+        },
+{
+            "type": "Microsoft.Network/routeTables",
+            "apiVersion": "2020-04-01",
+            "name": "[variables('hubrtname02')]",
+            "location": "uksouth",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "[variables('CustomerDesktopRouteName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('customerDesktopPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('firewallGatewayIp')]"
+                        }
+                    },
+                    {
+                        "name": "[variables('CustomerInfrastructureRouteName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('customerInfrastructurePrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('firewallGatewayIp')]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables/routes",
+            "apiVersion": "2020-04-01",
+            "name": "[concat(variables('hubrtname01'), '/',variables('CustomerDesktopRouteName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', variables('hubrtname01'))]"
+            ],
+            "properties": {
+                "addressPrefix": "[parameters('customerDesktopPrefix')]",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "[parameters('firewallGatewayIp')]"
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables/routes",
+            "apiVersion": "2020-04-01",
+            "name": "[concat(variables('hubrtname01'), '/',  variables('CustomerInfrastructureRouteName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', variables('hubrtname01'))]"
+            ],
+            "properties": {
+                "addressPrefix": "[parameters('customerInfrastructurePrefix')]",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "[parameters('firewallGatewayIp')]"
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables/routes",
+            "apiVersion": "2020-04-01",
+            "name": "[concat(variables('hubrtname02'), '/', variables('CustomerDesktopRouteName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', variables('hubrtname02'))]"
+            ],
+            "properties": {
+                "addressPrefix": "[parameters('customerDesktopPrefix')]",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "[parameters('firewallGatewayIp')]"
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables/routes",
+            "apiVersion": "2020-04-01",
+            "name": "[concat(variables('hubrtname02'), '/', variables('CustomerInfrastructureRouteName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', variables('hubrtname02'))]"
+            ],
+            "properties": {
+                "addressPrefix": "[parameters('customerInfrastructurePrefix')]",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "[parameters('firewallGatewayIp')]"
+            }
+        },   
+    {
+      "apiVersion": "2019-11-01",
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "name": "[variables('vnetPeerNameHubtoSpoke')]",
+      "location": "uksouth",
+      "properties": {
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": false,
+        "allowGatewayTransit": false,
+        "useRemoteGateways": false,
+        "remoteVirtualNetwork": {
+          "id": "[resourceId(variables('customerRgName'), 'Microsoft.Network/virtualNetworks', variables('customerVnetName'))]"
+        }
+      }
+    },
+        {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2019-09-01",
+            "name": "[variables('hubDesktopIpgName')]",
+            "location": "uksouth",
+            "properties": {
+                "ipAddresses": [
+                    "[parameters('customerDesktopPrefix')]"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2019-09-01",
+            "name": "[variables('hubInfraIpgName')]",
+            "location": "uksouth",
+            "properties": {
+                "ipAddresses": [
+                    "[parameters('customerInfrastructurePrefix')]"
+                    
+                ]
+            }
+        }
+        
+    ]
+}

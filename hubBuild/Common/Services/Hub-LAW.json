@@ -1,0 +1,142 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+   "hubLawName" : {
+    "type": "string"
+    },
+    "hubAaName": {
+        "type" : "string"
+    },
+    "tagCostcentreId":{
+        "type": "string"
+    },
+    "tagSalesOrderId" :{
+        "type" : "string"
+    },
+    "location": {
+      "type": "string"
+    }
+  },
+"variables":{
+"hubLawSku" : "pergb2018",
+"Updates": {
+        "name": "[concat('Updates', '(', parameters('hubLawName'), ')')]",
+        "galleryName": "Updates"
+    },
+"hubServiceMap":{
+    "name":"[concat('ServiceMap', '(', parameters('hubLawName'), ')')]",
+    "galleryName": "ServiceMap"
+}
+
+
+    
+},
+
+  "resources": [
+    {
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2020-08-01",
+      "name": "[parameters('hubLawName')]",
+      "location": "[parameters('location')]",
+      "tags": {
+                "Owner": "Block Solutions",
+                "Department": "Workspace and Cloud",
+                "Environment": "Production",
+                "Location": "[parameters('location')]",
+                "CostCentre": "[parameters('tagCostcentreId')]",
+                "SalesOrderID": "[parameters('tagSalesOrderId')]"
+      },
+      "properties": {
+        "sku": {
+          "name": "[variables('hubLawSku')]"
+        },
+        "retentionInDays": 365,
+        "features": {
+          "searchVersion": 1,
+          "legacy": 0
+        }
+      }
+    },
+    {
+			"apiVersion": "2015-11-01-preview",
+			"location": "[parameters('location')]",
+			"name": "[variables('Updates').name]",
+			"type": "Microsoft.OperationsManagement/solutions",
+			"id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.OperationsManagement/solutions/', variables('Updates').name)]",
+			"dependsOn": [
+				"[concat('Microsoft.OperationalInsights/workspaces/', parameters('hubLawName'))]"
+			],
+			"properties": {
+				"workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('hubLawName'))]"
+			},
+			"plan": {
+				"name": "[variables('Updates').name]",
+				"publisher": "Microsoft",
+				"promotionCode": "",
+				"product": "[concat('OMSGallery/', variables('Updates').galleryName)]"
+			}
+
+
+		},
+        {
+            "apiVersion": "2015-11-01-preview",
+            "type": "Microsoft.OperationsManagement/solutions",
+            "location": "[parameters('location')]",
+            "name": "[variables('hubServiceMap').name]",
+            "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.OperationsManagement/solutions/', variables('hubServiceMap').name)]",
+            	"dependsOn": [
+				"[concat('Microsoft.OperationalInsights/workspaces/', parameters('hubLawName'))]"
+			],
+            "properties": {
+                "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('hubLawName'))]"
+            },
+            "plan": {
+                "name": "[variables('hubServiceMap').name]",
+                "product": "[concat('OMSGallery/', variables('hubServiceMap').galleryName)]",
+                "promotionCode": "",
+                "publisher": "Microsoft"
+            }
+            
+        },
+
+    {
+      "type": "Microsoft.Automation/automationAccounts",
+      "apiVersion": "2020-01-13-preview",
+      "name": "[parameters('hubAaName')]",
+      "location": "[parameters('location')]",
+        "tags": {
+                "Owner": "Block Solutions",
+                "Department": "Workspace and Cloud",
+                "Environment": "Production",
+                "Location": "[parameters('location')]",
+                "CostCentre": "[parameters('tagCostcentreId')]",
+                "SalesOrderID": "[parameters('tagSalesOrderId')]"
+        },
+      "dependsOn": [
+        "[parameters('hubLawName')]"
+      ],
+      "properties": {
+        "sku": {
+          "name": "Basic"
+        }
+      },
+      "resources": [
+        
+      ]
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/linkedServices",
+      "apiVersion": "2020-08-01",
+      "name": "[concat(parameters('hubLawName'), '/' , 'Automation')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[parameters('hubLawName')]",
+        "[parameters('hubAaName')]"
+      ],
+      "properties": {
+        "resourceId": "[resourceId('Microsoft.Automation/automationAccounts', parameters('hubAaName'))]"
+      }
+    }
+  ]
+}

@@ -1,0 +1,579 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+       
+        "location": {
+            "type": "string",
+             "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+            "description": "Location for all resources."
+            }
+    }
+    },
+    "variables": {
+        "HubProxyASGName":"[concat ('Hub', parameters('location'),'-ProxyServer_asg')]",
+        "HubNsgName": "SharedServices_nsg",
+        "HubproxyvipIP": "###.###.###.4",
+        "HubMgmtIP": "###.###.###.4",
+        "CustomerDesktopSubnet": "###.###.###.###/23",
+        "BastionSubnet": "###.###.###.###/29",
+        "HubDmzSubnet": "####.###.###.###/27",
+        "HubSharedServicesSubnet": "###.###.###.###/24",
+        "hubAddsIp01":"[concat(parameters('lowerHubNetThreeOctet'),'.4')]",
+        "hubAddsIp02":"[concat(parameters('lowerHubNetThreeOctet'),'.5')]",
+
+
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/applicationSecurityGroups",
+            "apiVersion": "2019-12-01",
+            "name": "[variables('HubProxyASGName')]",
+            "location": "[parameters('location')]",
+            "properties": {}
+        },
+        
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-12-01",
+            "name": "[variables('HubNsgName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": [
+                     {
+                        "name": "Restrict-Proxy-EAST_WEST-IN",
+                        "properties": {
+                            "description": "Restrict East West Traffic Between Proxy Servers",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "access": "Deny",
+                            "priority": 100,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": [],
+                            "sourceApplicationSecurityGroups": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', variables('HubProxyASGName'))]"
+                                }
+                            ],
+                            "destinationApplicationSecurityGroups": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', variables('HubProxyASGName'))]"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Customer-Desktops-To-Proxy-VIP-TCP",
+                        "properties": {
+                            "description": "Allow customer desktops access to Web proxy VIP",
+                            "protocol": "tcp",
+                            "sourcePortRange": "*",
+                            "access": "Allow",
+                            "priority": 101,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                                "8080",
+                                "8443"
+                            ],
+                            "sourceAddressPrefixes": [
+                                "[variables('CustomerDesktopSubnet')]"
+                            ],
+                            "destinationAddressPrefixes": [
+                                "[variables('HubproxyvipIP')]"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Customer-Desktops-To-INT-KMS",
+                        "properties": {
+                            "description": "Allow Customer Desktops to Access Internal KMS",
+                            "protocol": "tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "1688",
+                            "access": "Allow",
+                            "priority": 102,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "sourceAddressPrefixes": [
+                                "[variables('CustomerDesktopSubnet')]"
+                            ],
+                            "destinationAddressPrefixes": [
+                                "[variables('HubMgmtIP')]"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Allow-Bastion-Mgmt-Server-Access",
+                        "properties": {
+                            "description": "Allow Bastion Host Net Access to Management Server",
+                            "protocol": "tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "access": "Allow",
+                            "priority": 103,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "sourceAddressPrefixes": [
+                                "[variables('BastionSubnet')]"
+                            ],
+                            "destinationAddressPrefixes": [
+                                "[variables('HubMgmtIP')]"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Block-DMZ-to-SharedServices",
+                        "properties": {
+                            "description": "Block Access between DMZ and Shared Services",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "access": "Deny",
+                            "priority": 200,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "sourceAddressPrefixes": [
+                                "[variables('HubDmzSubnet')]"
+                            ],
+                            "destinationAddressPrefixes": [
+                                "[variables('HubSharedServicesSubnet')]"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Block-SharedServices-to-DMZ",
+                        "properties": {
+                            "description": "Block Access between DMZ and Shared Services",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "access": "Deny",
+                            "priority": 201,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "sourceAddressPrefixes": [
+                                "[variables('HubSharedServicesSubnet')]"
+                            ],
+                            "destinationAddressPrefixes": [
+                                "[variables('HubDmzSubnet')]"
+                            ]
+                        }
+                    },
+                     {
+                        "name": "Deny-All",
+                        "properties": {
+                            "description": "Block Access between DMZ and Shared Services",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "access": "Deny",
+                            "priority": 1000,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "sourceAddressPrefixes": [
+                                "*"
+                            ],
+                            "destinationAddressPrefixes": [
+                                "*"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Restrict-Proxy-EAST_WEST-IN",
+                        "properties": {
+                            "description": "Restrict East West Traffic Between Proxy Servers",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "access": "Deny",
+                            "priority": 100,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": [],
+                            "sourceApplicationSecurityGroups": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', variables('HubProxyASGName'))]"
+                                }
+                            ],
+                            "destinationApplicationSecurityGroups": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', variables('HubProxyASGName'))]"
+                                }
+                            ]
+                        }
+                    },
+                     {
+                        "name": "Block-DMZ-TO-HSCN-Traffic",
+                        "properties": {
+                            "description": "Block DMZ Proxy Hosts to HSCN",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "access": "Deny",
+                            "priority": 101,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": [
+                                "10.207.116.0/22",
+                                "10.207.112.0/22",
+                                "194.72.7.137/32",
+                                "194.72.7.142/32",
+                                "155.231.0.0/16",
+                                "194.189.100.144/28",
+                                "194.189.111.96/27",
+                                "194.189.111.224/27",
+                                "194.189.113.128/27",
+                                "10.121.36.128/25",
+                                "20.146.120.128/25",
+                                "20.146.248.154/32",
+                                "10.196.206.128/25",
+                                "10.200.122.0/25",
+                                "10.222.62.128/25",
+                                "149.11.42.48/29"
+                            ],
+                            "sourceApplicationSecurityGroups": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', variables('HubProxyASGName'))]"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Block-SharedServices-TO-HSCN-Traffic",
+                        "properties": {
+                            "description": "Block DMZ Proxy Hosts to HSCN",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "access": "Deny",
+                            "priority": 102,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                                 "[variables('HubSharedServicesSubnet')]"
+                            ],
+                            "destinationAddressPrefixes": [
+                                "10.207.116.0/22",
+                                "10.207.112.0/22",
+                                "194.72.7.137/32",
+                                "194.72.7.142/32",
+                                "155.231.0.0/16",
+                                "194.189.100.144/28",
+                                "194.189.111.96/27",
+                                "194.189.111.224/27",
+                                "194.189.113.128/27",
+                                "10.121.36.128/25",
+                                "20.146.120.128/25",
+                                "20.146.248.154/32",
+                                "10.196.206.128/25",
+                                "10.200.122.0/25",
+                                "10.222.62.128/25",
+                                "149.11.42.48/29"
+                            ]
+                            
+                        }
+                    },
+                    {
+                        "name": "ProxyServer-to-ADDS-TCP",
+                        "properties": {
+                            "description": "Allow ProxyServer to Azure ADDS_TCP",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "access": "Allow",
+                            "priority": 103,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                                "53",
+                                "88",
+                                "135",
+                                "445",
+                                "464",
+                                "3268",
+                                "3269",
+                                "49152-65535",
+                                "636"
+                            ],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": [
+                                "[variables('hubAddsIp01')]",
+                                "[variables('hubAddsIp02')]"
+                            
+                            ],
+                            "sourceApplicationSecurityGroups": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', variables('HubProxyASGName'))]"
+                                }
+                            ]
+                        }
+                    },
+                
+                    {
+                        "name": "ProxyServer-to-ADDS-UDP",
+                        "properties": {
+                            "description": "Allow ProxyServer to Azure ADDS_TCP",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "access": "Allow",
+                            "priority": 104,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                                "53",
+                                "88",
+                                "123",
+                                "135",
+                                "389",
+                                "445",
+                                "464",
+                                "636"
+                            ],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": [
+                                "[variables('hubAddsIp01')]",
+                                "[variables('hubAddsIp02')]"
+                            
+                            ],
+                            "sourceApplicationSecurityGroups": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', variables('HubProxyASGName'))]"
+                                }
+                            ]
+                        }
+
+                    },
+                    {
+                        "name": "MgmtServer-to-ADDS-TCP",
+                        "properties": {
+                            "description": "Allow Hub Management Server Access to Azure ADDS_TCP",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "access": "Allow",
+                            "priority": 105,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                                "53",
+                                "88",
+                                "135",
+                                "445",
+                                "464",
+                                "3268",
+                                "3269",
+                                "49152-65535",
+                                "636"
+                            ],
+                            "sourceAddressPrefixes": [
+                            "[variables('HubMgmtIP')]"
+                            ],
+                            "destinationAddressPrefixes": [
+                                "[variables('hubAddsIp01')]",
+                                "[variables('hubAddsIp02')]"
+                            
+                            ]
+                        
+                        }
+
+                    },
+                    {
+                        "name": "MgmtServer-to-ADDS-UDP",
+                        "properties": {
+                            "description": "Allow ProxyServer to Azure ADDS_TCP",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "access": "Allow",
+                            "priority": 106,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                                "53",
+                                "88",
+                                "123",
+                                "135",
+                                "389",
+                                "445",
+                                "464",
+                                "636"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "[variables('HubMgmtIP')]"  
+                            ],
+                            "destinationAddressPrefixes": [
+                                "[variables('hubAddsIp01')]",
+                                "[variables('hubAddsIp02')]"
+                            
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Mgmt-to-ProxyServer-WebAccess",
+                        "properties": {
+                            "description": "Allow ProxyServer to Azure ADDS_TCP",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "access": "Allow",
+                            "priority": 107,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                                "8080",
+                                "8443"
+                            ],
+                            "sourceAddressPrefixes": [
+                                "[variables('HubMgmtIP')]"
+                            ],
+                            "destinationAddressPrefixes":  [],
+                            "destinationApplicationSecurityGroups": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', variables('HubProxyASGName'))]"
+                                }
+                            ]
+                        }
+
+                    },
+                    {
+                        "name": "Mgmt-to-ProxyServer-Mgmt",
+                        "properties": {
+                            "description": "Allow Management Server to Manage Proxy Servers",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "access": "Allow",
+                            "priority": 108,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                                "443",
+                                "22"
+                            ],
+                            "sourceAddressPrefixes": [
+                                "[variables('HubMgmtIP')]"
+                            ],
+                            "destinationAddressPrefixes":  [],
+                            "destinationApplicationSecurityGroups": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', variables('HubProxyASGName'))]"
+                                }
+                            ]
+                        }
+
+                    },
+                    {
+                        "name": "Allow-Proxy-Servers-Internet",
+                        "properties": {
+                            "description": "Allow ProxyServer to Azure ADDS_TCP",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "access": "Allow",
+                            "priority": 109,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                                "443",
+                                "80"
+                            ],
+                            "destinationAddressPrefixes":  [
+                                "*"
+                            ],
+                             "sourceApplicationSecurityGroups": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', variables('HubProxyASGName'))]"
+                                }
+                            ]   
+                        }
+                    },
+                    {
+                        "name": "Allow-Mgmt-Server-Internet",
+                        "properties": {
+                            "description": "Allow Management Server Access to internet",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "access": "Allow",
+                            "priority": 110,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                                "443",
+                                "80"
+                            ],
+                            "sourceAddressPrefixes": [
+                                "[variables('HubMgmtIP')]"
+                            ],
+                            "destinationAddressPrefixes":  [
+                                "*"
+                            ]   
+                        }
+                    },
+            
+            {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2019-12-01",
+            "name": "[concat(variables('HubNsgName'), '/Allow-MGMTBOX-Desktop-ICMP')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('HubNsgName'))]"
+            ],
+            "properties": {
+                "description": "Restrict East West Traffic Between Proxy Servers",
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "destinationPortRange": "*",
+                "access": "Deny",
+                "priority": 100,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": [],
+                "sourceApplicationSecurityGroups": [
+                {
+                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', variables('HubProxyASGName'))]"
+                 }
+                  ],
+                    "destinationApplicationSecurityGroups": [
+                {
+                     "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', variables('HubProxyASGName'))]"
+                }
+                  ]
+            }
+        },
+         {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2019-12-01",
+            "name": "[concat(variables('HubNsgName'), '/Allow-MGMTBOX-Desktop-ICMP')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('HubNsgName'))]"
+            ],
+            "properties": {
+                "description": "Restrict East West Traffic Between Proxy Servers",
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "destinationPortRange": "*",
+                "access": "Deny",
+                "priority": 100,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": [],
+                "sourceApplicationSecurityGroups": [
+                {
+                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', variables('HubProxyASGName'))]"
+                 }
+                  ],
+                    "destinationApplicationSecurityGroups": [
+                {
+                     "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', variables('HubProxyASGName'))]"
+                }
+                  ]
+            }
+        },

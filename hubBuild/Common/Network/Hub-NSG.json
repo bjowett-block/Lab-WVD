@@ -1,0 +1,310 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        
+    "hubNsgName": {
+        "type": "String"
+    },
+
+    "location": {
+        "type": "string"
+      },
+      "tagCostCentreId": {
+        "type": "string"
+      },
+      "tagSalesOrderId": {
+        "type": "string"
+      },
+      "hubMgmt01VmIp": {
+        "type": "string"
+      },
+      "hubUksDc01VmIp": {
+        "type": "string"
+      },
+      "hubUksDc02VmIp": {
+        "type": "string"
+      },
+      "hubUkwDc01VmIp": {
+        "type": "string"
+      },
+      "hubUkwDc02VmIp": {
+        "type": "string"
+      },
+      "customerDesktopNetwork" : {
+        "type": "string"
+      },
+        "hubDmzSubnetRange": {
+        "type": "string"
+      },
+      "hubSharedServicesSubnetRange": {
+        "Type": "String"
+      }
+    },
+
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-05-01",
+            "name": "[parameters('hubNsgName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "Owner": "Block Solutions",
+                "Department": "Workspace and Cloud",
+                "Environment": "Production",
+                "Location": "[parameters('location')]",
+                "CostCentre": "[parameters('tagCostcentreId')]",
+                "SalesOrderID": "[parameters('tagSalesOrderId')]"
+      },
+            "properties": {
+                "securityRules": [
+                    {
+              "name": "AllowDesktops-To-InternalKMS",
+              "properties": {
+                "description": "Allow Customer Desktops to Access Internal KMS",
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "destinationPortRange": "1688",
+                "destinationAddressPrefix": "[parameters('hubMgmt01VmIp')]",
+                "access": "Allow",
+                "priority": 102,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [
+                  "[parameters('customerDesktopNetwork')]"
+  
+                ],
+                "destinationAddressPrefixes": []
+              }
+            },
+{
+              "name": "Restrict-DMZ-To-SharedServices",
+              "properties": {
+                "description": "Restrict Access between DMZ and Shared Services",
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "destinationPortRange": "*",
+                "sourceAddressPrefix": "[parameters('hubDmzSubnetRange')]",
+                "destinationAddressPrefix": "[parameters('hubSharedServicesSubnetRange')]",
+                "access": "Deny",
+                "priority": 200,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+              }
+            },
+            {
+              "name": "Restrict-SharedServices-to-DMZ",
+              "properties": {
+                "description": "Restrict Access between Shared Service and DMZ",
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "destinationPortRange": "*",
+                "sourceAddressPrefix": "[parameters('hubSharedServicesSubnetRange')]",
+                "destinationAddressPrefix": "[parameters('hubDmzSubnetRange')]",
+                "access": "Deny",
+                "priority": 201,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+              }
+            },
+            {
+              "name": "Deny-All",
+              "properties": {
+                "description": "Deny-All",
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "destinationPortRange": "*",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Deny",
+                "priority": 1000,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+              }
+            },
+            {
+              "name": "Restrict-DMZ-To-HSCN",
+              "properties": {
+                "description": "Restrict DMZ Proxy Service Access  to HSCN",
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "destinationPortRange": "*",
+                "sourceAddressPrefix": "[parameters('hubDmzSubnetRange')]",
+                "access": "Deny",
+                "priority": 100,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": [
+                  "10.207.116.0/22",
+                  "10.207.112.0/22",
+                  "194.72.7.137/32",
+                  "194.72.7.142/32",
+                  "155.231.0.0/16",
+                  "194.189.100.144/28",
+                  "194.189.111.96/27",
+                  "194.189.111.224/27",
+                  "194.189.113.128/27",
+                  "10.121.36.128/25",
+                  "20.146.120.128/25",
+                  "20.146.248.154/32",
+                  "10.196.206.128/25",
+                  "10.200.122.0/25",
+                  "10.222.62.128/25",
+                  "149.11.42.48/29"
+                ]
+              }
+            },
+            
+            {
+              "name": "Restrict-SharedServices-To-HSCN",
+              "properties": {
+                "description": "Restrict Shared Service Management host Access  to HSCN",
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "destinationPortRange": "*",
+                "sourceAddressPrefix": "[parameters('hubSharedServicesSubnetRange')]",
+                "access": "Deny",
+                "priority": 101,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": [
+                  "10.207.116.0/22",
+                  "10.207.112.0/22",
+                  "194.72.7.137/32",
+                  "194.72.7.142/32",
+                  "155.231.0.0/16",
+                  "194.189.100.144/28",
+                  "194.189.111.96/27",
+                  "194.189.111.224/27",
+                  "194.189.113.128/27",
+                  "10.121.36.128/25",
+                  "20.146.120.128/25",
+                  "20.146.248.154/32",
+                  "10.196.206.128/25",
+                  "10.200.122.0/25",
+                  "10.222.62.128/25",
+                  "149.11.42.48/29"
+                ]
+              }
+            },
+           
+            {
+              "name": "SharedService-to-ADDS-TCP",
+              "properties": {
+                "description": "Allow Management  Server  Access to Azure ADDS_TCP\n",
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "[parameters('hubSharedServicesSubnetRange')]",
+                "access": "Allow",
+                "priority": 105,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "53",
+                  "88",
+                  "135",
+                  "445",
+                  "464",
+                  "3268",
+                  "3269",
+                  "49152-65535",
+                  "636"
+                ],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": [
+                  "[parameters('hubUksDc01VmIp')]",
+                  "[parameters('hubUksDc02VmIp')]",
+                  "[parameters('hubUkwDc01VmIp')]",
+                  "[parameters('hubUkwDc02VmIp')]"
+                ]
+              }
+            },
+            {
+              "name": "SharedServices-to-ADDS-UDP",
+              "properties": {
+                "description": "Allow Management  Server  Access to Azure ADDS_UDP\n",
+                "protocol": "UDP",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "[parameters('hubSharedServicesSubnetRange')]",
+                "access": "Allow",
+                "priority": 106,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "53",
+                  "88",
+                  "135",
+                  "389",
+                  "445",
+                  "464",
+                  "123",
+                  "636"
+                ],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": [
+                  "[parameters('hubUksDc01VmIp')]",
+                  "[parameters('hubUksDc02VmIp')]",
+                  "[parameters('hubUkwDc01VmIp')]",
+                  "[parameters('hubUkwDc02VmIp')]"
+                ]
+              }
+            },
+            {
+              "name": "Mgmt-to-Internet",
+              "properties": {
+                "description": "Allow Management Servers to Access internet\n",
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "[parameters('hubMgmt01VmIp')]",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 201,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "80",
+                  "443"
+                ],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+              }
+            },
+            {
+              "name": "Deny-All-Out",
+              "properties": {
+                "description": "Deny-All-out",
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "destinationPortRange": "*",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Deny",
+                "priority": 1000,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+              }
+            }
+
+                ]
+            }
+        }
+    ]
+}

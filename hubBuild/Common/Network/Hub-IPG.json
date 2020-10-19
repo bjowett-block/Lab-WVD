@@ -1,0 +1,127 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters":{
+    "location":{
+        "type": "string"
+      },
+    "customerIpPrefix":{
+        "type": "string"
+      },
+    "customerDesktopNetwork" : {
+        "type": "string"
+    },
+    "hubAddsIp01":{
+       "type": "string"
+   },
+    "hubAddsIp02":{
+       "type": "string"
+   }
+
+
+  },
+  "variables":{},
+  "resources": [
+      {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2019-12-01",
+            "name": "Customer-Spoke_ipg",
+            "location": "[parameters('location')]",
+            "properties": {
+                "ipAddresses": [
+                    "[parameters('customerIpPrefix')]"
+                ]
+            }
+        },
+         {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2019-12-01",
+            "name": "Customer-Desktop_ipg",
+            "location": "[parameters('location')]",
+            "properties": {
+                "ipAddresses": [
+                    "[parameters('customerDesktopNetwork')]"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2019-12-01",
+            "name": "ADDS_ipg",
+            "location": "[parameters('location')]",
+            "properties": {
+                "ipAddresses": [
+                    "[parameters('hubAddsIp01')]",
+                    "[parameters('hubAddsIp02')]"
+                ]
+            }
+        },
+            {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2019-12-01",
+            "name": "Emis-Group1_ipg",
+            "location": "[parameters('location')]",
+            "properties": {
+                "ipAddresses": [
+                 "10.207.112.0/22",
+                 "10.207.116.0/22"
+
+                ]
+            }      
+        },
+        {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2019-12-01",
+            "name": "Emis-Group2_ipg",
+            "location": "[parameters('location')]",
+            "properties": {
+                "ipAddresses": [
+                "185.13.72.0/22",
+                "149.11.42.48"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2019-12-01",
+            "name": "SystemOne_ipg",
+            "location": "[parameters('location')]",
+            "properties": {
+                "ipAddresses": [
+                "20.146.120.128/25",
+                "20.146.248.128/25",
+                "20.146.248.0/25"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/ipGroups",
+            "apiVersion": "2019-12-01",
+            "name": "HSCN_ipg",
+            "location": "[parameters('location')]",
+            "properties": {
+                "ipAddresses": [
+                    "10.207.116.0/22",
+                    "10.207.112.0/22",
+                    "194.72.7.137/32",
+                    "194.72.7.142/32",
+                    "155.231.0.0/16",
+                    "194.189.100.144/28",
+                    "194.189.111.96/27",
+                    "194.189.111.224/27",
+                    "194.189.113.128/27",
+                    "10.121.36.128/25",
+                    "20.146.120.128/25",
+                    "20.146.248.154/32",
+                    "10.196.206.128/25",
+                    "10.200.122.0/25",
+                    "10.222.62.128/25",
+                    "149.11.42.48/29"
+                ]
+            }
+        }
+        ],
+  "outputs": {}
+}
+
+

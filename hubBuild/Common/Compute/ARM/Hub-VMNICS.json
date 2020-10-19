@@ -1,0 +1,151 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "hubMgmtServerNicName": {
+      "type": "string"
+    },
+    "hubMgmtServerIp": {
+      "type": "string"
+    },
+    "hubProxyNicName01": {
+      "type": "string"
+    },
+    "hubProxyIp01": {
+      "type": "string"
+    },
+    "hubProxyNicName02": {
+      "type": "string"
+    },
+    "hubProxyIp02": {
+      "type": "string"
+    },
+    "hubProxyNicName03": {
+      "type": "string"
+    },
+    "hubProxyIp03": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "hubVnetName": {
+      "type": "string"
+    }
+},
+  "variables": {
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2019-04-01",
+      "name": "[parameters('hubMgmtServerNicName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "[parameters('hubMgmtServerIp')]",
+              "privateIPAllocationMethod": "Static",
+              "subnet": {
+             
+                "id": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/virtualNetworks/',parameters('hubVnetName'),'/subnets/SharedServices')]"
+              },
+              "primary": true,
+              "privateIPAddressVersion": "IPv4"
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableAcceleratedNetworking": false,
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2019-04-01",
+      "name": "[parameters('hubProxyNicName01')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "[parameters('hubProxyIp01')]",
+              "privateIPAllocationMethod": "Static",
+              "subnet": {
+                "id": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/virtualNetworks/',parameters('hubVnetName'),'/subnets/DMZ')]"
+              },
+              "primary": true,
+              "privateIPAddressVersion": "IPv4"
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableAcceleratedNetworking": false,
+        "enableIPForwarding": false
+      }
+    },
+    {
+      "apiVersion": "2019-04-01",
+      "location": "[parameters('location')]",
+      "name": "[parameters('hubProxyNicName02')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "[parameters('hubProxyIp02')]",
+              "privateIPAllocationMethod": "Static",
+              "subnet": {
+                "id": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/virtualNetworks/',parameters('hubVnetName'),'/subnets/DMZ')]"
+              },
+              "primary": true,
+              "privateIPAddressVersion": "IPv4"
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableAcceleratedNetworking": false,
+        "enableIPForwarding": false
+      },
+      "type": "Microsoft.Network/networkInterfaces"
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2019-04-01",
+      "name": "[parameters('hubProxyNicName03')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "[parameters('hubProxyIp03')]",
+              "privateIPAllocationMethod": "Static",
+              "subnet": {
+                "id": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/virtualNetworks/',parameters('hubVnetName'),'/subnets/DMZ')]"
+              },
+              "primary": true,
+              "privateIPAddressVersion": "IPv4"
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableAcceleratedNetworking": false,
+        "enableIPForwarding": false
+      }
+    }
+  ],
+  "outputs": {
+  }
+}

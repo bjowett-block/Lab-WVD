@@ -1,0 +1,856 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+  "parameters": {
+
+    "hubFirewallName": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "serviceOwner": {
+      "type": "String"
+    },
+    "serviceDepartment": {
+      "type": "String"
+    },
+    "serviceEnvironment": {
+      "type": "String"
+    },
+    "serviceCostCentre": {
+      "type": "String"
+    },
+    "hubFirewallPipName": {
+      "type": "string"
+    },
+    "hubFirewallPipId": {
+      "type": "string"
+    },
+    "hubVnetName": {
+      "type": "string"
+    },
+    "spokeIpGroup": {
+      "type": "string"
+    },
+    "spokeDesktopIpGroup": {
+      "type": "string"
+    },
+    "emis1IpGroup": {
+      "type": "string"
+    },
+    "emis2IpGroup": {
+      "type": "string"
+    },
+    "systemOneIpGroup": {
+      "type": "string"
+    },
+    "hubAddIpGroup": {
+      "type": "string"
+    },
+    "hscnIpGroup": {
+      "type": "string"
+    },
+    "hubSharedServicesSubnetRange": {
+      "Type": "String"
+    },
+    "hubDmzSubnetRange": {
+      "type": "string"
+    },
+    "hubBastionSubnetRange": {
+      "type": "string"
+    },
+    "hubAzureFirewallSubnetId": {
+      "type": "string"
+    }
+
+
+
+  },
+    "variables": {
+       
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/azureFirewalls",
+            "apiVersion": "2019-11-01",
+            "name": "[parameters('hubFirewallName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "Owner": "[parameters('serviceOwner')]",
+                "Department": "[parameters('serviceDepartment')]",
+                "Environment": "[parameters('serviceEnvironment')]",
+                "Location": "[parameters('location')]",
+                "CostCentre": "[parameters('serviceCostcentre')]"
+                         },
+            "properties": {
+                "sku": {
+                    "name": "AZFW_VNet",
+                    "tier": "Standard"
+                },
+                "threatIntelMode": "Alert",
+                "additionalProperties": {},
+                "ipConfigurations": [
+                    {
+                        "name": "[parameters('hubFirewallPipName')]",
+                        "properties": {
+                          "publicIPAddress": {
+                            "id": "[parameters('hubFirewallPipId')]"
+                          },
+                            "subnet": {
+                                "id": "[parameters('hubAzureFirewallSubnetId')]"
+                            }
+                        }
+                    }
+
+                    
+                ],
+                "networkRuleCollections": [
+                    {
+                        "name": "Restrict-Spoke-to-Spoke",
+                        "properties": {
+                            "priority": 100,
+                            "action": {
+                                "type": "Deny"
+                            },
+                            "rules": [
+                                {
+                                    "name": "Restrict InterSpoke Communication",
+                                    "protocols": [
+                                        "Any"
+                                    ],
+                                    "sourceAddresses": [],
+                                    "destinationAddresses": [],
+                                    "sourceIpGroups": [
+                                        "[parameters('spokeIpGroup')]"
+                                    ],
+                                    "destinationIpGroups": [
+                                        "[parameters('spokeIpGroup')]"
+                                    ],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                        "*"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Internal-ADD-Communicaiton",
+                        "properties": {
+                            "priority": 110,
+                            "action": {
+                                "type": "Allow"
+                            },
+                            "rules": [
+                                {
+                                    "name": "Spoke to ADDS-TCP",
+                                    "protocols": [
+                                        "TCP"
+                                    ],
+                                    "sourceAddresses": [],
+                                    "destinationAddresses":  [],
+                                    "sourceIpGroups": [
+                                        "[parameters('spokeIpGroup')]"
+                                    ],
+                                    "destinationIpGroups": [
+                                        "[parameters('hubAddIpGroup')]"
+                                    ],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                        "53",
+                                        "88",
+                                        "135",
+                                        "445",
+                                        "464",
+                                        "3268",
+                                        "3269",
+                                        "49152-65535",
+                                        "636"
+                                    ]
+                                },
+                                {
+                                    "name": "Spoke to ADDS-UDP",
+                                    "protocols": [
+                                        "UDP"
+                                    ],
+                                    "sourceAddresses": [],
+                                    "destinationAddresses": [
+                                    ],
+                                    "sourceIpGroups": [
+                                        "[parameters('spokeIpGroup')]"
+                                    ],
+                                    "destinationIpGroups": [
+                                        "[parameters('hubAddIpGroup')]"
+                                    ],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                        "53",
+                                        "88",
+                                        "135",
+                                        "389",
+                                        "445",
+                                        "464",
+                                        "123",
+                                        "636"
+                                    ]
+                                },
+                                {
+                                    "name": "ADDS to External DNS",
+                                    "protocols": [
+                                        "UDP"
+                                    ],
+                                    "sourceAddresses": [],
+                                    "destinationAddresses": [
+                                        "208.67.222.222",
+                                        "208.67.220.220"
+                                    ],
+                                    "sourceIpGroups": [
+                                        "[parameters('hubAddIpGroup')]"
+                                    ],
+                                    "destinationIpGroups": [],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                        "53"
+                                    ]
+                                },
+                                {
+                                    "name": "ADDS to NHS DNS",
+                                    "protocols": [
+                                        "UDP"
+                                    ],
+                                    "sourceAddresses": [],
+                                    "destinationAddresses": [
+                                        "155.231.231.1",
+                                        "155.231.231.2"
+                                    ],
+                                    "sourceIpGroups": [
+                                        "[parameters('hubAddIpGroup')]"
+                                    ],
+                                    "destinationIpGroups": [],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                        "53"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                   
+
+                    {
+                        "name": "Azure-Communication",
+                        "properties": {
+                            "priority": 111,
+                            "action": {
+                                "type": "Allow"
+                            },
+                            "rules": [
+                                {
+                                    "name": "Desktop to Azure KMS",
+                                    "protocols": [
+                                        "TCP"
+                                    ],
+                                    "sourceAddresses": [],
+                                    "destinationAddresses":[
+                                        "*"
+
+                                    ],
+                                    "sourceIpGroups": [
+                                        "[parameters('spokeIpGroup')]"
+                                    ],
+                                    "destinationIpGroups":  [],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                      "1688"
+                                        
+                                    ]
+                                },
+                                 {
+                                    "name": "SharedServices to Azure KMS",
+                                    "protocols": [
+                                        "UDP"
+                                    ],
+                                    "sourceAddresses": [
+                                        "[parameters('hubSharedServicesSubnetRange')]"
+                                    ],
+                                    "destinationAddresses": [
+                                        "*"
+                                    ],
+                                    "sourceIpGroups": [],
+                                    "destinationIpGroups":  [],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                      "1688"
+                                    ]
+                                },
+                                    {
+                                    "name": "DMZ to Azure KMS",
+                                    "protocols": [
+                                        "TCP"
+                                    ],
+                                    "sourceAddresses": [
+                                        "[parameters('hubDmzSubnetRange')]"
+                                    ],
+                                    "destinationAddresses":[
+                                        "*"
+                                    ],
+                                    "sourceIpGroups": [],
+                                    "destinationIpGroups":  [],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                        "1688"
+  
+                                    ]
+                                }
+                                    
+
+                                
+                                
+                            ]
+                        }
+                    },
+                     {
+                        "name": "EMIS-Communication",
+                        "properties": {
+                            "priority": 112,
+                            "action": {
+                                "type": "Allow"
+                            },
+                            "rules": [
+                                {
+                                    "name": "Desktop to EMIS1-TCP",
+                                    "protocols": [
+                                        "TCP"
+                                    ],
+                                    "sourceAddresses": [],
+                                    "destinationAddresses":[],
+                                    "sourceIpGroups": [
+                                        "[parameters('spokeDesktopIpGroup')]"
+                                    ],
+                                    "destinationIpGroups":  [
+                                        "[parameters('emis1IpGroup')]"
+                                    ],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                      "80",
+                                      "443",
+                                      "8080",
+                                      "33962",
+                                      "33956",
+                                      "33957",
+                                      "33964",
+                                      "33966",
+                                      "33969"
+                                        
+                                    ]
+                                },
+                                 {
+                                    "name": "Desktop to EMIS2-TCP",
+                                    "protocols": [
+                                        "TCP"
+                                    ],
+                                    "sourceAddresses": [],
+                                    "destinationAddresses": [],
+                                    "sourceIpGroups": [
+                                        "[parameters('spokeDesktopIpGroup')]"
+                                    ],
+                                    "destinationIpGroups":  [
+                                        "[parameters('emis2IpGroup')]"
+                                    ],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                      "80",
+                                      "8080",
+                                      "443"
+                                       ]
+                                }
+                                    
+                            ]
+                        }
+                     },
+                        {
+                        "name": "SystemOne-Communication",
+                        "properties": {
+                            "priority": 113,
+                            "action": {
+                                "type": "Allow"
+                            },
+                            "rules": [
+                                {
+                                    "name": "Desktop to SystemOne-TCP",
+                                    "protocols": [
+                                        "TCP"
+                                    ],
+                                    "sourceAddresses": [],
+                                    "destinationAddresses":[],
+                                    "sourceIpGroups": [
+                                        "[parameters('spokeDesktopIpGroup')]"
+                                    ],
+                                    "destinationIpGroups":  [
+                                        "[parameters('systemOneIpGroup')]"
+                                    ],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                    "2130-2140"
+                                        
+                                    ]
+                                },
+                                 {
+                                    "name": "Desktop to SystemOne-UDP",
+                                    "protocols": [
+                                        "UDP"
+                                    ],
+                                    "sourceAddresses": [],
+                                    "destinationAddresses": [],
+                                    "sourceIpGroups": [
+                                        "[parameters('spokeDesktopIpGroup')]"
+                                    ],
+                                    "destinationIpGroups":  [
+                                        "[parameters('systemOneIpGroup')]"
+                                    ],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                      "2120-2130"
+ 
+                                    ]
+                                }   
+
+                            ]
+                        }
+                    },
+
+                    {
+                        "name": "Restrict-HSCN-Access",
+                        "properties": {
+                            "priority": 300,
+                            "action": {
+                                "type": "Deny"
+                            },
+                            "rules": [
+                                {
+                                    "name": "Restrict Unknown Spoke Traffic to HSCN",
+                                    "protocols": [
+                                        "Any"
+                                    ],
+                                    "sourceAddresses": [],
+                                    "destinationAddresses":[],
+                                    "sourceIpGroups": [
+                                        "[parameters('spokeIpGroup')]"
+                                    ],
+                                    "destinationIpGroups":  [
+                                        "[parameters('hscnIpGroup')]"
+                                    ],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                    "*"
+                                        
+                                    ]
+                                },
+                                 {
+                                    "name": "Restrict Unknown Spoke Desktop Traffic to HSCN",
+                                    "protocols": [
+                                        "Any"
+                                    ],
+                                    "sourceAddresses": [],
+                                    "destinationAddresses":[],
+                                    "sourceIpGroups": [
+                                        "[parameters('spokeDesktopIpGroup')]"
+                                    ],
+                                    "destinationIpGroups":  [
+                                        "[parameters('hscnIpGroup')]"
+                                    ],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                    "*"
+                                        
+                                    ]
+                                },
+                                {
+                                    "name": "Restrict Unknown Shared Services Traffic to HSCN",
+                                    "protocols": [
+                                        "Any"
+                                    ],
+                                    "sourceAddresses": [
+                                        "[parameters('hubSharedServicesSubnetRange')]"
+                                    ],
+                                    "destinationAddresses":[],
+                                    "sourceIpGroups": [
+                                    ],
+                                    "destinationIpGroups":  [
+                                        "[parameters('hscnIpGroup')]"
+                                    ],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                    "*"
+                                        
+                                    ]
+                                },
+                                {
+                                    "name": "Restrict Unknown DMZ Traffic to HSCN",
+                                    "protocols": [
+                                        "Any"
+                                    ],
+                                    "sourceAddresses": [
+                                        "[parameters('hubDmzSubnetRange')]"
+                                    ],
+                                    "destinationAddresses":[],
+                                    "sourceIpGroups": [
+                                    ],
+                                    "destinationIpGroups":  [
+                                        "[parameters('hscnIpGroup')]"
+                                    ],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                    "*"
+                                        
+                                    ]
+                                },
+                                {
+                                    "name": "Restrict Unknown Bastion Traffic to HSCN",
+                                    "protocols": [
+                                        "Any"
+                                    ],
+                                    "sourceAddresses": [
+                                        "[parameters('hubBastionSubnetRange')]"
+                                    ],
+                                    "destinationAddresses":[],
+                                    "sourceIpGroups": [
+                                    ],
+                                    "destinationIpGroups":  [
+                                        "[parameters('hscnIpGroup')]"
+                                    ],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                    "*"   
+                                    ]
+                                }  
+
+                            ]
+                        }
+                    }
+                ],
+              "applicationRuleCollections": [
+                {
+                  "name": "WVD-Service-Access",
+                  "properties": {
+                    "priority": 200,
+                    "action": {
+                      "type": "Allow"
+                    },
+                    "rules": [
+                      {
+                        "name": "WVD",
+                        "protocols": [
+                          {
+                            "protocolType": "Https",
+                            "port": 443
+                          }
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "*.wvd.microsoft.com"
+                        ],
+                        "sourceAddresses": [],
+                        "sourceIpGroups": [
+                          "[parameters('spokeIpGroup')]"
+                        ]
+                      },
+                      {
+                        "name": "Blob",
+                        "protocols": [
+                          {
+                            "protocolType": "Https",
+                            "port": 443
+                          }
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "*.blob.windows.net"
+                        ],
+                        "sourceAddresses": [],
+                        "sourceIpGroups": [
+                          "[parameters('spokeIpGroup')]"
+                        ]
+                      },
+                      {
+                        "name": "Core",
+                        "protocols": [
+                          {
+                            "protocolType": "Https",
+                            "port": 443
+                          }
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "*.core.windows.net"
+                        ],
+                        "sourceAddresses": [],
+                        "sourceIpGroups": [
+                          "[parameters('spokeIpGroup')]"
+                        ]
+                      },
+                      {
+                        "name": "ServiceBus",
+                        "protocols": [
+                          {
+                            "protocolType": "Https",
+                            "port": 443
+                          }
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "*.servicebus.windows.net"
+                        ],
+                        "sourceAddresses": [],
+                        "sourceIpGroups": [
+                          "[parameters('spokeIpGroup')]"
+                        ]
+                      },
+                      {
+                        "name": "Prod-Warmpath",
+                        "protocols": [
+                          {
+                            "protocolType": "Https",
+                            "port": 443
+                          }
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "*.prod.warmpath.msftcloudes.com"
+                        ],
+                        "sourceAddresses": [],
+                        "sourceIpGroups": [
+                          "[parameters('spokeIpGroup')]"
+                        ]
+                      },
+                      {
+                        "name": "Catalog",
+                        "protocols": [
+                          {
+                            "protocolType": "Https",
+                            "port": 443
+                          }
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "catalogartifact.azureedge.net"
+                        ],
+                        "sourceAddresses": [],
+                        "sourceIpGroups": [
+                          "[parameters('spokeIpGroup')]"
+                        ]
+                      },
+                      {
+                        "name": "Online",
+                        "protocols": [
+                          {
+                            "protocolType": "Https",
+                            "port": 443
+                          }
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "*.microsoftonline.com"
+                        ],
+                        "sourceAddresses": [],
+                        "sourceIpGroups": [
+                          "[parameters('spokeIpGroup')]"
+                        ]
+                      },
+                      {
+                        "name": "Connecttest",
+                        "protocols": [
+                          {
+                            "protocolType": "Https",
+                            "port": 443
+                          },
+                          {
+                            "protocolType": "Http",
+                            "port": 80
+                          }
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "www.msftconnecttest.com"
+                        ],
+                        "sourceAddresses": [],
+                        "sourceIpGroups": [
+                          "[parameters('spokeIpGroup')]"
+                        ]
+                      },
+                      {
+                        "name": "Services1",
+                        "protocols": [
+                          {
+                            "protocolType": "Https",
+                            "port": 443
+                          }
+
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "settings-win.data.microsoft.com"
+
+                        ],
+                        "sourceAddresses": [],
+                        "sourceIpGroups": [
+                          "[parameters('spokeIpGroup')]"
+                        ]
+                      },
+                      {
+                        "name": "MS Online Services",
+                        "protocols": [
+                          {
+                            "protocolType": "Https",
+                            "port": 443
+                          }
+
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "login.windows.net"
+                        ],
+                        "sourceAddresses": [],
+                        "sourceIpGroups": [
+                          "[parameters('spokeIpGroup')]"
+                        ]
+                      },
+                      {
+                        "name": "Services3",
+                        "protocols": [
+                          {
+                            "protocolType": "Https",
+                            "port": 443
+                          }
+
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "fs.microsoft.com"
+                        ],
+                        "sourceAddresses": [],
+                        "sourceIpGroups": [
+                          "[parameters('spokeIpGroup')]"
+                        ]
+                      },
+                      {
+                        "name": "Services4",
+                        "protocols": [
+                          {
+                            "protocolType": "Https",
+                            "port": 443
+                          }
+
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "slscr.update.microsoft.com"
+                        ],
+                        "sourceAddresses": [],
+                        "sourceIpGroups": [
+                          "[parameters('spokeIpGroup')]"
+                        ]
+                      },
+                      {
+                        "name": "Windows Update",
+                        "protocols": [
+                          {
+                            "protocolType": "Https",
+                            "port": 443
+                          }
+
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "*.prod.do.dsp.microsoft.com"
+                        ],
+                        "sourceAddresses": [],
+                        "sourceIpGroups": [
+                          "[parameters('spokeIpGroup')]"
+                        ]
+                      },
+                      {
+                        "name": "Telemetry Service",
+                        "protocols": [
+                          {
+                            "protocolType": "Https",
+                            "port": 443
+                          }
+
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "*.events.data.microsoft.com"
+                        ],
+                        "sourceAddresses": [],
+                        "sourceIpGroups": [
+                          "[parameters('spokeIpGroup')]"
+                        ]
+                      },
+                      {
+                        "name": "Github",
+                        "protocols": [
+                          {
+                            "protocolType": "Https",
+                            "port": 443
+                          }
+
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "raw.githubuserconect.com"
+                        ],
+                        "sourceAddresses": [],
+                        "sourceIpGroups": [
+                          "[parameters('spokeIpGroup')]"
+                        ]
+                      },
+                      {
+                        "name": "One Drive client Update",
+                        "protocols": [
+                          {
+                            "protocolType": "Https",
+                            "port": 443
+                          }
+
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "*.sfx.ms"
+                        ],
+                        "sourceAddresses": [],
+                        "sourceIpGroups": [
+                          "[parameters('spokeIpGroup')]"
+                        ]
+                      },
+                      {
+                        "name": "Certification Revocation Check",
+                        "protocols": [
+                          {
+                            "protocolType": "Https",
+                            "port": 443
+                          }
+
+                        ],
+                        "fqdnTags": [],
+                        "targetFqdns": [
+                          "*.digicert.com"
+                        ],
+                        "sourceAddresses": [],
+                        "sourceIpGroups": [
+                          "[parameters('spokeIpGroup')]"
+                        ]
+                      }
+                    ]
+                  }
+
+                }
+              ],
+                "natRuleCollections": []
+            }
+        }
+    ]
+}
+        
+    

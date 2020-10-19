@@ -1,0 +1,30 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "hubIpPrefix": {
+      "value": "192.168.0.0/23"
+    },
+    "lowerHubNetThirdOctet": {
+      "value": "192.168.0"
+    },
+    "upperHubNetThirdOctet": {
+      "value": "192.168.1"
+    },
+    "hubNamePrefix": {
+      "value": "PCW"
+    },
+    "serviceEnvironment": {
+      "value": "Development"
+    },
+    "serviceCostCentre": {
+      "value": "12345"
+    },
+    "customerDesktopNetwork": {
+      "value": "172.25.0.0/23"
+    },
+    "customerIpPrefix": {
+      "value": "172.25.0.0/22"
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "keyVaultName": {
+            "type": "string"
+        },
+        "tenantId":{
+            "type": "string"
+        },
+        "location":{
+            "type": "string"
+        },
+ 
+        "tagCostCentre": {
+            "type": "string"
+        },
+        "tagSalesOrderId":{
+            "type":"string"
+    }
+    },
+    "variables": {},
+    "resources":[
+        {
+      "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2016-10-01",
+            "name": "[parameters('keyVaultName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "Owner": "Block Solutions",
+                "Department": "Workspace and Cloud",
+                "Environment": "Production",
+                "Location": "[parameters('location')]",
+                "CostCentre": "[parameters('tagCostcentre')]",
+                "SalesOrderID": "[parameters('tagSalesOrderId')]"
+      },
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "Standard"
+                },
+                "tenantId": "[parameters('tenantId')]",
+                "enabledForDeployment": true,
+                "enabledForDiskEncryption": true,
+                "enabledForTemplateDeployment": true,
+                "enableSoftDelete": true
+            }
+        }  
+    ],
+    "outputs": {}
+}

@@ -1,0 +1,595 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2019-08-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "_artifactsLocation": {
+      "type": "string",
+      "metadata": {
+        "description": "Auto-Generated container in staging storage account to recieve post-build staging folder upload"
+      }
+    },
+    "_artifactsLocationSasToken": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Auto generated token to access _artifactsLocation"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    },
+    "serviceType":{
+      "type": "string",
+      "allowedValues": [
+        "Acute",
+        "Commercial",
+        "Education",
+        "Local Government",
+        "Mental Health",
+        "Primary Care"
+      ],
+      "metadata": {
+        "description" : "The type of Windows Virtual Desktop to be deployed"
+      }
+    },
+
+    "hubNamePrefix": {
+      "type": "string",
+      "maxLength": 3,
+      "minLength": 3,
+      "metadata": {
+        "description": "A unique three character prefix identifying the environment"
+      }
+    },
+    "customerDesktopNetwork": {
+      "maxLength": 22,
+      "minLength": 10,
+      "type": "string"
+    },
+
+    "tagEnvironment": {
+      "type": "string",
+      "allowedValues": [
+        "Production",
+        "Development",
+        "Proof of Concept"
+      ]
+    },
+    "tagCostCentre": {
+      "type": "string"
+    },
+    "tagPoId":{
+      "type":"string"
+    },
+    "hubIpPrefix": {
+      "maxLength": 22,
+      "minLength": 10,
+      "type": "string"
+    },
+    "lowerHubNetThirdOctet": {
+      "maxLength": 11,
+      "minLength": 3,
+      "type": "string"
+    },
+    "upperHubNetThirdOctet": {
+      "maxLength": 11,
+      "minLength": 3,
+      "type": "string"
+    },
+    "customerIpPrefix": {
+      "type": "string"
+    },
+    "tenantId":{
+      "type": "string"
+    }
+  },
+  "variables": {
+    "TEMPLATES": {
+      "Hub-DCVM": {
+        "LINK": "[concat(parameters('_artifactsLocation'), '/Common/Compute/ARM/Hub-DCVM.json', parameters('_artifactsLocationSasToken'))]"
+      },
+      "Hub-MGMTVM": {
+        "LINK": "[concat(parameters('_artifactsLocation'), '/Common/Compute/ARM/Hub-MGMTVM.json', parameters('_artifactsLocationSasToken'))]"
+      },
+        "Hub-NICS": {
+        "Link": "[concat(parameters('_artifactsLocation'), '/Common/Compute/Hub-VMNICS.json', parameters('_artifactsLocationSasToken'))]"
+      },
+        "Hub-ASG": {
+        "Link": "[concat(parameters('_artifactsLocation'), '/Common/Network/Hub-ASG.json', parameters('_artifactsLocationSasToken'))]"
+      },
+        "Hub-IPG": {
+        "Link": "[concat(parameters('_artifactsLocation'), '/Common/Network/Hub-IPG.json', parameters('_artifactsLocationSasToken'))]"
+      },
+      "Hub-NSG": {
+        "Link": "[concat(parameters('_artifactsLocation'), '/Common/Network/HUB-NSG.json', parameters('_artifactsLocationSasToken'))]"
+      },
+      "Hub-VNET": {
+        "Link": "[concat(parameters('_artifactsLocation'), '/Common/Network/Hub-VNET.json', parameters('_artifactsLocationSasToken'))]"
+      },
+      "Hub-PIP": {
+        "Link": "[concat(parameters('_artifactsLocation'), '/Common/Network/Hub-PIP.json', parameters('_artifactsLocationSasToken'))]"
+      },
+      "Hub-RT": {
+        "Link": "[concat(parameters('_artifactsLocation'), '/Common/Network/Hub-RT.json', parameters('_artifactsLocationSasToken'))]"
+      },
+      "Hub-AFW": {
+        "Link": "[concat(parameters('_artifactsLocation'), '/Common/Network/Hub-AFW.json', parameters('_artifactsLocationSasToken'))]"
+      },
+        "Hub-VNG": {
+        "Link": "[concat(parameters('_artifactsLocation'), '/Common/Network/Hub-VNG.json', parameters('_artifactsLocationSasToken'))]"
+      },
+        "Hub-VPN": {
+        "Link": "[concat(parameters('_artifactsLocation'), '/Common/Network/Hub-VPN.json', parameters('_artifactsLocationSasToken'))]"
+      },
+        "Hub-LNG": {
+        "Link": "[concat(parameters('_artifactsLocation'), '/Common/Network/Hub-LNG.json', parameters('_artifactsLocationSasToken'))]"
+      },
+      "Hub-AA" :{
+        "Link": "[concat(parameters('_artifactsLocation'), '/Common/Services/Hub-AA.json', parameters('_artifactsLocationSasToken'))]"
+      },
+       "Hub-KV" :{
+        "Link": "[concat(parameters('_artifactsLocation'), '/Common/Services/Hub-KV.json', parameters('_artifactsLocationSasToken'))]"
+      },
+        "Hub-LAW" :{
+        "Link": "[concat(parameters('_artifactsLocation'), '/Common/Services/Hub-LAW.json', parameters('_artifactsLocationSasToken'))]"
+      },
+        "Hub-RSV" :{
+        "Link": "[concat(parameters('_artifactsLocation'), '/Common/Services/Hub-RSV.json', parameters('_artifactsLocationSasToken'))]"
+      },
+        "Hub-SA" :{
+        "Link": "[concat(parameters('_artifactsLocation'), '/Common/Services/Hub-SA.json', parameters('_artifactsLocationSasToken'))]"
+      }
+    },
+    "hubAaName":"[concat(parameters('hubNamePrefix'),'hub-aa')]",
+    "hubkeyVaultName":"[concat(parameters('hubNamePrefix'),'hub-kv')]",
+    "hubNsgName": "[concat(parameters('hubNamePrefix'),'hub-nsg')]",
+    "hubVnetName": "[concat(parameters('hubNamePrefix'),'hub-vnet')]",
+    "hubLawName": "[concat(parameters('hubNamePrefix'),'hub-vnet')]",
+    
+    "hubFirewallName": "[concat(parameters('hubNamePrefix'),'hub-afw')]",
+    "hubSharedServicesSubnetRange": "[concat(parameters('upperHubNetThirdOctet'),'.0/24')]",
+    "hubDomainServicesSubnetRange": "[concat(parameters('lowerHubNetThirdOctet'),'.0/28')]",
+    "hubBastionSubnetRange": "[concat(parameters('lowerHubNetThirdOctet'),'.16/29')]",
+    "hubGatewayServicesSubnetRange": "[concat(parameters('lowerHubNetThirdOctet'),'.32/27')]",
+    "hubDmzSubnetRange": "[concat(parameters('lowerHubNetThirdOctet'),'.64/27')]",
+    "hubAzureFirewallSubnetRange": "[concat(parameters('lowerHubNetThirdOctet'),'.128/26')]",
+    "hubFirewallPipName": "[concat(parameters('hubNamePrefix'),'hubafw-pip01')]",
+    "hubVngPipName01": "[concat(parameters('hubNamePrefix'),'hubvng-pip01')]",
+    "hubVngPipName02": "[concat(parameters('hubNamePrefix'),'hubvng-pip02')]",
+    "hubMgmtServerName": "[concat(parameters('hubNamePrefix'),'hubmgmtvm01')]",
+    "hubMgmtServerIp": "[concat(parameters('upperHubNetThirdOctet'),'.4')]",
+    "hubMgmtServerNicName": "[concat(parameters('hubNamePrefix'),'hubmgmtvm01-nic')]",
+    "hubDc01ServerName": "[concat(parameters('hubNamePrefix'),'hubadcvm01')]",
+    "hubDc01VmIp": "[concat(parameters('lowerHubNetThirdOctet'),'.4')]",
+    "hubDc01ServerNicName": "[concat(parameters('hubNamePrefix'),'hubadcvm01-nic')]",
+    "hubDc02ServerName": "[concat(parameters('hubNamePrefix'),'hubadcvm02')]",
+    "hubDc02VmIp": "[concat(parameters('lowerHubNetThirdOctet'),'.5')]",
+    "hubDc02ServerNicName": "[concat(parameters('hubNamePrefix'),'hubadcvm02-nic')]",
+
+
+    "tagOwner": "Block Solutions",
+    "tagDepartment": "Workspace and Cloud",
+    "spokeDesktopIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/Spoke-Desktop-IP-Group')]",
+    "spokeIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/Spoke-IP-Group')]",
+    "emis1IpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/EMIS-Group1-IP-Group')]",
+    "emis2IpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/EMIS-Group2-IP-Group')]",
+    "systemOneIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/SystemOne-IP-Group')]",
+    "hubAddIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/HubADDS-IP-Group')]",
+    "hscnIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/HSCN-IP-Group')]",
+    "hubFirewallPipId": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/publicIPAddresses/',variables('hubVngPipName01'))]",
+    "vngPip01Id": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/publicIPAddresses/',variables('hubVngPipName01'))]",
+    "vngPip02Id": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/publicIPAddresses/',variables('hubVngPipName02'))]",
+    "hubAzureFirewallSubnetId": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/virtualNetworks/',variables('hubVnetName'),'/subnets/AzureFirewallSubnet')]"
+  },
+  "resources": [
+    {
+    "type":"Microsoft.Resources/deployments",
+    "name": "Deploy_AutomationAccount",
+    "apiVersion": "2018-05-01",
+    "properties": {
+      "mode":"Incremental",
+      "templateLink":{
+        "uri": "[variables('TEMPLATES')['Hub-AA'].Link]",
+        "contentVersion": "1.0.0.0"
+      },
+      "parameters":{
+        "hubAaName": {
+          "value":"[variables('hubAaName')]"
+     },
+        "location": {
+            "value": "[parameters('location')]"
+          }
+    }
+    } 
+    },
+{
+    "type":"Microsoft.Resources/deployments",
+    "name": "Deploy_KeyVault",
+    "apiVersion": "2018-05-01",
+    "properties": {
+      "mode":"Incremental",
+      "templateLink":{
+        "uri": "[variables('TEMPLATES')['Hub-LAW'].Link]",
+        "contentVersion": "1.0.0.0"
+      },
+      "parameters":{
+         "hubLawName": {
+            "value":"[variables('hubLawName')]"
+        },
+      "location": {
+            "value": "[parameters('location')]"
+          }
+
+    } 
+    }
+    },
+
+     {
+    "type":"Microsoft.Resources/deployments",
+    "name": "Deploy_KeyVault",
+    "apiVersion": "2018-05-01",
+    "properties": {
+      "mode":"Incremental",
+      "templateLink":{
+        "uri": "[variables('TEMPLATES')['Hub-KV'].Link]",
+        "contentVersion": "1.0.0.0"
+      },
+      "parameters":{
+         "hubKeyVaultName": {
+            "value":"[variables('hubkeyVaultName')]"
+        },
+        "tenantId":{
+            "value":"[parameters('tenantId')]"
+        },
+        "location": {
+            "value": "[parameters('location')]"
+          },
+        "tagOwner":{
+          "value":"[variables('tagOwner')]"
+        },
+        "tagDepartment":{
+          "value":"[variables('tagDepartment')]"
+        },
+        "tagEnvironment":{
+          " value": "[parameters('tagEnvironment')]"
+        },
+        "tagCostCentre": {
+            "value": "[parameters('tagCostCentre')]"
+        },
+        "tagPoId":{
+           "value": "[parameters('tagPoId')]"
+    }
+    } 
+    }
+    },
+{
+    "type":"Microsoft.Resources/deployments",
+    "name": "Deploy_ASG",
+    "apiVersion": "2018-05-01",
+    "properties": {
+      "mode":"Incremental",
+      "templateLink":{
+        "uri": "[variables('TEMPLATES')['Hub-ASG'].Link]",
+        "contentVersion": "1.0.0.0"
+      },
+      "parameters":{
+         "custDesktopAsgName": {
+            "value":"[variables('custDesktopAsgName')]"
+        },
+        "location": {
+            "value": "[parameters('location')]"
+          },
+        "tagOwner":{
+          "value":"[variables('tagOwner')]"
+        },
+        "tagDepartment":{
+          "value":"[variables('tagDepartment')]"
+        },
+        "tagEnvironment":{
+          " value": "[parameters('tagEnvironment')]"
+        },
+        "tagCostCentre": {
+            "value": "[parameters('tagCostCentre')]"
+        },
+        "tagPoId":{
+           "value": "[parameters('tagPoId')]"
+    }
+    } 
+    }
+    },
+ {
+      "type": "Microsoft.Resources/deployments",
+      "name": "Deploy_IPgroups",
+      "apiVersion": "2018-05-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('Templates')['Hub-IPG'].Link]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "customerIpPrefix": {
+            "value": "[parameters('customerIpPrefix')]"
+          },
+          "customerDesktopNetwork": {
+            "value": "[parameters('customerDesktopNetwork')]"
+          },
+          "hubAddsIp01": {
+            "value": "[variables('hubAddsIp01')]"
+          },
+          "hubAddsIp02": {
+            "value": "[variables('hubAddsIp02')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+
+          }
+        }
+      }
+    },
+
+
+
+
+
+
+
+    
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "Deploy_HubNetworkSecurityGateway",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/Deploy_ASG"
+      ],
+      "apiVersion": "2018-05-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('Templates')['Hub-NSG'].Link]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "hubNsgName": {
+            "value": "[variables('hubNsgName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "hubMgmtServerIp": {
+            "value": "[variables('hubMgmtServerIp')]"
+          },
+          "hubSharedServicesSubnetRange": {
+            "value": "[variables('hubSharedServicesSubnetRange')]"
+          },
+          "hubBastionSubnetRange": {
+            "value": "[variables('hubBastionSubnetRange')]"
+          },
+          "hubDmzSubnetRange": {
+            "value": "[variables('hubDmzSubnetRange')]"
+          },
+          "hubAddsIp01": {
+            "value": "[variables('hubAddsIp01')]"
+          },
+          "hubAddsIp02": {
+            "value": "[variables('hubAddsIp02')]"
+          },
+          "customerDesktopNetwork": {
+            "value": "[parameters('customerDesktopNetwork')]"
+          }
+        }
+      }
+    },
+    
+   
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "Deploy_VirtualNetwork",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/Deploy_HubNetworkSecurityGateway"
+      ],
+      "apiVersion": "2018-05-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('Templates')['Hub-VNET'].Link]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "hubIpPrefix": {
+            "value": "[parameters('hubIpPrefix')]"
+          },
+          "lowerHubNetThirdOctet": {
+            "value": "[parameters('lowerHubNetThirdOctet')]"
+          },
+          "upperHubNetThirdOctet": {
+            "value": "[parameters('upperHubNetThirdOctet')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "hubSharedServicesSubnetRange": {
+            "value": "[variables('hubSharedServicesSubnetRange')]"
+          },
+          "hubDomainServicesSubnetRange": {
+            "value": "[variables('hubDomainServicesSubnetRange')]"
+          },
+          "hubBastionSubnetRange": {
+            "value": "[variables('hubBastionSubnetRange')]"
+          },
+          "hubGatewayServicesSubnetRange": {
+            "value": "[variables('hubGatewayServicesSubnetRange')]"
+          },
+          "hubDmzSubnetRange": {
+            "value": "[variables('hubDmzSubnetRange')]"
+          },
+          "hubAzureFirewallSubnetRange": {
+            "value": "[variables('hubAzureFirewallSubnetRange')]"
+          },
+          "hubAddsIp01": {
+            "value": "[variables('hubAddsIp01')]"
+          },
+          "hubAddsIp02": {
+            "value": "[variables('hubAddsIp02')]"
+          },
+          "hubVnetName": {
+            "value": "[variables('hubVnetName')]"
+          },
+          "tagEnvironment": {
+            "value": "[parameters('tagEnvironment')]"
+          },
+          "tagCostCentre": {
+            "value": "[parameters('tagCostCentre')]"
+          },
+          "tagPoId": {
+            "value": "[parameters('tagPoId')]"
+          },
+          "hubNsgName": {
+            "value": "[variables('hubNsgName')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "Deploy_PublicIP_Addresses",
+      "apiVersion": "2018-05-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('Templates')['PublicIP'].Link]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+
+          "hubFirewallPipName": {
+            "value": "[variables('hubFirewallPipName')]"
+          },
+          "hubVngPipName01": {
+            "value": "[variables('hubVngPipName01')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "Deploy-NetworkInterfaces",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/Deploy_VirtualNetwork"
+      ],
+      "apiVersion": "2018-05-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('Templates')['Hub-NICS'].Link]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+
+          "hubMgmtServerNicName": {
+            "value": "[variables('hubMgmtServerNicName')]"
+          },
+          "hubMgmtServerIp": {
+            "value": "[variables('hubMgmtServerIp')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "hubVnetName": {
+            "value": "[variables('hubVnetName')]"
+          }
+        }
+      }
+    },
+   
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "Deploy_AzureFirewall",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/Deploy_VirtualNetwork",
+        "Microsoft.Resources/deployments/Deploy_Addressgroups",
+        "Microsoft.Resources/deployments/Deploy_PublicIP_Addresses"
+      ],
+      "apiVersion": "2018-05-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('Templates')['Hub-AFW'].Link]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "hubFirewallName": {
+            "value": "[variables('hubFirewallName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tagOwner": {
+            "value": "[variables('tagOwner')]"
+          },
+          "tagDepartment": {
+            "value": "[variables('tagDepartment')]"
+          },
+          "tagEnvironment": {
+            "value": "[parameters('tagEnvironment')]"
+          },
+          "tagCostCentre": {
+            "value": "[parameters('tagCostCentre')]"
+          },
+          "tagPoId": {
+            "value": "[parameters('tagPoId')]"
+          },
+
+          "hubFirewallPipName": {
+            "value": "[variables('hubFirewallPipName')]"
+          },
+          "hubVnetName": {
+            "value": "[variables('hubVnetName')]"
+          },
+          "spokeIpGroup": {
+            "value": "[variables('spokeIpGroup')]"
+          },
+          "spokeDesktopIpGroup": {
+            "value": "[variables('spokeDesktopIpGroup')]"
+          },
+          "emis1IpGroup": {
+            "value": "[variables('emis1IpGroup')]"
+          },
+          "emis2IpGroup": {
+            "value": "[variables('emis2IpGroup')]"
+          },
+          "systemOneIpGroup": {
+            "value": "[variables('systemOneIpGroup')]"
+          },
+          "hubAddIpGroup": {
+            "value": "[variables('hubAddIpGroup')]"
+          },
+          "hscnIpGroup": {
+            "value": "[variables('hscnIpGroup')]"
+          },
+          "hubSharedServicesSubnetRange": {
+            "value": "[variables('hubSharedServicesSubnetRange')]"
+          },
+          "hubDmzSubnetRange": {
+            "value": "[variables('hubDmzSubnetRange')]"
+          },
+          "hubBastionSubnetRange": {
+            "value": "[variables('hubBastionSubnetRange')]"
+          },
+          "hubAzureFirewallSubnetId": {
+            "value": "[variables('hubAzureFirewallSubnetId')]"
+          },
+          "hubFirewallPipId": {
+            "value": "[variables('hubFirewallPipId')]"
+          }
+        }
+      }
+    }
+
+
+  ],
+    "outputs": {
+    }
+  }
