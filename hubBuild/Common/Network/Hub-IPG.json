@@ -11,10 +11,10 @@
     "customerDesktopNetwork" : {
         "type": "string"
     },
-    "hubAddsIp01":{
+    "hubDc01VmIp":{
        "type": "string"
    },
-    "hubAddsIp02":{
+    "hubDc02VmIp":{
        "type": "string"
    }
 
@@ -51,8 +51,8 @@
             "location": "[parameters('location')]",
             "properties": {
                 "ipAddresses": [
-                    "[parameters('hubAddsIp01')]",
-                    "[parameters('hubAddsIp02')]"
+                    "[parameters('hubDc01VmIp')]",
+                    "[parameters('hubDc02VmIp')]"
                 ]
             }
         },

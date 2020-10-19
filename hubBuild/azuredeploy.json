@@ -15,6 +15,9 @@
         "description": "A unique three character prefix identifying the environment"
       }
     },
+    "customerIpPrefix":{
+        "type": "string"
+      },
     "customerDesktopNetwork": {
       "maxLength": 22,
       "minLength": 10,
@@ -336,21 +339,48 @@
       },
       "tagCostCentreId": {
         "value": "[parameters('tagCostCentreId')]"
+      },
+      "hubNsgName": {
+            "value": "[variables('hubNsgName')]"
       }
      
 
   }
 }   
+},
+{
+  "name": "Deploy_IPGroups",
+  "dependsOn": [
+        "Microsoft.Resources/deployments/Deploy_HubNetworkSecurityGateway"
+      ],
+  "type": "Microsoft.Resources/deployments",
+  "apiVersion": "2019-10-01",
+  "properties": {
+    "mode": "Incremental",
+    "templateLink": {
+      "uri": "[variables('Templates')['Hub-VNET'].Link]",
+      "contentVersion": "1.0.0.0"
+    },
+"parameters": {
+     "customerDesktopNetwork":{
+            "value":"[parameters('customerDesktopNetwork')]"
+          },
+      "customerIpPrefix":{
+        "value": "[parameters('customerIpPrefix')]"
+      },
+      "location": {
+        "value": "[parameters('location')]"
+      },
+     "hubDc01VmIp": {
+        "value":"[variables('hubUksDc01VmIp')]"
+      },
+      "hubDc02VmIp": {
+        "value":"[variables('hubUksDc01VmIp')]"
+      }
 }
-
-
-
-    
-    
-   
-   
-
-
+  }
+  
+}
 
   ],
     "outputs": {
