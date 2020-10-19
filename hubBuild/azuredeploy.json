@@ -85,7 +85,7 @@
         "Hub-LNG": {
         "Link": "[concat(variables('templateLink'), '/hubBuild/Common/Network/Hub-LNG.json')]"
       },
-      "Hub-AA" :{
+       "Hub-AA" :{
         "Link": "[concat(variables('templateLink'), '/hubBuild/Common/Services/Hub-AA.json')]"
       },
        "Hub-KV" :{
@@ -99,13 +99,17 @@
       },
         "Hub-SA" :{
         "Link": "[concat(variables('templateLink'), '/hubBuild/Common/Services/Hub-SA.json')]"
-      }
+      },
+       "Hub-DSA" : {
+         "Link" : "[concat(variables('templateLink'), '/hubBuild/Common/Storage/Hub-DSA.json')]"
+       }
     },
     "hubAaName":"[concat(parameters('hubNamePrefix'),'hub-aa01')]",
     "hubkeyVaultName":"[concat(parameters('hubNamePrefix'),'hub-kv01')]",
     "hubNsgName": "[concat(parameters('hubNamePrefix'),'hub-nsg01')]",
     "hubVnetName": "[concat(parameters('hubNamePrefix'),'hub-vnet01')]",
     "hubLawName": "[concat(parameters('hubNamePrefix'),'hub-law01')]",
+    "hubDsaName": "[concat(parameters('hubNamePrefix'),'hubdsa01')]",
     
     "hubFirewallName": "[concat(parameters('hubNamePrefix'),'hub-afw')]",
     "hubSharedServicesSubnetRange": "[concat(parameters('upperHubNetThirdOctet'),'.0/24')]",
@@ -276,7 +280,34 @@
 
   }
 }   
-}  
+},
+{
+  "name": "Deploy_HubDiagnosticStorage",
+  "type": "Microsoft.Resources/deployments",
+  "apiVersion": "2019-10-01",
+  "properties": {
+    "mode": "Incremental",
+    "templateLink": {
+      "uri": "[variables('Templates')['Hub-DSA'].Link]",
+      "contentVersion": "1.0.0.0"
+    },
+    "parameters": {
+      "storageAccountName": {
+        "value": "[variables('hubDsaName')]"
+      },
+      "location":{
+        "value":"[parameters('location')]"
+      },
+       "tagSalesOrderId":{
+        "value": "[parameters('tagSalesOrderId')]"
+  
+      },
+      "tagCostCentreId": {
+        "value": "[parameters('tagCostCentreId')]"
+      }
+    }
+  }
+} 
     
     
    
