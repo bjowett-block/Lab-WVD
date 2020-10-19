@@ -285,6 +285,9 @@
 },
 {
   "name": "Deploy_HubDiagnosticStorage",
+  "dependsOn": [
+        "Microsoft.Resources/deployments/Deploy_HubVirtualNetwork"
+      ],
   "type": "Microsoft.Resources/deployments",
   "apiVersion": "2019-10-01",
   "properties": {
