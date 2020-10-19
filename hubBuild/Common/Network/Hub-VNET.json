@@ -185,6 +185,9 @@
         ],
         "properties": {
           "addressPrefix": "[parameters('hubDomainServicesSubnetRange')]",
+          "networkSecurityGroup": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups',parameters('hubNsgName'))]"
+          },
           "delegations": [],
           "privateEndpointNetworkPolicies": "Enabled",
           "privateLinkServiceNetworkPolicies": "Enabled"
@@ -230,6 +233,9 @@
               ]
             }
           ],
+          "networkSecurityGroup": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups',parameters('hubNsgName'))]"
+          },
           "delegations": [],
           "privateEndpointNetworkPolicies": "Enabled",
           "privateLinkServiceNetworkPolicies": "Enabled"

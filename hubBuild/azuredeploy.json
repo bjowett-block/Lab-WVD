@@ -62,7 +62,7 @@
         "Link": "[concat(variables('templateLink'), '/hubBuild/Common/Network/Hub-IPG.json')]"
       },
       "Hub-NSG": {
-        "Link": "[concat(variables('templateLink'), '/hubBuild/Common/Network/HUB-NSG.json')]"
+        "Link": "[concat(variables('templateLink'), '/hubBuild/Common/Network/Hub-NSG.json')]"
       },
       "Hub-VNET": {
         "Link": "[concat(variables('templateLink'), '/hubBuild/Common/Network/Hub-VNET.json')]"

@@ -6,23 +6,23 @@
             "value": "acw"
         },
         "customerDesktopNetwork":{
-            "value": "172.19.4.0/24"
+            "value": "172.18.4.0/24"
         },
-        "tagCostcentreId":{
+        "tagCostCentreId":{
             "value":"Cloud"
         },
         "tagSalesOrderId": {
             "value":"123456"
         },
         "hubIpPrefix":{
-            "value":"172.19.0.0/23"
+            "value":"172.18.0.0/23"
         },
-        "lowerHubnetThirdOctet":{
-            "value":"172.19.0"
+        "lowerHubNetThirdOctet":{
+            "value":"172.18.0"
         
         },
-        "upperHubnetThirdOctet":{
-            "value":"172.19.1.0"
+        "upperHubNetThirdOctet":{
+            "value":"172.18.1"
         }
     }
 
