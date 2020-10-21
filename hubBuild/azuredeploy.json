@@ -148,14 +148,14 @@
 
 
  
-    "spokeDesktopIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/Spoke-Desktop-IP-Group')]",
-    "spokeIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/Spoke-IP-Group')]",
-    "emis1IpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/EMIS-Group1-IP-Group')]",
-    "emis2IpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/EMIS-Group2-IP-Group')]",
-    "systemOneIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/SystemOne-IP-Group')]",
-    "hubAddIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/HubADDS-IP-Group')]",
-    "hscnIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/HSCN-IP-Group')]",
-     "hubAzureFirewallSubnetId": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/VirtualNetworks',variables('hubVnetName'),'/subnets/AzureFirewallSubnet')]"
+    "spokeDesktopIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/customer-desktop-ipg')]",
+    "spokeIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/customer-spoke-ipg')]",
+    "emis1IpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/emis-group1-igp')]",
+    "emis2IpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/emis-group2-igp')]",
+    "systemOneIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/systemone-ipg')]",
+    "hubAddIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/adds-ipg')]",
+    "hscnIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/hscn-ipg')]",
+     "hubAzureFirewallSubnetId": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/VirtualNetworks/',variables('hubVnetName'),'/subnets/AzureFirewallSubnet')]"
   },
   "resources": [
 {
@@ -473,9 +473,6 @@
     },
     "location": {
       "value": "[parameters('location')]"
-    },
-    "hubVnetName": {
-      "value": "[variables('hubVnetName')]"
     },
     "hubAzureFirewallSubnetId":{
       "value":"[variables('hubAzureFirewallSubnetId')]"

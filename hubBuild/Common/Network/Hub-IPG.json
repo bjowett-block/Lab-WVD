@@ -37,7 +37,7 @@
       {
             "type": "Microsoft.Network/ipGroups",
             "apiVersion": "2020-05-01",
-            "name": "Customer-Spoke_ipg",
+            "name": "customer-spoke-ipg",
             "location": "[parameters('location')]",
             "tags": {
               "Owner": "Block Solutions",
@@ -58,7 +58,7 @@
          {
             "type": "Microsoft.Network/ipGroups",
             "apiVersion": "2020-05-01",
-            "name": "Customer-Desktop_ipg",
+            "name": "customer-desktop-ipg",
             "location": "[parameters('location')]",
             "tags": {
               "Owner": "Block Solutions",
@@ -77,7 +77,7 @@
         {
             "type": "Microsoft.Network/ipGroups",
             "apiVersion": "2020-05-01",
-            "name": "ADDS_ipg",
+            "name": "adds-ipg",
             "location": "[parameters('location')]",
             "tags": {
               "Owner": "Block Solutions",
@@ -97,7 +97,7 @@
             {
             "type": "Microsoft.Network/ipGroups",
             "apiVersion": "2020-05-01",
-            "name": "Emis-Group1_ipg",
+            "name": "emis-group1-igp",
             "location": "[parameters('location')]",
             "tags": {
               "Owner": "Block Solutions",
@@ -118,7 +118,7 @@
         {
             "type": "Microsoft.Network/ipGroups",
             "apiVersion": "2020-05-01",
-            "name": "Emis-Group2_ipg",
+            "name": "emis-group2-igp",
             "location": "[parameters('location')]",
             "tags": {
               "Owner": "Block Solutions",
@@ -138,7 +138,7 @@
         {
             "type": "Microsoft.Network/ipGroups",
             "apiVersion": "2020-05-01",
-            "name": "SystemOne_ipg",
+            "name": "systemone-ipg",
             "location": "[parameters('location')]",
             "tags": {
               "Owner": "Block Solutions",
@@ -159,7 +159,7 @@
         {
             "type": "Microsoft.Network/ipGroups",
             "apiVersion": "2020-05-01",
-            "name": "HSCN_ipg",
+            "name": "hscn-ipg",
             "location": "[parameters('location')]",
             "tags": {
               "Owner": "Block Solutions",
@@ -190,6 +190,10 @@
                 ]
             }
         }
+         
+
+
+
         ],
   "outputs": {}
 }
