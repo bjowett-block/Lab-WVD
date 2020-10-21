@@ -85,7 +85,7 @@
                             "id": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('hubFirewallPipName'))]"
                           },
                             "subnet": {
-                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks/',parameters('hubVnetName'),'/subnets/AzureFirewallSubnet'))]"
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks/', parameters('hubVnetName')),'/subnets/AzureFirewallSubnet')]"
                             }
                         }
                     }
