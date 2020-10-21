@@ -9,9 +9,6 @@
     "location": {
       "type": "string"
     },
-    "hubVnetName": {
-      "type": "string"
-    },
     "hubFirewallPipName": {
       "type": "string"
     },
@@ -42,6 +39,12 @@
     "hubDmzSubnetRange": {
       "type": "string"
     },
+    "hubBastionSubnetRange": {
+      "type": "string"
+    },
+    "hubAzureFirewallSubnetId": {
+      "type": "string"
+    },
     "tagSalesOrderId":{
         "type": "string"
   
@@ -59,7 +62,7 @@
     "resources": [
         {
             "type": "Microsoft.Network/azureFirewalls",
-            "apiVersion": "2020-05-01",
+            "apiVersion": "2019-11-01",
             "name": "[parameters('hubFirewallName')]",
             "location": "[parameters('location')]",
             "tags": {
@@ -82,10 +85,10 @@
                         "name": "[parameters('hubFirewallPipName')]",
                         "properties": {
                           "publicIPAddress": {
-                            "id": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('hubFirewallPipName'))]"
+                            "id": "[parameters('hubFirewallPipId')]"
                           },
                             "subnet": {
-                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks/',parameters('hubVnetName'),'/subnets/AzureFirewallSubnet'))]"
+                                "id": "[parameters('hubAzureFirewallSubnetId')]"
                             }
                         }
                     }
@@ -489,9 +492,29 @@
                                     ],
                                     "destinationFqdns": [],
                                     "destinationPorts": [
-                                    "*"  
+                                    "*"
+                                        
                                     ]
-                                }
+                                },
+                                {
+                                    "name": "Restrict Unknown Bastion Traffic to HSCN",
+                                    "protocols": [
+                                        "Any"
+                                    ],
+                                    "sourceAddresses": [
+                                        "[parameters('hubBastionSubnetRange')]"
+                                    ],
+                                    "destinationAddresses":[],
+                                    "sourceIpGroups": [
+                                    ],
+                                    "destinationIpGroups":  [
+                                        "[parameters('hscnIpGroup')]"
+                                    ],
+                                    "destinationFqdns": [],
+                                    "destinationPorts": [
+                                    "*"   
+                                    ]
+                                }  
 
                             ]
                         }

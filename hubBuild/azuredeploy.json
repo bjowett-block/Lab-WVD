@@ -147,19 +147,14 @@
     "hubUksDc02ServerNicName": "[concat(parameters('hubNamePrefix'), variables('hubUksDc02ServerName'),'-NIC')]",
 
 
-    "tagOwner": "Block Solutions",
-    "tagDepartment": "Workspace and Cloud",
+ 
     "spokeDesktopIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/Spoke-Desktop-IP-Group')]",
     "spokeIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/Spoke-IP-Group')]",
     "emis1IpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/EMIS-Group1-IP-Group')]",
     "emis2IpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/EMIS-Group2-IP-Group')]",
     "systemOneIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/SystemOne-IP-Group')]",
     "hubAddIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/HubADDS-IP-Group')]",
-    "hscnIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/HSCN-IP-Group')]",
-    "hubFirewallPipId": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/publicIPAddresses/',variables('hubVngPipName01'))]",
-    "vngPip01Id": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/publicIPAddresses/',variables('hubVngPipName01'))]",
-    "vngPip02Id": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/publicIPAddresses/',variables('hubVngPipName02'))]",
-    "hubAzureFirewallSubnetId": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/virtualNetworks/',variables('hubVnetName'),'/subnets/AzureFirewallSubnet')]"
+    "hscnIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/HSCN-IP-Group')]"
   },
   "resources": [
 {
@@ -455,7 +450,74 @@
 }
   }
   
+},
+{
+  "name": "Deploy_AzureFirewall",
+  "dependsOn": [
+        "Microsoft.Resources/deployments/Deploy_HubVirtualNetwork",
+        "Microsoft.Resources/deployments/Deploy_HubPublicIPAddresses",
+        "Microsoft.Resources/deployments/Deploy_IPGroups"
+      ],
+  "type": "Microsoft.Resources/deployments",
+  "apiVersion": "2019-10-01",
+  "properties": {
+    "mode": "Incremental",
+    "templateLink": {
+      "uri": "[variables('Templates')['Hub-AFW'].Link]",
+      "contentVersion": "1.0.0.0"
+    },
+"parameters": {
+    "hubFirewallName": {
+      "value": "[variables('hubFirewallName')]"
+    },
+    "location": {
+      "value": "[parameters('location')]"
+    },
+    "hubVnetName": {
+      "value": "[variables('hubVnetName')]"
+    },
+    "hubFirewallPipName": {
+      "value": "[variables('hubFirewallPipName')]"
+    },
+    "spokeIpGroup": {
+      "value": "[variables ('spokeIpGroup')]"
+    },
+    "spokeDesktopIpGroup": {
+      "value": "[variables('spokeDesktopIpGroup')]"
+    },
+    "emis1IpGroup": {
+      "value": "[variables('emis1IpGroup')]"
+    },
+    "emis2IpGroup": {
+       "value": "[variables('emis2IpGroup')]"
+    },
+    "systemOneIpGroup": {
+      "value": "[variables('systemOneIpGroup')]"
+    },
+    "hubAddIpGroup": {
+      "value": "[variables('hubAddIpGroup')]"
+    },
+    "hscnIpGroup": {
+      "value": "[variables('hscnIpGroup')]"
+    },
+    "hubSharedServicesSubnetRange": {
+      "value": "[variables('hubSharedServicesSubnetRange')]"
+    },
+    "hubDmzSubnetRange": {
+      "value": "[variables('hubDmzSubnetRange')]"
+    },
+    "tagSalesOrderId":{
+        "value": "[parameters('tagSalesOrderId')]"
+      },
+    "tagCostCentreId": {
+        "value": "[parameters('tagCostCentreId')]"
+      }
+
 }
+  }
+  
+}
+
 
 
 
