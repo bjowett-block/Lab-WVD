@@ -142,6 +142,7 @@
     "hubVng01PipName": "[concat(parameters('hubNamePrefix'),'hubvng-pip01')]",
     "hubVng02PipName": "[concat(parameters('hubNamePrefix'),'hubvng-pip02')]",
     "hubMgmtServerName": "[concat(parameters('hubNamePrefix'),'hubmgmtvm01')]",
+    "hubVngPeerIpAddress" : "[concat(parameters('lowerHubNetThirdOctet'),'.62')]",
     "hubMgmt01VmIp": "[concat(parameters('upperHubNetThirdOctet'),'.4')]",
     "hubMgmtServerNicName": "[concat(parameters('hubNamePrefix'),'hubmgmtvm01-nic')]",
     "hubUksDc01ServerName": "[concat(parameters('hubNamePrefix'),'hubadcvm01')]",
@@ -549,14 +550,14 @@
     "hubBgpAsn":{
       "value":"[parameters('hubBgpAsn')]"
     },
-   "hubVngPeerIpAddress":{
-    "value":"[variables('hubVngPeerIpAddress')]"
+    "hubVngPeerIpAddress":{
+        "value":"[variables('hubVngPeerIpAddress')]"
+    },
+    "hubVng01PipName":{
+        "value": "[variables('hubVng01PipName')]"
         },
-        "hubVng01PipName":{
-            "value": "[variables('hubVng01PipName')]"
-        },
-        "hubGatewaySubnetId":{
-            "value":"[variables('hubGatewaySubnetId')]"
+    "hubGatewaySubnetId":{
+        "value":"[variables('hubGatewaySubnetId')]"
         },
 
     "tagSalesOrderId":{

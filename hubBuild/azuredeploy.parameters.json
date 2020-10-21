@@ -29,8 +29,13 @@
         },
         "upperHubNetThirdOctet":{
             "value":"172.18.1"
+        },
+        "hubBgpAsn" :{
+            "value":"65515"
         }
-          }
+        
+        }
     }
+
 
     
