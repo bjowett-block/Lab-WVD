@@ -1,8 +1,85 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {},
+    "parameters": {
+        "hubVng01Name": {
+            "type": "string"
+        },
+        "location":{
+            "type":"string"
+        },
+       
+        "hubBgpAsn":{
+            "type": "string"
+        },
+        "hubVngPeerIpAddress":{
+            "type":"string"
+        },
+        "hubVng01PipName":{
+            "type": "string"
+        },
+        "hubGatewaySubnetId":{
+            "type":"string"
+        },
+         "tagCostCentreId":{
+            "type": "string"
+        },
+        "tagSalesOrderId":{
+            "type": "string"
+         }
+    },
     "variables": {},
-    "resources":[],
-    "outputs": {}
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworkGateways",
+            "apiVersion": "2020-05-01",
+            "name": "[parameters('hubVng01Name')]",
+            "location": "[parameters('location')]",
+            "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
+            "properties": {
+                "enablePrivateIpAddress": false,
+                "ipConfigurations": [
+                    {
+                        "name": "default",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses/',parameters('hubVng01PipName'))]"
+                            },
+                            "subnet": {
+                                "id": "[parameters('hubGatewaySubnetId')]"
+                            }
+                        }
+                    }
+                ],
+                "sku": {
+                    "name": "VpnGw1",
+                    "tier": "VpnGw1"
+                },
+                "gatewayType": "Vpn",
+                "vpnType": "RouteBased",
+                "enableBgp": true,
+                "activeActive": false,
+                "bgpSettings": {
+                    "asn": "[parameters('hubBgpAsn')]",
+                    "bgpPeeringAddress": "[parameters('hubVngPeerIpAddress')]",
+                    "peerWeight": 0,
+                    "bgpPeeringAddresses": [
+                        {
+                            "ipconfigurationId": "[concat(resourceId('Microsoft.Network/virtualNetworkGateways', parameters('hubVng01Name')), '/ipConfigurations/default')]",
+                            "customBgpIpAddresses": []
+                        }
+                    ]
+                },
+                "vpnGatewayGeneration": "Generation1"
+            }
+        }
+    ]
 }

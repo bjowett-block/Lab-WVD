@@ -46,6 +46,9 @@
       "maxLength": 11,
       "minLength": 3,
       "type": "string"
+    },
+    "hubBgpAsn":{
+      "type": "string"
     }
   },
   "variables": {
@@ -118,6 +121,8 @@
     "hubDsaName": "[concat(parameters('hubNamePrefix'),'hubdsa01')]",
     "hubRt01Name": "[concat(parameters('hubNamePrefix'),'hubrt01')]",
     "hubRt02Name": "[concat(parameters('hubNamePrefix'),'hubrt02')]",
+    "hubVng01Name": "[concat(parameters('hubNamePrefix'),'hubvng01')]",
+    "hubVng02Name": "[concat(parameters('hubNamePrefix'),'hubvng02')]",
     "customerDevUatDesktopPrefixName": "[concat(parameters('hubNamePrefix'),'-Customer-Desktop-DEVUAT-Prefix')]",
     "customerDevUatInfrastructurePrefixName": "[concat(parameters('hubNamePrefix'),'-Customer-Infrastructure-DEVUAT-Prefix')]",
     "hubFirewallName": "[concat(parameters('hubNamePrefix'),'hub-afw01')]",
@@ -134,8 +139,8 @@
 
 
     "hubFirewallPipName": "[concat(parameters('hubNamePrefix'),'hubafw-pip01')]",
-    "hubVngPipName01": "[concat(parameters('hubNamePrefix'),'hubvng-pip01')]",
-    "hubVngPipName02": "[concat(parameters('hubNamePrefix'),'hubvng-pip02')]",
+    "hubVng01PipName": "[concat(parameters('hubNamePrefix'),'hubvng-pip01')]",
+    "hubVng02PipName": "[concat(parameters('hubNamePrefix'),'hubvng-pip02')]",
     "hubMgmtServerName": "[concat(parameters('hubNamePrefix'),'hubmgmtvm01')]",
     "hubMgmt01VmIp": "[concat(parameters('upperHubNetThirdOctet'),'.4')]",
     "hubMgmtServerNicName": "[concat(parameters('hubNamePrefix'),'hubmgmtvm01-nic')]",
@@ -155,7 +160,8 @@
     "systemOneIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/systemone-ipg')]",
     "hubAddIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/adds-ipg')]",
     "hscnIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/hscn-ipg')]",
-     "hubAzureFirewallSubnetId": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/VirtualNetworks/',variables('hubVnetName'),'/subnets/AzureFirewallSubnet')]"
+     "hubAzureFirewallSubnetId": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/VirtualNetworks/',variables('hubVnetName'),'/subnets/AzureFirewallSubnet')]",
+     "hubGatewaySubnetId": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/VirtualNetworks/',variables('hubVnetName'),'/subnets/GatewaySubnet')]"
   },
   "resources": [
 {
@@ -274,10 +280,10 @@
       "value":"[variables('hubFirewallPipName')]"
     },
     "hubVngPipName01": {
-      "value":"[variables('hubVngPipName01')]"
+      "value":"[variables('hubVng01PipName')]"
     },
     "hubVngPipName02": {
-      "value":"[variables('hubVngPipName02')]"
+      "value":"[variables('hubVng02PipName')]"
     },
     "location": {
       "value":"[parameters('location')]"
@@ -517,7 +523,54 @@
 }
   }
   
+},
+{
+  "name": "Deploy_VirtualNetworkGateways",
+  "dependsOn": [
+        "Microsoft.Resources/deployments/Deploy_HubVirtualNetwork",
+        "Microsoft.Resources/deployments/Deploy_HubPublicIPAddresses"
+       
+      ],
+  "type": "Microsoft.Resources/deployments",
+  "apiVersion": "2019-10-01",
+  "properties": {
+    "mode": "Incremental",
+    "templateLink": {
+      "uri": "[variables('Templates')['Hub-VNG'].Link]",
+      "contentVersion": "1.0.0.0"
+    },
+"parameters": {
+    "hubVng01Name": {
+      "value": "[variables('hubVng01Name')]"
+    },
+    "location": {
+      "value": "[parameters('location')]"
+    },
+    "hubBgpAsn":{
+      "value":"[parameters('hubBgpAsn')]"
+    },
+   "hubVngPeerIpAddress":{
+    "value":"[variables('hubVngPeerIpAddress')]"
+        },
+        "hubVng01PipName":{
+            "value": "[variables('hubVng01PipName')]"
+        },
+        "hubGatewaySubnetId":{
+            "value":"[variables('hubGatewaySubnetId')]"
+        },
+
+    "tagSalesOrderId":{
+        "value": "[parameters('tagSalesOrderId')]"
+      },
+    "tagCostCentreId": {
+        "value": "[parameters('tagCostCentreId')]"
+      }
+
 }
+  }
+  
+}
+
 
 
 
