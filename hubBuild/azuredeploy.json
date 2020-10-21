@@ -403,12 +403,11 @@
             "value": "[variables('hubNsgName')]"
       },
       "hubRt01Name":{
-            "value":"[variables('hubRt01Name')]"
+            "value": "[variables('hubRt01Name')]"
       },
       "hubRt02Name":{
-            "value":"[variables('hubRt02Name')]"
+            "value": "[variables('hubRt02Name')]"
       }
-
      
 
   }

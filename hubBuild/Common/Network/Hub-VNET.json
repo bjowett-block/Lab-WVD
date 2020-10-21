@@ -43,6 +43,9 @@
     },
     "hubNsgName": {
       "type": "string"
+    },
+    "hubRt01Name":{
+      "type": "string"
     }
     
 
@@ -80,6 +83,9 @@
                 "name": "DomainServices",
                 "properties": {
                   "addressPrefix": "[parameters('hubDomainServicesSubnetRange')]",
+                  "routeTable":{
+                    "id":"[resourceId('Microsoft.Network/routeTables',parameters('hubRt01Name'))]"
+                  },
                   "delegations": [],
                   "privateEndpointNetworkPolicies": "Enabled",
                   "privateLinkServiceNetworkPolicies": "Enabled",
