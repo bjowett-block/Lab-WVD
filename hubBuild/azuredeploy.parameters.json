@@ -23,7 +23,10 @@
         },
         "upperHubNetThirdOctet":{
             "value":"172.18.1"
-        }
+        },
+        "customerIpPrefix":{
+            "value": "172.18.4.0/24"
+          }
     }
 
     }

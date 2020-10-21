@@ -2,21 +2,33 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters":{
-    "location":{
-        "type": "string"
-      },
-    "customerIpPrefix":{
-        "type": "string"
-      },
+    
+
     "customerDesktopNetwork" : {
         "type": "string"
     },
+    "customerDesktopIpPrefix":{
+        "type": "string"
+      },
+    "customerInfrastructureIpPrefix": {
+        "type": "string"
+    },
+    "location":{
+        "type": "string"
+    }, 
     "hubDc01VmIp":{
        "type": "string"
    },
     "hubDc02VmIp":{
        "type": "string"
+   },
+    "tagCostCentreId":{
+       "type": "string"
+   },
+   "tagSalesOrderId":{
+       "type": "string"
    }
+
 
 
   },
@@ -24,20 +36,38 @@
   "resources": [
       {
             "type": "Microsoft.Network/ipGroups",
-            "apiVersion": "2019-12-01",
+            "apiVersion": "2020-05-01",
             "name": "Customer-Spoke_ipg",
             "location": "[parameters('location')]",
+            "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
             "properties": {
                 "ipAddresses": [
-                    "[parameters('customerIpPrefix')]"
+                    "[parameters('customerDesktopIpPrefix')]",
+                    "[parameters('customerInfrastructureIpPrefix')]"
+                    
                 ]
             }
         },
          {
             "type": "Microsoft.Network/ipGroups",
-            "apiVersion": "2019-12-01",
+            "apiVersion": "2020-05-01",
             "name": "Customer-Desktop_ipg",
             "location": "[parameters('location')]",
+            "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
             "properties": {
                 "ipAddresses": [
                     "[parameters('customerDesktopNetwork')]"
@@ -46,9 +76,17 @@
         },
         {
             "type": "Microsoft.Network/ipGroups",
-            "apiVersion": "2019-12-01",
+            "apiVersion": "2020-05-01",
             "name": "ADDS_ipg",
             "location": "[parameters('location')]",
+            "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
             "properties": {
                 "ipAddresses": [
                     "[parameters('hubDc01VmIp')]",
@@ -58,9 +96,17 @@
         },
             {
             "type": "Microsoft.Network/ipGroups",
-            "apiVersion": "2019-12-01",
+            "apiVersion": "2020-05-01",
             "name": "Emis-Group1_ipg",
             "location": "[parameters('location')]",
+            "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
             "properties": {
                 "ipAddresses": [
                  "10.207.112.0/22",
@@ -71,9 +117,17 @@
         },
         {
             "type": "Microsoft.Network/ipGroups",
-            "apiVersion": "2019-12-01",
+            "apiVersion": "2020-05-01",
             "name": "Emis-Group2_ipg",
             "location": "[parameters('location')]",
+            "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
             "properties": {
                 "ipAddresses": [
                 "185.13.72.0/22",
@@ -83,9 +137,17 @@
         },
         {
             "type": "Microsoft.Network/ipGroups",
-            "apiVersion": "2019-12-01",
+            "apiVersion": "2020-05-01",
             "name": "SystemOne_ipg",
             "location": "[parameters('location')]",
+            "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
             "properties": {
                 "ipAddresses": [
                 "20.146.120.128/25",
@@ -96,9 +158,17 @@
         },
         {
             "type": "Microsoft.Network/ipGroups",
-            "apiVersion": "2019-12-01",
+            "apiVersion": "2020-05-01",
             "name": "HSCN_ipg",
             "location": "[parameters('location')]",
+            "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
             "properties": {
                 "ipAddresses": [
                     "10.207.116.0/22",

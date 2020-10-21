@@ -3,23 +3,56 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
 
-        "hubRtName": {
+        "hubRt01Name": {
             "type": "string"
         },
+        "hubRt02Name": {
+            "type": "string"
+        },
+
         "hubDefaultGatewayIp": {
             "type": "string"
         },
         "location": {
             "type": "string"
+        },
+        "customerDevUatDesktopPrefixName": {
+            "type": "string"
+        },
+
+        "customerDevUatDesktopPrefix": {
+            "type": "string"
+        },
+        "customerDevUatInfrastructurePrefixName": {
+            "type": "string"
+
+        },
+         "customerDevUatInfrastructurePrefix": {
+            "type": "string"
+        },
+        "tagCostCentreId": {
+            "type": "string"
+        },
+        "tagSalesOrderId": {
+            "type": "string"
         }
+
     },
     "variables": {},
     "resources": [
         {
             "type": "Microsoft.Network/routeTables",
             "apiVersion": "2020-03-01",
-            "name": "[parameters('hubRtName')]",
+            "name": "[parameters('hubRt01Name')]",
             "location": "[parameters('location')]",
+            "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
             "properties": {
                 "disableBgpRoutePropagation": false,
                 "routes": [
@@ -30,22 +63,62 @@
                             "nextHopType": "VirtualAppliance",
                             "nextHopIpAddress": "[parameters('hubDefaultGatewayIp')]"
                         }
+                    },
+                    {
+                        "name": "[parameters('customerDevUatDesktopPrefixName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('customerDevUatDesktopPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('hubDefaultGatewayIp')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('customerDevUatInfrastructurePrefixName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('customerDevUatInfrastructurePrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('hubDefaultGatewayIp')]"
+                        }
                     }
+
                 ]
             }
         },
         {
-            "type": "Microsoft.Network/routeTables/routes",
+            "type": "Microsoft.Network/routeTables",
             "apiVersion": "2020-03-01",
-            "name": "[concat(parameters('hubRtName'), '/Default-Gateway')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/routeTables', parameters('hubRtName'))]"
-            ],
+            "name": "[parameters('hubRt02Name')]",
+            "location": "[parameters('location')]",
+            "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
             "properties": {
-                "addressPrefix": "0.0.0.0/0",
-                "nextHopType": "VirtualAppliance",
-                "nextHopIpAddress": "[parameters('hubDefaultGatewayIp')]"
+                "disableBgpRoutePropagation": false,
+                "routes": [
+                     {
+                        "name": "[parameters('customerDevUatDesktopPrefixName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('customerDevUatDesktopPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('hubDefaultGatewayIp')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('customerDevUatInfrastructurePrefixName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('customerDevUatInfrastructurePrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('hubDefaultGatewayIp')]"
+                        }
+                    }
+                ]
             }
         }
+        
     ]
 }

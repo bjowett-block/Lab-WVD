@@ -15,10 +15,13 @@
         "description": "A unique three character prefix identifying the environment"
       }
     },
-    "customerIpPrefix":{
+    "customerDevUatDesktopPrefix":{
         "type": "string"
       },
-    "customerDesktopNetwork": {
+    "customerDevUatInfrastructurePrefix":{
+      "type":"string"
+    },
+    "customerDevUatDesktopNetwork": {
       "maxLength": 22,
       "minLength": 10,
       "type": "string"
@@ -113,6 +116,10 @@
     "hubVnetName": "[concat(parameters('hubNamePrefix'),'hub-vnet01')]",
     "hubLawName": "[concat(parameters('hubNamePrefix'),'hub-law01')]",
     "hubDsaName": "[concat(parameters('hubNamePrefix'),'hubdsa01')]",
+    "hubRt01Name": "[concat(parameters('hubNamePrefix'),'hubrt01')]",
+    "hubRt02Name": "[concat(parameters('hubNamePrefix'),'hubrt02')]",
+    "customerDevUatDesktopPrefixName": "[concat(parameters('hubNamePrefix'),'-Customer-Desktop-DEVUAT-Prefix')]",
+"customerDevUatInfrastructurePrefixName": "[concat(parameters('hubNamePrefix'),'-Customer-Infrastructure-DEVUAT-Prefix')]",
     "hubFirewallName": "[concat(parameters('hubNamePrefix'),'hub-afw01')]",
     
 
@@ -123,6 +130,9 @@
     "hubGatewayServicesSubnetRange": "[concat(parameters('lowerHubNetThirdOctet'),'.32/27')]",
     "hubDmzSubnetRange": "[concat(parameters('lowerHubNetThirdOctet'),'.64/27')]",
     "hubAzureFirewallSubnetRange": "[concat(parameters('lowerHubNetThirdOctet'),'.128/26')]",
+    "hubDefaultGatewayIp":"[concat(parameters('lowerHubNetThirdOctet'),'.132')]",
+
+
     "hubFirewallPipName": "[concat(parameters('hubNamePrefix'),'hubafw-pip01')]",
     "hubVngPipName01": "[concat(parameters('hubNamePrefix'),'hubvng-pip01')]",
     "hubVngPipName02": "[concat(parameters('hubNamePrefix'),'hubvng-pip02')]",
@@ -215,7 +225,7 @@
             "value": "[variables('hubUksDc02VmIp')]"
           },
           "customerDesktopNetwork":{
-            "value":"[parameters('customerDesktopNetwork')]"
+            "value":"[parameters('customerDevUatDesktopNetwork')]"
           },
           "hubDmzSubnetRange": {
             "value": "[variables('hubDmzSubnetRange')]"
@@ -289,9 +299,58 @@
   
 },
 {
+  "name": "Deploy_Routingtables",
+  "type": "Microsoft.Resources/deployments",
+  "apiVersion": "2019-10-01",
+  "properties": {
+    "mode": "Incremental",
+    "templateLink": {
+      "uri": "[variables('Templates')['Hub-RT'].Link]",
+      "contentVersion": "1.0.0.0"
+    },
+"parameters": {
+  "hubRt01Name":{
+    "value":"[variables('hubRt01Name')]"
+  },
+   "hubRt02Name":{
+    "value":"[variables('hubRt02Name')]"
+  },
+  "location":{
+    "value":"[parameters('location')]"
+  },
+  "hubDefaultGatewayIp":{
+    "value":"[variables('hubDefaultGatewayIp')]"
+  },
+  "customerDevUatDesktopPrefixName":{
+    "value" : "[variables('customerDevUatDesktopPrefixName')]"
+  },
+  "customerDevUatDesktopPrefix":{
+    "value" : "[parameters('customerDevUatDesktopPrefix')]"
+  },
+   "customerDevUatInfrastructurePrefixName":{
+    "value" : "[variables('customerDevUatInfrastructurePrefixName')]"
+  },
+  "customerDevUatInfrastructurePrefix": {
+    "value": "[parameters('customerDevUatInfrastructurePrefix')]"
+  },
+   "tagCostCentreId":{
+    "value": "[parameters('tagCostCentreId')]"
+  },
+     "tagSalesOrderId":{
+      "value": "[parameters('tagSalesOrderId')]"  
+  }
+
+
+}
+  }
+  
+},
+
+{
   "name": "Deploy_HubVirtualNetwork",
   "dependsOn": [
-        "Microsoft.Resources/deployments/Deploy_HubNetworkSecurityGateway"
+        "Microsoft.Resources/deployments/Deploy_HubNetworkSecurityGateway",
+        "Deploy_Routingtables"
       ],
   "type": "Microsoft.Resources/deployments",
   "apiVersion": "2019-10-01",
@@ -342,7 +401,14 @@
       },
       "hubNsgName": {
             "value": "[variables('hubNsgName')]"
+      },
+      "hubRt01Name":{
+            "value":"[variables('hubRt01Name')]"
+      },
+      "hubRt02Name":{
+            "value":"[variables('hubRt02Name')]"
       }
+
      
 
   }
@@ -358,15 +424,18 @@
   "properties": {
     "mode": "Incremental",
     "templateLink": {
-      "uri": "[variables('Templates')['Hub-VNET'].Link]",
+      "uri": "[variables('Templates')['Hub-IPG'].Link]",
       "contentVersion": "1.0.0.0"
     },
 "parameters": {
      "customerDesktopNetwork":{
-            "value":"[parameters('customerDesktopNetwork')]"
-          },
-      "customerIpPrefix":{
-        "value": "[parameters('customerIpPrefix')]"
+        "value":"[parameters('customerDevUatDesktopNetwork')]"
+        },
+      "customerDesktopIpPrefix":{
+        "value": "[parameters('customerDevUatDesktopPrefix')]"
+      },
+      "customerInfrastructureIpPrefix":{
+        "value": "[parameters('customerDevUatInfrastructurePrefix')]"
       },
       "location": {
         "value": "[parameters('location')]"
@@ -376,11 +445,20 @@
       },
       "hubDc02VmIp": {
         "value":"[variables('hubUksDc01VmIp')]"
+      },
+       "tagSalesOrderId":{
+        "value": "[parameters('tagSalesOrderId')]"
+  
+      },
+      "tagCostCentreId": {
+        "value": "[parameters('tagCostCentreId')]"
       }
 }
   }
   
 }
+
+
 
   ],
     "outputs": {
