@@ -9,9 +9,10 @@
     "location": {
       "type": "string"
     },
-    "hubVnetName": {
-      "type": "string"
+    "hubAzureFirewallSubnetId":{
+      "type":"string"
     },
+
     "hubFirewallPipName": {
       "type": "string"
     },
@@ -85,7 +86,7 @@
                             "id": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('hubFirewallPipName'))]"
                           },
                             "subnet": {
-                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks/', parameters('hubVnetName')),'/subnets/AzureFirewallSubnet')]"
+                                "id": "[parameters('hubAzureFirewallSubnetId')]"
                             }
                         }
                     }

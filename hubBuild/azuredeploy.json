@@ -154,7 +154,8 @@
     "emis2IpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/EMIS-Group2-IP-Group')]",
     "systemOneIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/SystemOne-IP-Group')]",
     "hubAddIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/HubADDS-IP-Group')]",
-    "hscnIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/HSCN-IP-Group')]"
+    "hscnIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/HSCN-IP-Group')]",
+     "hubAzureFirewallSubnetId": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/VirtualNetworks',variables('hubVnetName'),'/subnets/AzureFirewallSubnet')]"
   },
   "resources": [
 {
@@ -475,6 +476,9 @@
     },
     "hubVnetName": {
       "value": "[variables('hubVnetName')]"
+    },
+    "hubAzureFirewallSubnetId":{
+      "value":"[variables('hubAzureFirewallSubnetId')]"
     },
     "hubFirewallPipName": {
       "value": "[variables('hubFirewallPipName')]"
