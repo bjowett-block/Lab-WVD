@@ -86,9 +86,6 @@
                 "name": "DomainServices",
                 "properties": {
                   "addressPrefix": "[parameters('hubDomainServicesSubnetRange')]",
-                  "routeTable": {
-                                "id": "[resourceId('Microsoft.Network/routeTables/',parameters('hubRt01Name'))]"
-                            },
                   "delegations": [],
                   "privateEndpointNetworkPolicies": "Enabled",
                   "privateLinkServiceNetworkPolicies": "Enabled",
@@ -102,9 +99,6 @@
                 "name": "GatewayServices",
                 "properties": {
                   "addressPrefix": "[parameters('hubGatewayServicesSubnetRange')]",
-                  "routeTable": {
-                                "id": "[resourceId('Microsoft.Network/routeTables/',parameters('hubRt02Name'))]"
-                            },
                   "delegations": [],
                   "privateEndpointNetworkPolicies": "Enabled",
                   "privateLinkServiceNetworkPolicies": "Enabled"
@@ -114,9 +108,6 @@
                 "name": "DMZ",
                 "properties": {
                   "addressPrefix": "[parameters('hubDmzSubnetRange')]",
-                  "routeTable": {
-                                "id": "[resourceId('Microsoft.Network/routeTables/',parameters('hubRt01Name'))]"
-                            },
                   "delegations": [],
                   "privateEndpointNetworkPolicies": "Enabled",
                   "privateLinkServiceNetworkPolicies": "Enabled",
@@ -141,9 +132,6 @@
                 "name": "SharedServices",
                 "properties": {
                   "addressPrefix": "[parameters('hubSharedServicesSubnetRange')]",
-                  "routeTable": {
-                                "id": "[resourceId('Microsoft.Network/routeTables/',parameters('hubRt01Name'))]"
-                            },
                   "serviceEndpoints": [
                     {
                       "service": "Microsoft.KeyVault",
