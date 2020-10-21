@@ -46,8 +46,10 @@
     },
     "hubRt01Name":{
       "type": "string"
+    },
+    "hubRt02Name":{
+      "type": "string"
     }
-    
 
 
   },
@@ -99,6 +101,9 @@
                 "name": "GatewayServices",
                 "properties": {
                   "addressPrefix": "[parameters('hubGatewayServicesSubnetRange')]",
+                  "routeTable":{
+                    "id":"[resourceId('Microsoft.Network/routeTables',parameters('hubRt01Name'))]"
+                  },
                   "delegations": [],
                   "privateEndpointNetworkPolicies": "Enabled",
                   "privateLinkServiceNetworkPolicies": "Enabled"
