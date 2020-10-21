@@ -102,7 +102,7 @@
                 "properties": {
                   "addressPrefix": "[parameters('hubGatewayServicesSubnetRange')]",
                   "routeTable":{
-                    "id":"[resourceId('Microsoft.Network/routeTables',parameters('hubRt01Name'))]"
+                    "id":"[resourceId('Microsoft.Network/routeTables',parameters('hubRt02Name'))]"
                   },
                   "delegations": [],
                   "privateEndpointNetworkPolicies": "Enabled",
