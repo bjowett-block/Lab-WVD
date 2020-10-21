@@ -5,9 +5,15 @@
         "hubNamePrefix":{
             "value": "acw"
         },
-        "customerDesktopNetwork":{
+        "customerDevUatDesktopNetwork":{
             "value": "172.18.4.0/24"
         },
+        "customerDevUatDesktopPrefix":{
+            "value":"172.18.4.0/23."
+        },
+        "customerDevUatInfrastructurePrefix":{
+            "value":"172.18.200.0/24."
+        } ,
         "tagCostCentreId":{
             "value":"Cloud"
         },
