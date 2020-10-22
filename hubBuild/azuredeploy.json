@@ -380,7 +380,7 @@
         "value":"[variables('hubDomainServicesSubnetRange')]"
       },
  
-      "hubGatewayServicesSubnetRange": {
+      "hubGatewaySubnetRange": {
       "value":"[variables('hubGatewaySubnetRange')]"
       },
       "hubDmzSubnetRange": {
