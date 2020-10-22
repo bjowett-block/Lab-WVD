@@ -70,6 +70,9 @@
     },
     "hubLngRemoteBgpAsn":{
       "type": "string"
+    },
+    "hubPskPassword":{
+      "type": "securestring"
     } 
   },
   "variables": {
@@ -146,6 +149,8 @@
     "hubVng02Name": "[concat(parameters('hubNamePrefix'),'hubvng02')]",
     "hubLng01Name": "[concat(parameters('hubNamePrefix'),'hubLng01')]",
     "hubLng02Name": "[concat(parameters('hubNamePrefix'),'hubLng02')]",
+    "hubVpn01Name":"[concat(variables('hubVng01Name'),'-', variables('hubLng01Name'))]",
+    "hubVpn02Name":"[concat(variables('hubVng01Name'),'-', variables('hubLng02Name'))]",
     "customerDevUatDesktopPrefixName": "[concat(parameters('hubNamePrefix'),'-Customer-Desktop-DEVUAT-Prefix')]",
     "customerDevUatInfrastructurePrefixName": "[concat(parameters('hubNamePrefix'),'-Customer-Infrastructure-DEVUAT-Prefix')]",
     "hubFirewallName": "[concat(parameters('hubNamePrefix'),'hub-afw01')]",
@@ -596,11 +601,6 @@
 },
 {
   "name": "Deploy_LocalNetworkGateways",
-  "dependsOn": [
-        "Microsoft.Resources/deployments/Deploy_HubVirtualNetwork",
-        "Microsoft.Resources/deployments/Deploy_HubPublicIPAddresses"
-       
-      ],
   "type": "Microsoft.Resources/deployments",
   "apiVersion": "2019-10-01",
   "properties": {
@@ -637,7 +637,7 @@
         "location":{
             "value": "[parameters('location')]"
         },
-        "hubLngRemoteAsn":{
+        "hubLngRemoteBgpAsn":{
             "value": "[parameters('hubLngRemoteBgpAsn')]"
         }, 
         "tagSalesOrderId":{
@@ -646,6 +646,51 @@
         "tagCostCentreId": {
             "value": "[parameters('tagCostCentreId')]"
     }
+}
+  }
+  
+},
+{
+  "name": "Deploy_VPN",
+  "dependsOn": [
+        "Microsoft.Resources/deployments/Deploy_LocalNetworkGateway",
+        "Microsoft.Resources/deployments/Deploy_VirtualNetworkGateways"
+       
+      ],
+  "type": "Microsoft.Resources/deployments",
+  "apiVersion": "2019-10-01",
+  "properties": {
+    "mode": "Incremental",
+    "templateLink": {
+      "uri": "[variables('Templates')['Hub-VPN'].Link]",
+      "contentVersion": "1.0.0.0"
+    },
+"parameters": {
+         "hubVpn01Name":{
+            "value": "[variables('hubVpn01Name')]"
+        },
+        "hubVpn02Name":{
+            "value": "[variables('hubVpn02Name')]"
+        },
+        "hubVng01Name": {
+            "value": "[variables('hubVng01Name')]"
+        },
+        "hubLng01Name": {
+             "value": "[variables('hubLng01Name')]"
+        },
+        "hubLng02Name": {
+            "value": "[variables('hubLng02Name')]"
+        },
+        "hubPskPassword": {
+            "value": "[parameters('hubPskPassword')]"
+        },
+         "tagSalesOrderId":{
+            "value": "[parameters('tagSalesOrderId')]"        },
+        "tagCostCentreId": {
+            "value": "[parameters('tagCostCentreId')]"        },
+        "location": {
+            "value": "[parameters('location')]"
+        }
 }
   }
   

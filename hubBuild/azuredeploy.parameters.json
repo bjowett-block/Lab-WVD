@@ -49,11 +49,14 @@
             "value": "10.10.11.1"
           },
           "hubLng02PeerIpPrefix": {
-            "value": "172.30.255.28./30"
+            "value": "172.30.255.28/30"
           },
           "hubLngRemoteBgpAsn":{
             "value": "199706"
-          } 
+          },
+          "hubPskPassword":{
+            "value": "Password123"
+          }  
         
         }
     }
