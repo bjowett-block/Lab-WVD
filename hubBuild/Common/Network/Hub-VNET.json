@@ -19,7 +19,7 @@
       "type": "string"
     },
  
-    "hubGatewayServicesSubnetRange": {
+    "hubGatewaySubnetRange": {
       "type": "string"
     },
     "hubDmzSubnetRange": {
@@ -98,9 +98,9 @@
               },
 
               {
-                "name": "GatewayServices",
+                "name": "GatewaySubtnet",
                 "properties": {
-                  "addressPrefix": "[parameters('hubGatewayServicesSubnetRange')]",
+                  "addressPrefix": "[parameters('hubGatewaySubnetRange')]",
                   "routeTable":{
                     "id":"[resourceId('Microsoft.Network/routeTables',parameters('hubRt02Name'))]"
                   },

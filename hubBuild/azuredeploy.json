@@ -132,7 +132,7 @@
     "hubSharedServicesSubnetRange": "[concat(parameters('upperHubNetThirdOctet'),'.0/24')]",
     "hubDomainServicesSubnetRange": "[concat(parameters('lowerHubNetThirdOctet'),'.0/28')]",
     "hubBastionSubnetRange": "[concat(parameters('lowerHubNetThirdOctet'),'.16/29')]",
-    "hubGatewayServicesSubnetRange": "[concat(parameters('lowerHubNetThirdOctet'),'.32/27')]",
+    "hubGatewaySubnetRange": "[concat(parameters('lowerHubNetThirdOctet'),'.32/27')]",
     "hubDmzSubnetRange": "[concat(parameters('lowerHubNetThirdOctet'),'.64/27')]",
     "hubAzureFirewallSubnetRange": "[concat(parameters('lowerHubNetThirdOctet'),'.128/26')]",
     "hubDefaultGatewayIp":"[concat(parameters('lowerHubNetThirdOctet'),'.132')]",
@@ -280,10 +280,10 @@
     "hubFirewallPipName": {
       "value":"[variables('hubFirewallPipName')]"
     },
-    "hubVngPipName01": {
+    "hubVng01PipName": {
       "value":"[variables('hubVng01PipName')]"
     },
-    "hubVngPipName02": {
+    "hubVng02PipName": {
       "value":"[variables('hubVng02PipName')]"
     },
     "location": {
@@ -381,7 +381,7 @@
       },
  
       "hubGatewayServicesSubnetRange": {
-      "value":"[variables('hubGatewayServicesSubnetRange')]"
+      "value":"[variables('hubGatewaySubnetRange')]"
       },
       "hubDmzSubnetRange": {
         "value":"[variables('hubDmzSubnetRange')]"
