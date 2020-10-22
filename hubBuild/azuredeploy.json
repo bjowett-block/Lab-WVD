@@ -653,7 +653,7 @@
 {
   "name": "Deploy_VPN",
   "dependsOn": [
-        "Microsoft.Resources/deployments/Deploy_LocalNetworkGateway",
+        "Microsoft.Resources/deployments/Deploy_LocalNetworkGateways",
         "Microsoft.Resources/deployments/Deploy_VirtualNetworkGateways"
        
       ],
