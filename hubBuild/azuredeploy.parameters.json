@@ -32,7 +32,28 @@
         },
         "hubBgpAsn" :{
             "value":"65515"
-        }
+        },
+        "hubLng01RemotePeerIP":{
+            "value": "172.20.255.33"
+          },
+          "hubLng01RemoteGatewayIP":{
+            "value": "10.10.10.1"
+          },
+          "hubLng01PeerIpPrefix": {
+            "value": "172.30.255.32/30"
+          },
+          "hubLng02RemotePeerIP":{
+            "value": "172.30.255.29"
+          },
+         "hubLng02RemoteGatewayIP":{
+            "value": "10.10.11.1"
+          },
+          "hubLng02PeerIpPrefix": {
+            "value": "172.30.255.28./30"
+          },
+          "hubLngRemoteBgpAsn":{
+            "value": "199706"
+          } 
         
         }
     }

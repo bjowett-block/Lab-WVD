@@ -1,8 +1,103 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {},
+    "parameters": {
+        
+        "hubLng01Name": {
+            "type": "string"
+        },
+        "hubLng01RemotePeerIP":{
+            "type": "string"
+        },
+        "hubLng01RemoteGatewayIP":{
+            "type": "string"
+        },
+        "hubLng01PeerIpPrefix": {
+            "type": "string"
+        },
+        "hubLng02Name": {
+            "type": "string"
+        },
+        "hubLng02RemotePeerIP":{
+            "type": "string"
+        },
+        "hubLng02RemoteGatewayIP":{
+            "type": "string"
+        },
+        "hubLng02PeerIpPrefix": {
+            "type": "string"
+        },
+        "location":{
+            "type": "string"
+        },
+        "hubLngRemoteBgpAsn":{
+            "type": "string"
+        }, 
+        "tagSalesOrderId":{
+            "type": "string"
+        },
+        "tagCostCentreId": {
+            "type": "string"
+    }
+
+        
+    
+    },
     "variables": {},
-    "resources":[],
-    "outputs": {}
+    "resources": [
+        {
+            "type": "Microsoft.Network/localNetworkGateways",
+            "apiVersion": "2020-05-01",
+            "name": "[parameters('hubLng01Name')]",
+            "location": "[parameters('location')]",
+            "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
+            "properties": {
+                "localNetworkAddressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('hubLng01PeerIpPrefix')]"
+                    ]
+                },
+                "gatewayIpAddress": "[parameters('hubLng01RemoteGatewayIP')]",
+                "bgpSettings": {
+                    "asn": "[parameters('hubLngRemoteBgpAsn')]",
+                    "bgpPeeringAddress": "[parameters('hubLng01RemotePeerIP')]",
+                    "peerWeight": 0
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/localNetworkGateways",
+            "apiVersion": "2020-05-01",
+            "name": "[parameters('hubLng02Name')]",
+            "location": "[parameters('location')]",
+            "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
+            "properties": {
+                "localNetworkAddressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('hubLng02PeerIpPrefix')]"
+                    ]
+                },
+                "gatewayIpAddress": "[parameters('hubLng02RemoteGatewayIP')]",
+                "bgpSettings": {
+                    "asn": "[parameters('hubLngRemoteBgpAsn')]",
+                    "bgpPeeringAddress": "[parameters('hubLng02RemotePeerIP')]",
+                    "peerWeight": 0
+                }
+            }
+        }
+    ]
 }

@@ -49,7 +49,28 @@
     },
     "hubBgpAsn":{
       "type": "string"
-    }
+    },
+    "hubLng01RemotePeerIP":{
+      "type": "string"
+    },
+    "hubLng01RemoteGatewayIP":{
+      "type": "string"
+    },
+    "hubLng01PeerIpPrefix": {
+      "type": "string"
+    },
+    "hubLng02RemotePeerIP":{
+      "type": "string"
+    },
+   "hubLng02RemoteGatewayIP":{
+      "type": "string"
+    },
+    "hubLng02PeerIpPrefix": {
+      "type": "string"
+    },
+    "hubLngRemoteBgpAsn":{
+      "type": "string"
+    } 
   },
   "variables": {
 
@@ -123,6 +144,8 @@
     "hubRt02Name": "[concat(parameters('hubNamePrefix'),'hubrt02')]",
     "hubVng01Name": "[concat(parameters('hubNamePrefix'),'hubvng01')]",
     "hubVng02Name": "[concat(parameters('hubNamePrefix'),'hubvng02')]",
+    "hubLng01Name": "[concat(parameters('hubNamePrefix'),'hubLng01')]",
+    "hubLng02Name": "[concat(parameters('hubNamePrefix'),'hubLng02')]",
     "customerDevUatDesktopPrefixName": "[concat(parameters('hubNamePrefix'),'-Customer-Desktop-DEVUAT-Prefix')]",
     "customerDevUatInfrastructurePrefixName": "[concat(parameters('hubNamePrefix'),'-Customer-Infrastructure-DEVUAT-Prefix')]",
     "hubFirewallName": "[concat(parameters('hubNamePrefix'),'hub-afw01')]",
@@ -567,6 +590,62 @@
         "value": "[parameters('tagCostCentreId')]"
       }
 
+}
+  }
+  
+},
+{
+  "name": "Deploy_LocalNetworkGateways",
+  "dependsOn": [
+        "Microsoft.Resources/deployments/Deploy_HubVirtualNetwork",
+        "Microsoft.Resources/deployments/Deploy_HubPublicIPAddresses"
+       
+      ],
+  "type": "Microsoft.Resources/deployments",
+  "apiVersion": "2019-10-01",
+  "properties": {
+    "mode": "Incremental",
+    "templateLink": {
+      "uri": "[variables('Templates')['Hub-LNG'].Link]",
+      "contentVersion": "1.0.0.0"
+    },
+"parameters": {
+        "hubLng01Name": {
+            "value": "[variables('hubLng01Name')]"
+        },
+        "hubLng01RemotePeerIP":{
+            "value": "[parameters('hubLng01RemotePeerIP')]"
+        },
+        "hubLng01RemoteGatewayIP":{
+            "value": "[parameters('hubLng01RemoteGatewayIP')]"
+        },
+        "hubLng01PeerIpPrefix": {
+            "value": "[parameters('hubLng01PeerIpPrefix')]"
+        },
+        "hubLng02Name": {
+            "value": "[variables('hubLng02Name')]"
+        },
+        "hubLng02RemotePeerIP":{
+            "value": "[parameters('hubLng02RemotePeerIP')]"
+        },
+        "hubLng02RemoteGatewayIP":{
+            "value": "[parameters('hubLng02RemoteGatewayIP')]"
+        },
+        "hubLng02PeerIpPrefix": {
+            "value": "[parameters('hubLng02PeerIpPrefix')]"
+        },
+        "location":{
+            "value": "[parameters('location')]"
+        },
+        "hubLngRemoteAsn":{
+            "value": "[parameters('hubLngRemoteBgpAsn')]"
+        }, 
+        "tagSalesOrderId":{
+            "value": "[parameters('tagSalesOrderId')]"
+        },
+        "tagCostCentreId": {
+            "value": "[parameters('tagCostCentreId')]"
+    }
 }
   }
   
