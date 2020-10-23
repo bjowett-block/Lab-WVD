@@ -97,7 +97,7 @@
         "LINK": "[concat(variables('templateLink'), '/hubBuild/Common/Compute/ARM/Hub-MGMTVM.json')]"
       },
         "Hub-NICS": {
-        "Link": "[concat(variables('templateLink'), '/hubBuild/Common/Compute/Hub-VMNICS.json')]"
+        "Link": "[concat(variables('templateLink'), '/hubBuild/Common/Compute/ARM/Hub-VMNICS.json')]"
       },
         "Hub-ASG": {
         "Link": "[concat(variables('templateLink'), '/hubBuild/Common/Network/Hub-ASG.json')]"
@@ -737,6 +737,54 @@
         "tagCostCentreId": {
             "value": "[parameters('tagCostCentreId')]"        }
         
+}
+  }
+  
+},
+{
+  "name": "Deploy_VMNICS",
+  "dependsOn": [
+        "Microsoft.Resources/deployments/Deploy_HubVirtualNetwork"
+      ],
+  "type": "Microsoft.Resources/deployments",
+  "apiVersion": "2019-10-01",
+  "properties": {
+    "mode": "Incremental",
+    "templateLink": {
+      "uri": "[variables('Templates')['Hub-NICS'].Link]",
+      "contentVersion": "1.0.0.0"
+    },
+  "parameters": {
+        "hubMgmtServerNicName":{
+            "value": "[variables('hubMgmtServerNicName')]"
+        },
+        "hubUksDc01ServerNicName":{
+            "value": "[variables('hubUksDc01ServerNicName')]"
+        },
+        "hubUksDc02ServerNicName":{
+            "value": "[variables('hubUksDc02ServerNicName')]"
+        },
+        "location": {
+            "value": "[parameters('location')]"
+        },
+        "hubMgmt01VmIp": {
+            "value": "[variables('hubMgmt01VmIp')]"
+        },
+        "hubUksDc01VmIp": {
+            "value": "[variables('hubUksDc01VmIp')]"
+        },
+        "hubUksDc02VmIp": {
+            "value": "[variables('hubUksDc02VmIp')]"
+        },
+         "hubVnetName": {
+            "value": "[variables('hubVnetName')]"
+        },
+         "tagSalesOrderId":{
+            "value": "[parameters('tagSalesOrderId')]" 
+        },
+        "tagCostCentreId": {
+            "value": "[parameters('tagCostCentreId')]"        
+        }    
 }
   }
   

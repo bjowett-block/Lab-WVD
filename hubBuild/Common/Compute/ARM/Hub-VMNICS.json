@@ -2,36 +2,45 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "hubMgmtServerNicName": {
+    "hubMgmtServerNicName":{
       "type": "string"
+    
     },
-    "hubMgmtServerIp": {
+        "hubUksDc01ServerNicName":{
       "type": "string"
+    
     },
-    "hubProxyNicName01": {
+        "hubUksDc02ServerNicName":{
       "type": "string"
+    
     },
-    "hubProxyIp01": {
+     "location":{
       "type": "string"
+    
     },
-    "hubProxyNicName02": {
+     "hubMgmt01VmIp":{
       "type": "string"
+    
     },
-    "hubProxyIp02": {
+     "hubUksDc01VmIp":{
       "type": "string"
+    
     },
-    "hubProxyNicName03": {
+    "hubUksDc02VmIp":{
       "type": "string"
-    },
-    "hubProxyIp03": {
-      "type": "string"
-    },
-    "location": {
-      "type": "string"
+    
     },
     "hubVnetName": {
       "type": "string"
+    },
+    "tagSalesOrderId":{
+      "type": "string"
+  
+    },
+    "tagCostCentreId": {
+      "type": "string"
     }
+
 },
   "variables": {
   },
@@ -41,12 +50,20 @@
       "apiVersion": "2019-04-01",
       "name": "[parameters('hubMgmtServerNicName')]",
       "location": "[parameters('location')]",
+      "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
       "properties": {
         "ipConfigurations": [
           {
             "name": "ipconfig1",
             "properties": {
-              "privateIPAddress": "[parameters('hubMgmtServerIp')]",
+              "privateIPAddress": "[parameters('hubMgmt01VmIp')]",
               "privateIPAllocationMethod": "Static",
               "subnet": {
              
@@ -67,17 +84,26 @@
     {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2019-04-01",
-      "name": "[parameters('hubProxyNicName01')]",
+      "name": "[parameters('hubUksDc01ServerNicName')]",
       "location": "[parameters('location')]",
+      "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
       "properties": {
         "ipConfigurations": [
           {
             "name": "ipconfig1",
             "properties": {
-              "privateIPAddress": "[parameters('hubProxyIp01')]",
+              "privateIPAddress": "[parameters('hubUksDc01VmIp')]",
               "privateIPAllocationMethod": "Static",
               "subnet": {
-                "id": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/virtualNetworks/',parameters('hubVnetName'),'/subnets/DMZ')]"
+             
+                "id": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/virtualNetworks/',parameters('hubVnetName'),'/subnets/DomainServices')]"
               },
               "primary": true,
               "privateIPAddressVersion": "IPv4"
@@ -91,47 +117,21 @@
         "enableIPForwarding": false
       }
     },
-    {
-      "apiVersion": "2019-04-01",
-      "location": "[parameters('location')]",
-      "name": "[parameters('hubProxyNicName02')]",
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAddress": "[parameters('hubProxyIp02')]",
-              "privateIPAllocationMethod": "Static",
-              "subnet": {
-                "id": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/virtualNetworks/',parameters('hubVnetName'),'/subnets/DMZ')]"
-              },
-              "primary": true,
-              "privateIPAddressVersion": "IPv4"
-            }
-          }
-        ],
-        "dnsSettings": {
-          "dnsServers": []
-        },
-        "enableAcceleratedNetworking": false,
-        "enableIPForwarding": false
-      },
-      "type": "Microsoft.Network/networkInterfaces"
-    },
-    {
+   {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2019-04-01",
-      "name": "[parameters('hubProxyNicName03')]",
+      "name": "[parameters('hubUksDc02ServerNicName')]",
       "location": "[parameters('location')]",
       "properties": {
         "ipConfigurations": [
           {
             "name": "ipconfig1",
             "properties": {
-              "privateIPAddress": "[parameters('hubProxyIp03')]",
+              "privateIPAddress": "[parameters('hubUksDc02VmIp')]",
               "privateIPAllocationMethod": "Static",
               "subnet": {
-                "id": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/virtualNetworks/',parameters('hubVnetName'),'/subnets/DMZ')]"
+             
+                "id": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/virtualNetworks/',parameters('hubVnetName'),'/subnets/DomainServices')]"
               },
               "primary": true,
               "privateIPAddressVersion": "IPv4"
@@ -145,6 +145,8 @@
         "enableIPForwarding": false
       }
     }
+    
+    
   ],
   "outputs": {
   }
