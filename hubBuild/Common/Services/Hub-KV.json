@@ -1,51 +1,123 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "keyVaultName": {
-            "type": "string"
-        },
-        "tenantId":{
-            "type": "string"
-        },
-        "location":{
-            "type": "string"
-        },
- 
-        "tagCostCentre": {
-            "type": "string"
-        },
-        "tagSalesOrderId":{
-            "type":"string"
-    }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "hubKvName": {
+        "type": "string"
     },
-    "variables": {},
-    "resources":[
-        {
+    "location": {
+        "type": "string"
+    },
+    "hubTenantId":{
+        "type": "string"
+    },
+    "hubKvAdminobjectId": {
+       "type": "string" 
+    },
+    "WindowsDefaultPassword": {
+      "type": "securestring"
+    },
+    "tagSalesOrderId":{
+            "type": "string"
+        },
+    "tagCostCentreId": {
+            "type": "string"
+        }
+  },
+  "resources": [
+    {
       "type": "Microsoft.KeyVault/vaults",
-            "apiVersion": "2016-10-01",
-            "name": "[parameters('keyVaultName')]",
-            "location": "[parameters('location')]",
-            "tags": {
-                "Owner": "Block Solutions",
-                "Department": "Workspace and Cloud",
-                "Environment": "Production",
-                "Location": "[parameters('location')]",
-                "CostCentre": "[parameters('tagCostcentre')]",
-                "SalesOrderID": "[parameters('tagSalesOrderId')]"
-      },
-            "properties": {
-                "sku": {
-                    "family": "A",
-                    "name": "Standard"
-                },
-                "tenantId": "[parameters('tenantId')]",
-                "enabledForDeployment": true,
-                "enabledForDiskEncryption": true,
-                "enabledForTemplateDeployment": true,
-                "enableSoftDelete": true
+      "apiVersion": "2019-09-01",
+      "name": "[parameters('hubKvName')]",
+      "location": "[parameters('location')]",
+      "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
+      "properties": {
+        "enabledForDeployment": "True",
+        "enabledForDiskEncryption": "True",
+        "enabledForTemplateDeployment": "True",
+        "enableSoftDelete": "True",
+        "tenantId": "[parameters('hubTenantId')]",
+        "accessPolicies": [
+          {
+            "objectId": "[parameters('hubKvAdminobjectId')]",
+            "tenantId": "[parameters('hubTenantId')]",
+            "permissions": {
+             "keys": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore"
+                            ],
+              "secrets": [
+                                "Get",
+                                "List",
+                                "Set",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore"
+                            ],
+             "certificates": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "ManageContacts",
+                                "ManageIssuers",
+                                "GetIssuers",
+                                "ListIssuers",
+                                "SetIssuers",
+                                "DeleteIssuers"
+                            ]
             }
-        }  
-    ],
-    "outputs": {}
+          }
+        ],
+        "sku": {
+          "name": "Standard",
+          "family": "A"
+        },
+        "networkAcls": {
+          "defaultAction": "Allow",
+          "bypass": "AzureServices"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2019-09-01",
+      "name": "[concat(parameters('hubKvName'), '/WindowsDefaultPassword')]",
+      "location": "[parameters('location')]",
+      "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('hubKvName'))]"
+      ],
+      "properties": {
+        "value": "[parameters('windowsDefaultPassword')]"
+      }
+    }
+  ]
 }

@@ -73,7 +73,18 @@
     },
     "hubPskPassword":{
       "type": "securestring"
-    } 
+    },
+    "hubTenantId":{
+      "type": "string"
+    },
+    "hubKvAdminobjectId":{
+      "type": "string"
+    },
+    "WindowsDefaultPassword":{
+      "type": "securestring"
+    }
+
+
   },
   "variables": {
 
@@ -138,7 +149,7 @@
        }
     },
     "hubAaName":"[concat(parameters('hubNamePrefix'),'hub-aa01')]",
-    "hubkeyVaultName":"[concat(parameters('hubNamePrefix'),'hub-kv01')]",
+    "hubKvName":"[concat(parameters('hubNamePrefix'),'hub-kv01')]",
     "hubNsgName": "[concat(parameters('hubNamePrefix'),'hub-nsg01')]",
     "hubVnetName": "[concat(parameters('hubNamePrefix'),'hub-vnet01')]",
     "hubLawName": "[concat(parameters('hubNamePrefix'),'hub-law01')]",
@@ -691,6 +702,41 @@
         "location": {
             "value": "[parameters('location')]"
         }
+}
+  }
+  
+},
+{
+  "name": "Deploy_KeyVault",
+  "type": "Microsoft.Resources/deployments",
+  "apiVersion": "2019-10-01",
+  "properties": {
+    "mode": "Incremental",
+    "templateLink": {
+      "uri": "[variables('Templates')['Hub-KV'].Link]",
+      "contentVersion": "1.0.0.0"
+    },
+"parameters": {
+        "hubKvName":{
+            "value": "[variables('hubKvName')]"
+        },
+        "location": {
+            "value": "[parameters('location')]"
+        },
+        "hubTenantId": {
+            "value": "[parameters('hubTenantId')]"
+        },
+        "hubKvAdminobjectId": {
+            "value": "[parameters('hubKvAdminobjectId')]"
+        },
+        "WindowsDefaultPassword": {
+            "value": "[parameters('WindowsDefaultPassword')]"
+        },
+         "tagSalesOrderId":{
+            "value": "[parameters('tagSalesOrderId')]"        },
+        "tagCostCentreId": {
+            "value": "[parameters('tagCostCentreId')]"        }
+        
 }
   }
   
