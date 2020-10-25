@@ -69,7 +69,41 @@
         "metrics": []
       }
      
+    },
+
+{
+      "apiVersion": "2019-06-15",
+      "name": "[concat(parameters('hubRsvName'), '/Standard-AVM-Daily')]",
+      "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
+      "dependsOn": [
+        "[concat('Microsoft.RecoveryServices/vaults/', parameters('hubRsvName'))]"
+      ],
+      "location": "[parameters('location')]",
+      "properties": {
+        "backupManagementType": "AzureIaasVM",
+        "instantRpRetentionRangeInDays": "",
+        "schedulePolicy": {
+          "scheduleRunFrequency": "Daily",
+          "scheduleRunDays": null,
+          "scheduleRunTimes": "2020-10-25T21:00:00Z",
+          "schedulePolicyType": "SimpleSchedulePolicy"
+        },
+        "retentionPolicy": {
+          "dailySchedule": {
+            "retentionTimes": "2020-10-25T21:00:00Z",
+            "retentionDuration": {
+              "count": "14",
+              "durationType": "Days"
+            }
+          }
+         
+          
+    
+        },
+        "timeZone": "UTC"
+      }
     }
+
 
         
     ]
