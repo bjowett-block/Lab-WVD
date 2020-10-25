@@ -168,6 +168,7 @@
     "hubVpn02Name":"[concat(variables('hubVng01Name'),'-', variables('hubLng02Name'))]",
     "hubAvs01Name": "[concat(parameters('hubNamePrefix'),'hubavs01')]",
     "hubAvs02Name": "[concat(parameters('hubNamePrefix'),'hubavs02')]",
+    "hubRsvName": "[concat(parameters('hubNamePrefix'),'hubrsv01')]",
     "customerDevUatDesktopPrefixName": "[concat(parameters('hubNamePrefix'),'-Customer-Desktop-DEVUAT-Prefix')]",
     "customerDevUatInfrastructurePrefixName": "[concat(parameters('hubNamePrefix'),'-Customer-Infrastructure-DEVUAT-Prefix')]",
     "hubFirewallName": "[concat(parameters('hubNamePrefix'),'hub-afw01')]",
@@ -341,6 +342,34 @@
     }
   }
 },
+{
+  "name": "Deploy_HubRecoveryVault",
+  "type": "Microsoft.Resources/deployments",
+  "apiVersion": "2019-10-01",
+  "properties": {
+    "mode": "Incremental",
+    "templateLink": {
+      "uri": "[variables('Templates')['Hub-RSV'].Link]",
+      "contentVersion": "1.0.0.0"
+    },
+    "parameters": {
+      "hubRsvName": {
+        "value": "[variables('hubRsvName')]"
+      },
+      "location":{
+        "value":"[parameters('location')]"
+      },
+       "tagSalesOrderId":{
+        "value": "[parameters('tagSalesOrderId')]"
+  
+      },
+      "tagCostCentreId": {
+        "value": "[parameters('tagCostCentreId')]"
+      }
+    }
+  }
+},
+
 {
  "name": "Deploy_HubPublicIPAddresses",
   "type": "Microsoft.Resources/deployments",

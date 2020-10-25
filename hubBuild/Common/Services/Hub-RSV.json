@@ -1,8 +1,42 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
     "contentVersion": "1.0.0.0",
-    "parameters": {},
-    "variables": {},
-    "resources":[],
-    "outputs": {}
+    "parameters": {
+        "hubRsvName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "tagSalesOrderId":{
+            "type": "string"
+  
+        },
+        "tagCostCentreId": {
+            "type": "string"
+        }
+
+    },
+    "resources": [
+        {
+            "apiVersion": "2016-06-01",
+            "name": "[parameters('hubRsvName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
+            
+            "type": "Microsoft.RecoveryServices/vaults",
+            "sku": {
+                "name": "RS0",
+                "tier": "Standard"
+            },
+            "properties": {}
+        }
+    ]
 }
