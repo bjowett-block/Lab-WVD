@@ -67,12 +67,8 @@
           }
         ],
         "metrics": []
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.RecoveryServices/vaults/', parameters('hubRsvName'))]",
-        "[parameters('hubDsaId')]",
-        "[parameters('hubLawId')]"
-      ]
+      }
+     
     }
 
         
