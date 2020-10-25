@@ -51,7 +51,7 @@
             },
       "properties": {
         "hardwareProfile": {
-          "vmSize": "B2s"
+          "vmSize": "Standard_B2s"
         },
         "osProfile": {
           "computerName": "[parameters('hubUksDc01ServerName')]",

@@ -874,8 +874,6 @@
   "dependsOn": [
         "Microsoft.Resources/deployments/Deploy_HubVirtualNetwork",
         "Microsoft.Resources/deployments/Deploy_VMNICS",
-        "Microsoft.Resources/deployments/Deploy_KeyVault",
-        "Microsoft.Resources/deployments/Deploy_HubRecoveryVault"
       ],
   "type": "Microsoft.Resources/deployments",
   "apiVersion": "2019-10-01",
@@ -897,10 +895,6 @@
         },
         "WindowsDefaultPassword":{
             "value":"[parameters('WindowsDefaultPassword')]"
-
-        },
-        "hubDsaName": {
-            "value": "[variables('hubDsaName')]"
         },
          "tagSalesOrderId":{
             "value": "[parameters('tagSalesOrderId')]" 
