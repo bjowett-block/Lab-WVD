@@ -344,6 +344,10 @@
 },
 {
   "name": "Deploy_HubRecoveryVault",
+  "dependsOn": [
+        "Microsoft.Resources/deployments/Deploy_HubDiagnosticStorage",
+        "Microsoft.Resources/deployments/Deploy_LAWandAA"
+      ],
   "type": "Microsoft.Resources/deployments",
   "apiVersion": "2019-10-01",
   "properties": {
