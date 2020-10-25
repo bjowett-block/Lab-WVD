@@ -875,8 +875,7 @@
         "Microsoft.Resources/deployments/Deploy_HubVirtualNetwork",
         "Microsoft.Resources/deployments/Deploy_VMNICS",
         "Microsoft.Resources/deployments/Deploy_KeyVault",
-        "Microsoft.Resources/deployments/Deploy_HubRecoveryVault",
-        "Microsoft.Resources/deployments/Deploy_HubDiagnosticStorage')]"
+        "Microsoft.Resources/deployments/Deploy_HubRecoveryVault"
       ],
   "type": "Microsoft.Resources/deployments",
   "apiVersion": "2019-10-01",
