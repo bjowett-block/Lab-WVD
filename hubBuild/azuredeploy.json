@@ -868,6 +868,50 @@
 }
   }
   
+},
+{
+"name": "Deploy_DomainControllers",
+  "dependsOn": [
+        "Microsoft.Resources/deployments/Deploy_HubVirtualNetwork",
+        "Microsoft.Resources/deployments/Deploy_VMNICS",
+        "Microsoft.Resources/deployments/Deploy_KeyVault",
+        "Microsoft.Resources/deployments/Deploy_HubRecoveryVault",
+        "Microsoft.Resources/deployments/Deploy_HubDiagnosticStorage')]"
+      ],
+  "type": "Microsoft.Resources/deployments",
+  "apiVersion": "2019-10-01",
+  "properties": {
+    "mode": "Incremental",
+    "templateLink": {
+      "uri": "[variables('Templates')['Hub-DCVM'].Link]",
+      "contentVersion": "1.0.0.0"
+    },
+  "parameters": {
+        "hubUksDc01ServerName":{
+            "value": "[variables('hubUksDc01ServerName')]"
+        },
+        "hubUksDc01ServerNicName":{
+            "value": "[variables('hubUksDc01ServerNicName')]"
+        },
+        "location": {
+            "value": "[parameters('location')]"
+        },
+        "WindowsDefaultPassword":{
+            "value":"[parameters('WindowsDefaultPassword')]"
+
+        },
+        "hubDsaName": {
+            "value": "[variables('hubDsaName')]"
+        },
+         "tagSalesOrderId":{
+            "value": "[parameters('tagSalesOrderId')]" 
+        },
+        "tagCostCentreId": {
+            "value": "[parameters('tagCostCentreId')]"        
+        }    
+}
+  }
+  
 }
 
 
