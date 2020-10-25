@@ -359,6 +359,12 @@
       "location":{
         "value":"[parameters('location')]"
       },
+      "hubLawName":{
+        "value":"[variables('hubLawName')]"
+      },
+      "hubDsaName":{
+        "value": "[variables('hubDsaName')]"
+      },
        "tagSalesOrderId":{
         "value": "[parameters('tagSalesOrderId')]"
   

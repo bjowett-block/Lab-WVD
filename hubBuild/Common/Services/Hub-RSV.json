@@ -8,6 +8,12 @@
         "location": {
             "type": "string"
         },
+        "hubLawName":{
+            "type":"string"
+        },
+        "hubDsaName":{
+            "type":"string"
+        },
         "tagSalesOrderId":{
             "type": "string"
   
@@ -37,6 +43,34 @@
                 "tier": "Standard"
             },
             "properties": {}
-        }
+        },
+{
+      "type": "Microsoft.RecoveryServices/vaults/providers/diagnosticSettings",
+      "name": "[concat(parameters('hubRsvName'), '/microsoft.insights/', parameters ('hubLawName'))]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "[parameters('hubLawName')]",
+        "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts/', parameters('hubDsaName'))]",
+        "workspaceId": "[resourceId('microsoft.operationalinsights/workspaces/', parameters('hubLawName'))]",
+        "logs": [
+          {
+            "category": "AzureBackupReport",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 365,
+              "enabled": false
+            }
+          }
+        ],
+        "metrics": []
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.RecoveryServices/vaults/', parameters('hubRsvName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts/', parameters('hubDsaName'))]",
+        "[resourceId('microsoft.operationalinsights/workspaces/', parameters('hubLawName'))]"
+      ]
+    }
+
+        
     ]
 }
