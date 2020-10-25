@@ -208,7 +208,9 @@
     "hubAddIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/adds-ipg')]",
     "hscnIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/hscn-ipg')]",
      "hubAzureFirewallSubnetId": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/VirtualNetworks/',variables('hubVnetName'),'/subnets/AzureFirewallSubnet')]",
-     "hubGatewaySubnetId": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/VirtualNetworks/',variables('hubVnetName'),'/subnets/GatewaySubnet')]"
+     "hubGatewaySubnetId": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/VirtualNetworks/',variables('hubVnetName'),'/subnets/GatewaySubnet')]",
+     "hubDsaId": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/microsoft.Storage/storageAccounts/', variables('hubDsaName'))]",
+     "hubLawId": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/microsoft.operationalinsights/workspaces/', variables('hubLawName'))]"
   },
   "resources": [
 {
@@ -366,8 +368,11 @@
       "hubLawName":{
         "value":"[variables('hubLawName')]"
       },
-      "hubDsaName":{
-        "value": "[variables('hubDsaName')]"
+      "hubLawId":{
+        "value":"[variables('hubLawId')]"
+      },
+        "hubDsaId":{
+        "value":"[variables('hubDsaId')]"
       },
        "tagSalesOrderId":{
         "value": "[parameters('tagSalesOrderId')]"

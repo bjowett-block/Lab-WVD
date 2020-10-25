@@ -11,9 +11,13 @@
         "hubLawName":{
             "type":"string"
         },
-        "hubDsaName":{
+        "hubDsaId":{
             "type":"string"
         },
+        "hubLawId":{
+            "Type":"string"
+        },
+
         "tagSalesOrderId":{
             "type": "string"
   
@@ -50,8 +54,8 @@
       "apiVersion": "2017-05-01-preview",
       "properties": {
         "name": "[parameters('hubLawName')]",
-        "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts/', parameters('hubDsaName'))]",
-        "workspaceId": "[resourceId('microsoft.operationalinsights/workspaces/', parameters('hubLawName'))]",
+        "storageAccountId": "[parameters('hubDsaId')]",
+        "workspaceId": "[parameters('hubLawId')]",
         "logs": [
           {
             "category": "AzureBackupReport",
@@ -66,8 +70,8 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.RecoveryServices/vaults/', parameters('hubRsvName'))]",
-        "[resourceId('Microsoft.Storage/storageAccounts/', parameters('hubDsaName'))]",
-        "[resourceId('microsoft.operationalinsights/workspaces/', parameters('hubLawName'))]"
+        "[parameters('hubDsaId')]",
+        "[parameters('hubLawId')]"
       ]
     }
 
