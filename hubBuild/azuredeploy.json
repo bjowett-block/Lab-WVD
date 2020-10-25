@@ -146,7 +146,11 @@
       },
        "Hub-DSA" : {
          "Link" : "[concat(variables('templateLink'), '/hubBuild/Common/Storage/Hub-DSA.json')]"
+       },
+       "Hub-AVS" : {
+         "Link" : "[concat(variables('templateLink'), '/hubBuild/Common/Services/Hub-AVS.json')]"
        }
+
     },
     "hubAaName":"[concat(parameters('hubNamePrefix'),'hub-aa01')]",
     "hubKvName":"[concat(parameters('hubNamePrefix'),'hub-kv01')]",
@@ -162,6 +166,8 @@
     "hubLng02Name": "[concat(parameters('hubNamePrefix'),'hubLng02')]",
     "hubVpn01Name":"[concat(variables('hubVng01Name'),'-', variables('hubLng01Name'))]",
     "hubVpn02Name":"[concat(variables('hubVng01Name'),'-', variables('hubLng02Name'))]",
+    "hubAvs01Name": "[concat(parameters('hubNamePrefix'),'hubavs01')]",
+    "hubAvs02Name": "[concat(parameters('hubNamePrefix'),'hubavs02')]",
     "customerDevUatDesktopPrefixName": "[concat(parameters('hubNamePrefix'),'-Customer-Desktop-DEVUAT-Prefix')]",
     "customerDevUatInfrastructurePrefixName": "[concat(parameters('hubNamePrefix'),'-Customer-Infrastructure-DEVUAT-Prefix')]",
     "hubFirewallName": "[concat(parameters('hubNamePrefix'),'hub-afw01')]",
@@ -291,6 +297,36 @@
     "parameters": {
       "storageAccountName": {
         "value": "[variables('hubDsaName')]"
+      },
+      "location":{
+        "value":"[parameters('location')]"
+      },
+       "tagSalesOrderId":{
+        "value": "[parameters('tagSalesOrderId')]"
+  
+      },
+      "tagCostCentreId": {
+        "value": "[parameters('tagCostCentreId')]"
+      }
+    }
+  }
+},
+{
+  "name": "Deploy_HubAvailabilitySets",
+  "type": "Microsoft.Resources/deployments",
+  "apiVersion": "2019-10-01",
+  "properties": {
+    "mode": "Incremental",
+    "templateLink": {
+      "uri": "[variables('Templates')['Hub-AVS'].Link]",
+      "contentVersion": "1.0.0.0"
+    },
+    "parameters": {
+      "hubAvs01Name": {
+        "value": "[variables('hubAvs01Name')]"
+      },
+      "hubAvs02Name": {
+        "value": "[variables('hubAvs02Name')]"
       },
       "location":{
         "value":"[parameters('location')]"

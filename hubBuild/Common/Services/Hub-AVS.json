@@ -1,0 +1,71 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "hubAvs01Name": {
+            "type": "string"
+            
+        },
+        "hubAvs02Name": {
+            "type": "string"
+            
+        },
+        "location": {
+            "type": "string"
+        },
+         "tagSalesOrderId":{
+            "type": "string"
+  
+        },
+        "tagCostCentreId": {
+            "type": "string"
+        }
+       
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[parameters('hubAvs01Name')]",
+            "apiVersion": "2019-07-01",
+            "location": "[parameters('location')]",
+            "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
+            "properties": {
+                "platformFaultDomainCount": 2,
+                "platformUpdateDomainCount": 5
+            },
+            "sku": {
+                "name": "Aligned"
+            }
+            
+        },
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[parameters('hubAvs02Name')]",
+            "apiVersion": "2019-07-01",
+            "location": "[parameters('location')]",
+            "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
+            "properties": {
+                "platformFaultDomainCount": 2,
+                "platformUpdateDomainCount": 5
+            },
+            "sku": {
+                "name": "Aligned"
+            }
+            
+        }
+    ]
+}
