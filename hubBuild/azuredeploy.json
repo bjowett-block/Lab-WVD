@@ -873,7 +873,7 @@
 "name": "Deploy_DomainControllers",
   "dependsOn": [
         "Microsoft.Resources/deployments/Deploy_HubVirtualNetwork",
-        "Microsoft.Resources/deployments/Deploy_VMNICS",
+        "Microsoft.Resources/deployments/Deploy_VMNICS"
       ],
   "type": "Microsoft.Resources/deployments",
   "apiVersion": "2019-10-01",

@@ -50,6 +50,9 @@
         },
 {
       "type": "Microsoft.RecoveryServices/vaults/providers/diagnosticSettings",
+      "dependsOn": [
+          "[resourceId('Microsoft.RecoveryServices/vaults/',parameters('hubRsvName'))]"
+      ],
       "name": "[concat(parameters('hubRsvName'), '/microsoft.insights/', parameters ('hubLawName'))]",
       "apiVersion": "2017-05-01-preview",
       "properties": {
