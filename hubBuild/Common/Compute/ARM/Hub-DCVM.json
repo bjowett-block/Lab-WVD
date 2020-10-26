@@ -33,6 +33,9 @@
   "hubDsaId":{
     "type": "string"
   },
+  "hubLawId":{
+    "type": "string"
+  },
   "tagSalesOrderId":{
       "type": "string"
   
@@ -361,7 +364,53 @@
                 "storageAccountEndPoint": "https://core.windows.net/"
             }
             }
-        }
+        },
+ {
+          "name": "[concat(parameters('hubUksDc01ServerName'), '/MMAExtension')]",
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', parameters('hubUksDc01ServerName'))]"
+            ],
+          "location": "[parameters('location')]",
+          "apiVersion": "2018-06-01",
+          "properties": {
+            "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+            "type": "MicrosoftMonitoringAgent",
+            "typeHandlerVersion": "1.0",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "workspaceId": "[reference(parameters('hubLawId'), '2015-03-20').customerId]",
+              "stopOnMultipleConnections": "false"
+            },
+            "protectedSettings": {
+              "workspaceKey": "[listKeys(parameters('hubLawId'), '2015-03-20').primarySharedKey]"
+            }
+          }
+
+ },
+ {
+          "name": "[concat(parameters('hubUksDc02ServerName'), '/MMAExtension')]",
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', parameters('hubUksDc02ServerName'))]"
+            ],
+          "location": "[parameters('location')]",
+          "apiVersion": "2018-06-01",
+          "properties": {
+            "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+            "type": "MicrosoftMonitoringAgent",
+            "typeHandlerVersion": "1.0",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "workspaceId": "[reference(parameters('hubLawId'), '2015-03-20').customerId]",
+              "stopOnMultipleConnections": "false"
+            },
+            "protectedSettings": {
+              "workspaceKey": "[listKeys(parameters('hubLawId'), '2015-03-20').primarySharedKey]"
+            }
+          }
+
+ }
   ],
   "outputs": {
     

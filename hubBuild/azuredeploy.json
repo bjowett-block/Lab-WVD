@@ -847,6 +847,10 @@
   "name": "Deploy_KeyVault",
   "type": "Microsoft.Resources/deployments",
   "apiVersion": "2019-10-01",
+  "dependsOn": [
+        "Microsoft.Resources/deployments/Deploy_HubDiagnosticStorage",
+        "Microsoft.Resources/deployments/Deploy_LAWandAA"
+      ],
   "properties": {
     "mode": "Incremental",
     "templateLink": {
@@ -971,8 +975,14 @@
         "hubUksDc01ServerName":{
             "value": "[variables('hubUksDc01ServerName')]"
         },
+        "hubUksDc02ServerName":{
+            "value": "[variables('hubUksDc02ServerName')]"
+        },
         "hubUksDc01ServerNicName":{
             "value": "[variables('hubUksDc01ServerNicName')]"
+        },
+         "hubUksDc02ServerNicName":{
+            "value": "[variables('hubUksDc02ServerNicName')]"
         },
       "hubAvs01Name": {
         "value": "[variables('hubAvs01Name')]"
@@ -983,6 +993,9 @@
       "hubDsaId":{
           "value":"[variables('hubDsaId')]"
       },
+      "hubLawId":{
+            "value":"[variables('hubLawId')]"
+        },
         "location": {
             "value": "[parameters('location')]"
         },
