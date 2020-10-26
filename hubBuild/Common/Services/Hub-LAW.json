@@ -197,7 +197,7 @@
      
     },
     {
-      "type": "Microsoft.OperationalInsights/workspace/providers/diagnosticSettings",
+      "type": "Microsoft.OperationalInsights/workspaces/providers/diagnosticSettings",
       "dependsOn": [
           "[resourceId('Microsoft.OperationalInsights/workspaces/',parameters('hubLawName'))]"
       ],
