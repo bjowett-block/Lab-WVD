@@ -159,7 +159,7 @@
       "dependsOn": [
           "[resourceId('Microsoft.Network/networkInterfaces',parameters('hubUksDc01ServerNicName'))]"
       ],
-      "name": "[concat(parameters('hubUksDc01ServerNicName'), '/microsoft.insights/', parameters ('hubLawName'),'-diag')]",
+      "name": "[concat(parameters('hubUksDc01ServerNicName'), '/microsoft.insights/', parameters ('hubUksDc01ServerNicName'),'ds')]",
       "apiVersion": "2017-05-01-preview",
       "properties": {
         "name": "[parameters('hubLawName')]",
@@ -182,7 +182,7 @@
       "dependsOn": [
           "[resourceId('Microsoft.Network/networkInterfaces',parameters('hubUksDc02ServerNicName'))]"
       ],
-      "name": "[concat(parameters('hubUksDc02ServerNicName'), '/microsoft.insights/', parameters ('hubLawName'),'-diag')]",
+      "name": "[concat(parameters('hubUksDc02ServerNicName'), '/microsoft.insights/', parameters ('hubUksDc02ServerNicName'),'ds')]",
       "apiVersion": "2017-05-01-preview",
       "properties": {
         "name": "[parameters('hubLawName')]",
@@ -204,7 +204,7 @@
       "dependsOn": [
           "[resourceId('Microsoft.Network/networkInterfaces',parameters('hubMgmtServerNicName'))]"
       ],
-      "name": "[concat(parameters('hubMgmtServerNicName'), '/microsoft.insights/', parameters ('hubLawName'),'-diag')]",
+      "name": "[concat(parameters('hubMgmtServerNicName'), '/microsoft.insights/', parameters ('hubMgmtServerNicName'),'ds')]",
       "apiVersion": "2017-05-01-preview",
       "properties": {
         "name": "[parameters('hubLawName')]",
