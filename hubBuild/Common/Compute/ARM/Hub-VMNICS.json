@@ -39,6 +39,15 @@
     },
     "tagCostCentreId": {
       "type": "string"
+    },
+    "hubLawName":{
+      "type": "string"
+    },
+    "hubLawId":{
+      "type": "string"
+    },
+    "hubDsaId":{
+      "type": "string"
     }
 
 },
@@ -144,7 +153,33 @@
         "enableAcceleratedNetworking": false,
         "enableIPForwarding": false
       }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces/providers/diagnosticSettings",
+      "dependsOn": [
+          "[resourceId('Microsoft.Network/networkInterfaces',parameters('hubUksDc01ServerNicName'))]"
+      ],
+      "name": "[concat(parameters('hubUksDc01ServerNicName'), '/microsoft.insights/', parameters ('hubLawName'),'-diag')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "[parameters('hubLawName')]",
+        "storageAccountId": "[parameters('hubDsaId')]",
+        "workspaceId": "[parameters('hubLawId')]",
+        "logs": [
+          {
+            "category": "AllMetrics",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": false
+            }
+          }
+        ],
+        "metrics": []
+      }
+     
     }
+
     
     
   ],
