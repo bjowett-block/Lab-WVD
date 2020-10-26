@@ -874,7 +874,10 @@
   "dependsOn": [
         "Microsoft.Resources/deployments/Deploy_HubVirtualNetwork",
         "Microsoft.Resources/deployments/Deploy_VMNICS",
-        "Microsoft.Resources/deployments/Deploy_HubAvailabilitySets"
+        "Microsoft.Resources/deployments/Deploy_HubAvailabilitySets",
+        "Microsoft.Resources/deployments/Deploy_HubDiagnosticStorage",
+        "Microsoft.Resources/deployments/Deploy_LAWandAA"
+
       ],
   "type": "Microsoft.Resources/deployments",
   "apiVersion": "2019-10-01",
