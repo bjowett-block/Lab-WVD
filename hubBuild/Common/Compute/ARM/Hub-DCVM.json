@@ -18,6 +18,9 @@
   "WindowsDefaultPassword": {
       "type": "securestring"
     },
+  "hubAvs01Name":{
+    "type": "string"  
+  },
   "tagSalesOrderId":{
       "type": "string"
   
@@ -78,6 +81,9 @@
               "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('hubUksDc01ServerNicName'))]"
             }
           ]
+        },
+        "availabilitySet":{
+          "id": "[resourceId('Microsoft.compute/availbilitySets',parameters('hubAvs01Name'))]"
         },
         "diagnosticsProfile": {
           "bootDiagnostics": {
