@@ -199,7 +199,7 @@
     {
       "type": "Microsoft.OperationalInsights/workspace/providers/diagnosticSettings",
       "dependsOn": [
-          "[resourceId('Microsoft.OperationalInsights/workspace/',parameters('hubLawName'))]"
+          "[resourceId('Microsoft.OperationalInsights/workspaces/',parameters('hubLawName'))]"
       ],
       "name": "[concat(parameters('hubLawName'), '/microsoft.insights/', parameters ('hubLawName'),'ds')]",
       "apiVersion": "2017-05-01-preview",
