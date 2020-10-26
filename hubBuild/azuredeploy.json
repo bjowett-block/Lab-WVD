@@ -897,9 +897,12 @@
       "hubAvs01Name": {
         "value": "[variables('hubAvs01Name')]"
       },
-        "hubDsaName":{
+      "hubDsaName":{
           "value":"[variables('hubDsaName')]"
         },
+      "hubDsaId":{
+          "value":"[variables('hubDsaId')]"
+      },
         "location": {
             "value": "[parameters('location')]"
         },
