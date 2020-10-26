@@ -638,7 +638,16 @@
       },
     "tagCostCentreId": {
         "value": "[parameters('tagCostCentreId')]"
-      }
+      },
+       "hubLawName":{
+            "value":"[variables('hubLawName')]"
+        },  
+        "hubLawId":{
+            "value":"[variables('hubLawId')]"
+        },
+       "hubDsaId":{
+            "value":"[variables('hubDsaId')]"
+        } 
 
 }
   }
