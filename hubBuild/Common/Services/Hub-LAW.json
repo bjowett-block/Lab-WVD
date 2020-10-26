@@ -16,6 +16,12 @@
     },
     "location": {
       "type": "string"
+    },
+    "hubDsaId":{
+      "type": "string"
+    },
+    "hubLawId":{
+      "type": "string"
     }
   },
 "variables":{
@@ -137,6 +143,59 @@
       "properties": {
         "resourceId": "[resourceId('Microsoft.Automation/automationAccounts', parameters('hubAaName'))]"
       }
+    },
+{
+      "type": "Microsoft.Automation/automationAccounts/providers/diagnosticSettings",
+      "dependsOn": [
+          "[resourceId('Microsoft.Automation/automationAccounts/',parameters('hubAaName'))]",
+          "[resourceId('Microsoft.OperationalInsights/workspaces/',parameters('hubLawName'))]"
+      ],
+      "name": "[concat(parameters('hubAaName'), '/microsoft.insights/', parameters ('hubAaName'),'ds')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "[parameters('hubLawName')]",
+        "storageAccountId": "[parameters('hubDsaId')]",
+        "workspaceId": "[parameters('hubLawId')]",
+        "logs": [
+          {
+            "category": "JobLogs",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          },
+          {
+            "category": "JobStreams",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          },
+           {
+            "category": "DscNodeStatus",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          }
+        ],
+        "metrics": [
+        {
+            "category": "AllMetrics",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          }
+
+        ]
+      }
+     
     }
+
   ]
 }

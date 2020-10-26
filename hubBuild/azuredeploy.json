@@ -217,6 +217,9 @@
     "type":"Microsoft.Resources/deployments",
     "name": "Deploy_LAWandAA",
     "apiVersion": "2018-05-01",
+    "dependsOn": [
+        "Microsoft.Resources/deployments/Deploy_HubDiagnosticStorage"
+      ],
     "properties": {
       "mode":"Incremental",
       "templateLink":{
