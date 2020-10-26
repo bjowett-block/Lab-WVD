@@ -8,8 +8,14 @@
   "hubUksDc01ServerName": {
   "type": "string"
     },
+  "hubUksDc02ServerName": {
+  "type": "string"
+    },
 
   "hubUksDc01ServerNicName": {
+  "type":"string"
+    },
+  "hubUksDc02ServerNicName": {
   "type":"string"
     },
   "location": {
@@ -48,6 +54,23 @@
         "location": "[resourceGroup().location]",
         "dependsOn": [
             "[concat('Microsoft.Compute/virtualMachines/', parameters('hubUksDc01ServerName'))]" ],
+        "properties": {
+            "publisher": "Microsoft.ManagedIdentity",
+            "type": "ManagedIdentityExtensionForWindows",
+            "typeHandlerVersion": "1.0",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+                "port": 50342
+            }
+        }
+    },
+{
+        "type": "Microsoft.Compute/virtualMachines/extensions",
+        "name": "[concat(parameters('hubUksDc02ServerName'), '/', 'WADExtensionSetup')]",
+        "apiVersion": "2017-12-01",
+        "location": "[resourceGroup().location]",
+        "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', parameters('hubUksDc02ServerName'))]" ],
         "properties": {
             "publisher": "Microsoft.ManagedIdentity",
             "type": "ManagedIdentityExtensionForWindows",
@@ -122,6 +145,67 @@
 
       }
     },
+     {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2020-06-01",
+      "name": "[parameters('hubUksDc02ServerName')]",
+      "location": "[parameters('location')]",
+      "identity": {
+        "type": "SystemAssigned"
+        },
+      "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_B2s"
+        },
+        "osProfile": {
+          "computerName": "[parameters('hubUksDc02ServerName')]",
+          "adminUsername": "azureadmin",
+          "adminPassword": "[parameters('WindowsDefaultPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2019-Datacenter",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS"
+            }
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('hubUksDc02ServerNicName'))]"
+            }
+          ]
+        },
+
+
+        "availabilitySet":{
+          "id": "[resourceId('Microsoft.Compute/availabilitySets',parameters('hubAvs01Name'))]"
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https://',parameters('hubDsaName'),'.blob.core.windows.net')]"
+            
+          }
+        }
+
+      }
+    },
     {
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(parameters('hubUksDc01ServerName'), '/', 'Microsoft.Insights.VMDiagnosticsSettings')]",
@@ -129,6 +213,84 @@
             "location": "[resourceGroup().location]",
             "dependsOn": [
             "[concat('Microsoft.Compute/virtualMachines/', parameters('hubUksDc01ServerName'))]"
+            ],
+            "properties": {
+            "publisher": "Microsoft.Azure.Diagnostics",
+            "type": "IaaSDiagnostics",
+            "typeHandlerVersion": "1.12",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+                "WadCfg": {
+                "DiagnosticMonitorConfiguration": {
+    "overallQuotaInMB": 4096,
+    "DiagnosticInfrastructureLogs": {
+                    "scheduledTransferLogLevelFilter": "Error"
+        },
+                    "Directories": {
+                    "scheduledTransferPeriod": "PT1M",
+    "IISLogs": {
+                        "containerName": "wad-iis-logfiles"
+                    },
+                    "FailedRequestLogs": {
+                        "containerName": "wad-failedrequestlogs"
+                    }
+                    },
+                    "PerformanceCounters": {
+                    "scheduledTransferPeriod": "PT1M",
+                    "sinks": "AzMonSink",
+                    "PerformanceCounterConfiguration": [
+                        {
+                        "counterSpecifier": "\\Memory\\Available Bytes",
+                        "sampleRate": "PT15S"
+                        },
+                        {
+                        "counterSpecifier": "\\Memory\\% Committed Bytes In Use",
+                        "sampleRate": "PT15S"
+                        },
+                        {
+                        "counterSpecifier": "\\Memory\\Committed Bytes",
+                        "sampleRate": "PT15S"
+                        }
+                    ]
+                    },
+                    "WindowsEventLog": {
+                    "scheduledTransferPeriod": "PT1M",
+                    "DataSource": [
+                        {
+                        "name": "Application!*"
+                        }
+                    ]
+                    },
+                    "Logs": {
+                    "scheduledTransferPeriod": "PT1M",
+                    "scheduledTransferLogLevelFilter": "Error"
+                    }
+                },
+                "SinksConfig": {
+                    "Sink": [
+                    {
+                        "name" : "AzMonSink",
+                        "AzureMonitor" : {}
+                    }
+                    ]
+                }
+                },
+                "StorageAccount": "[resourceId('Microsoft.Network/storage', parameters('hubDsaName'))]"
+            },
+            "protectedSettings": {
+                "storageAccountName": "[parameters('hubDsaName')]",
+                "storageAccountKey": "[listKeys(parameters('hubDsaId'),'2015-06-15').key1]",
+                "storageAccountEndPoint": "https://core.windows.net/"
+            }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('hubUksDc02ServerName'), '/', 'Microsoft.Insights.VMDiagnosticsSettings')]",
+            "apiVersion": "2017-12-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', parameters('hubUksDc02ServerName'))]"
             ],
             "properties": {
             "publisher": "Microsoft.Azure.Diagnostics",
