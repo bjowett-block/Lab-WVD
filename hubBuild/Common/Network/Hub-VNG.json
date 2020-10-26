@@ -26,7 +26,16 @@
         },
         "tagSalesOrderId":{
             "type": "string"
-         }
+         },
+        "hubLawName":{
+            "type": "string"
+        },
+        "hubDsaId":{
+            "type": "string"
+        },
+        "hubLawId":{
+            "type": "string"
+    }
     },
     "variables": {},
     "resources": [
@@ -80,6 +89,74 @@
                 },
                 "vpnGatewayGeneration": "Generation1"
             }
-        }
+        },
+         {
+      "type": "Microsoft.Network/virtualNetworkGateways/providers/diagnosticSettings",
+      "dependsOn": [
+          "[resourceId('Microsoft.Network/virtualNetworkGateways', parameters('hubVng01Name'))]"
+          
+      ],
+      "name": "[concat(parameters('hubVng01Name'), '/microsoft.insights/', parameters ('hubVng01Name'),'ds')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "[parameters('hubLawName')]",
+        "storageAccountId": "[parameters('hubDsaId')]",
+        "workspaceId": "[parameters('hubLawId')]",
+        "logs": [
+          {
+            "category": "GatewayDiagnosticLog",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          },
+          {
+            "category": "TunnelDiagnosticLog",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          },
+          {
+            "category": "RouteDiagnosticLog",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          },
+          {
+            "category": "IKEDiagnosticLog",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          },
+          {
+            "category": "P2SDiagnosticLog",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          }
+        ],
+        "metrics": [
+            {
+            "category": "AllMetrics",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          }
+        ]
+      }
+     
+    }
+
     ]
 }

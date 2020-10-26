@@ -694,8 +694,10 @@
   "name": "Deploy_VirtualNetworkGateways",
   "dependsOn": [
         "Microsoft.Resources/deployments/Deploy_HubVirtualNetwork",
-        "Microsoft.Resources/deployments/Deploy_HubPublicIPAddresses"
-       
+        "Microsoft.Resources/deployments/Deploy_HubPublicIPAddresses",
+        "Microsoft.Resources/deployments/Deploy_HubDiagnosticStorage",
+        "Microsoft.Resources/deployments/Deploy_LAWandAA"
+      
       ],
   "type": "Microsoft.Resources/deployments",
   "apiVersion": "2019-10-01",
@@ -730,6 +732,15 @@
       },
     "tagCostCentreId": {
         "value": "[parameters('tagCostCentreId')]"
+      },
+     "hubLawName":{
+        "value":"[variables('hubLawName')]"
+      },
+      "hubLawId":{
+        "value":"[variables('hubLawId')]"
+      },
+        "hubDsaId":{
+        "value":"[variables('hubDsaId')]"
       }
 
 }

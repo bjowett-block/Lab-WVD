@@ -195,7 +195,43 @@
         ]
       }
      
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspace/providers/diagnosticSettings",
+      "dependsOn": [
+          "[resourceId('Microsoft.OperationalInsights/workspace/',parameters('hubLawName'))]"
+      ],
+      "name": "[concat(parameters('hubLawName'), '/microsoft.insights/', parameters ('hubLawName'),'ds')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "[parameters('hubLawName')]",
+        "storageAccountId": "[parameters('hubDsaId')]",
+        "workspaceId": "[parameters('hubLawId')]",
+        "logs": [
+          {
+            "category": "Audit",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          }
+        ],
+        "metrics": [
+        {
+            "category": "AllMetrics",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          }
+
+        ]
+      }
+     
     }
+
 
   ]
 }
