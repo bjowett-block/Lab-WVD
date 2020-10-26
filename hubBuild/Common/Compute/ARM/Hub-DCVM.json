@@ -191,7 +191,7 @@
                     ]
                 }
                 },
-                "StorageAccount": "[resourceId('Microsoft.Network/storage', parameters('hubUksDc01ServerNicName'))]"
+                "StorageAccount": "[resourceId('Microsoft.Network/storage', parameters('hubDsaName'))]"
             },
             "protectedSettings": {
                 "storageAccountName": "[parameters('hubDsaName')]",
