@@ -21,6 +21,9 @@
   "hubAvs01Name":{
     "type": "string"  
   },
+  "hubDsaName":{
+    "type": "string"
+  },
   "tagSalesOrderId":{
       "type": "string"
   
@@ -87,7 +90,9 @@
         },
         "diagnosticsProfile": {
           "bootDiagnostics": {
-            "enabled": false
+            "enabled": true,
+            "storageUri": "[concat('https://',parameters('hubDsaName'),'.blob.core.windows.net')]"
+            
           }
         }
       }
