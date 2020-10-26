@@ -19,7 +19,16 @@
         },
     "tagSalesOrderId":{
             "type": "string"
-        }
+        },
+    "hubLawName":{
+        "type": "string"
+    },
+    "hubDsaId":{
+      "type": "string"
+    },
+    "hubLawId":{
+      "type": "string"
+    }
   },
   "variables":{},
   "resources": [
@@ -91,7 +100,161 @@
         "idleTimeoutInMinutes": 4,
         "ipTags": []
       }
+    },
+    {
+    "type": "Microsoft.Network/publicIPAddresses/providers/diagnosticSettings",
+      "dependsOn": [
+          "[resourceId('Microsoft.Network/publicIPAddresses', parameters('hubFirewallPipName'))]"
+          
+      ],
+      "name": "[concat(parameters('hubFirewallPipName'), '/microsoft.insights/', parameters ('hubFirewallPipName'),'ds')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "[parameters('hubLawName')]",
+        "storageAccountId": "[parameters('hubDsaId')]",
+        "workspaceId": "[parameters('hubLawId')]",
+       "logs": [
+          {
+            "category": "DDoSProtectionNotifications",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          },
+          {
+            "category": "DDoSMitigationFlowLogs",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          },
+          {
+            "category": "DDoSMitigationReports",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          }
+        ],
+        "metrics": [
+          {
+            "category": "AllMetrics",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          }
+          ]
+      }
+     
+    },
+      {
+    "type": "Microsoft.Network/publicIPAddresses/providers/diagnosticSettings",
+      "dependsOn": [
+          "[resourceId('Microsoft.Network/publicIPAddresses', parameters('hubVng01PipName'))]"
+          
+      ],
+      "name": "[concat(parameters('hubVng01PipName'), '/microsoft.insights/', parameters ('hubVng01PipName'),'ds')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "[parameters('hubLawName')]",
+        "storageAccountId": "[parameters('hubDsaId')]",
+        "workspaceId": "[parameters('hubLawId')]",
+        "logs": [
+          {
+            "category": "DDoSProtectionNotifications",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          },
+          {
+            "category": "DDoSMitigationFlowLogs",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          },
+          {
+            "category": "DDoSMitigationReports",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          }
+        ],
+        "metrics": [
+          {
+            "category": "AllMetrics",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          }
+          ]
+      }
+     
+    },
+     {
+    "type": "Microsoft.Network/publicIPAddresses/providers/diagnosticSettings",
+      "dependsOn": [
+          "[resourceId('Microsoft.Network/publicIPAddresses', parameters('hubVng02PipName'))]"
+          
+      ],
+      "name": "[concat(parameters('hubVng02PipName'), '/microsoft.insights/', parameters ('hubVng02PipName'),'ds')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "[parameters('hubLawName')]",
+        "storageAccountId": "[parameters('hubDsaId')]",
+        "workspaceId": "[parameters('hubLawId')]",
+        "logs": [
+          {
+            "category": "DDoSProtectionNotifications",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          },
+          {
+            "category": "DDoSMitigationFlowLogs",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          },
+          {
+            "category": "DDoSMitigationReports",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          }
+        ],
+        "metrics": [
+          {
+            "category": "AllMetrics",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          }
+          ]
+      }
+     
     }
+
 
   ],
   "outputs": {}

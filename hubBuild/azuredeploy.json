@@ -411,6 +411,10 @@
 {
  "name": "Deploy_HubPublicIPAddresses",
   "type": "Microsoft.Resources/deployments",
+  "dependsOn": [
+        "Microsoft.Resources/deployments/Deploy_HubDiagnosticStorage",
+        "Microsoft.Resources/deployments/Deploy_LAWandAA"
+      ],
   "apiVersion": "2019-10-01",
   "properties": {
     "mode": "Incremental",
@@ -436,7 +440,17 @@
         },
     "tagSalesOrderId":{
       "value": "[parameters('tagSalesOrderId')]"
-        }
+        },
+      "hubLawName":{
+        "value":"[variables('hubLawName')]"
+      },
+      "hubLawId":{
+        "value":"[variables('hubLawId')]"
+      },
+        "hubDsaId":{
+        "value":"[variables('hubDsaId')]"
+      }
+    
 
     }
     
