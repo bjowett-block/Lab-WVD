@@ -165,20 +165,67 @@
         "name": "[parameters('hubLawName')]",
         "storageAccountId": "[parameters('hubDsaId')]",
         "workspaceId": "[parameters('hubLawId')]",
-        "logs": [
-          {
+        "logs": [],
+        "metrics": [{
             "category": "AllMetrics",
             "enabled": true,
             "retentionPolicy": {
               "days": 30,
               "enabled": false
             }
-          }
-        ],
-        "metrics": []
+          }]
+      }
+     
+    },
+  {
+      "type": "Microsoft.Network/networkInterfaces/providers/diagnosticSettings",
+      "dependsOn": [
+          "[resourceId('Microsoft.Network/networkInterfaces',parameters('hubUksDc02ServerNicName'))]"
+      ],
+      "name": "[concat(parameters('hubUksDc02ServerNicName'), '/microsoft.insights/', parameters ('hubLawName'),'-diag')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "[parameters('hubLawName')]",
+        "storageAccountId": "[parameters('hubDsaId')]",
+        "workspaceId": "[parameters('hubLawId')]",
+        "logs": [],
+        "metrics": [{
+            "category": "AllMetrics",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": false
+            }
+          }]
+      }
+    },
+     {
+      "type": "Microsoft.Network/networkInterfaces/providers/diagnosticSettings",
+      "dependsOn": [
+          "[resourceId('Microsoft.Network/networkInterfaces',parameters('hubMgmtServerNicName'))]"
+      ],
+      "name": "[concat(parameters('hubMgmtServerNicName'), '/microsoft.insights/', parameters ('hubLawName'),'-diag')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "[parameters('hubLawName')]",
+        "storageAccountId": "[parameters('hubDsaId')]",
+        "workspaceId": "[parameters('hubLawId')]",
+        "logs": [],
+        "metrics": [{
+            "category": "AllMetrics",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": false
+            }
+          }]
       }
      
     }
+
+
+
+
 
     
     

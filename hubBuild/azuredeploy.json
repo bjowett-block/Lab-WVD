@@ -193,10 +193,10 @@
     "hubMgmtServerNicName": "[concat(parameters('hubNamePrefix'),'hubmgmtvm01-nic')]",
     "hubUksDc01ServerName": "[concat(parameters('hubNamePrefix'),'hubadcvm01')]",
     "hubUksDc01VmIp": "[concat(parameters('lowerHubNetThirdOctet'),'.4')]",
-    "hubUksDc01ServerNicName": "[concat(parameters('hubNamePrefix'), variables('hubUksDc01ServerName'),'-NIC')]",
+    "hubUksDc01ServerNicName": "[concat (variables('hubUksDc01ServerName'),'-nic')]",
     "hubUksDc02ServerName": "[concat(parameters('hubNamePrefix'),'hubadcvm02')]",
     "hubUksDc02VmIp": "[concat(parameters('lowerHubNetThirdOctet'),'.5')]",
-    "hubUksDc02ServerNicName": "[concat(parameters('hubNamePrefix'), variables('hubUksDc02ServerName'),'-NIC')]",
+    "hubUksDc02ServerNicName": "[concat(variables('hubUksDc02ServerName'),'-nic')]",
 
 
  
@@ -824,7 +824,9 @@
 {
   "name": "Deploy_VMNICS",
   "dependsOn": [
-        "Microsoft.Resources/deployments/Deploy_HubVirtualNetwork"
+        "Microsoft.Resources/deployments/Deploy_HubVirtualNetwork",
+        "Microsoft.Resources/deployments/Deploy_HubDiagnosticStorage",
+        "Microsoft.Resources/deployments/Deploy_LAWandAA"
       ],
   "type": "Microsoft.Resources/deployments",
   "apiVersion": "2019-10-01",
