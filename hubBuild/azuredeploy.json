@@ -873,7 +873,8 @@
 "name": "Deploy_DomainControllers",
   "dependsOn": [
         "Microsoft.Resources/deployments/Deploy_HubVirtualNetwork",
-        "Microsoft.Resources/deployments/Deploy_VMNICS"
+        "Microsoft.Resources/deployments/Deploy_VMNICS",
+        "Microsoft.Resources/deployments/Deploy_HubAvailabilitySets"
       ],
   "type": "Microsoft.Resources/deployments",
   "apiVersion": "2019-10-01",
@@ -890,6 +891,9 @@
         "hubUksDc01ServerNicName":{
             "value": "[variables('hubUksDc01ServerNicName')]"
         },
+      "hubAvs01Name": {
+        "value": "[variables('hubAvs01Name')]"
+      },
         "location": {
             "value": "[parameters('location')]"
         },

@@ -83,7 +83,7 @@
           ]
         },
         "availabilitySet":{
-          "id": "[resourceId('Microsoft.compute/availbilitySets',parameters('hubAvs01Name'))]"
+          "id": "[resourceId('Microsoft.Compute/availabilitySets',parameters('hubAvs01Name'))]"
         },
         "diagnosticsProfile": {
           "bootDiagnostics": {
