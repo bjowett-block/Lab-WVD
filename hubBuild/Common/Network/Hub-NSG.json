@@ -33,7 +33,16 @@
       },
       "hubSharedServicesSubnetRange": {
         "Type": "String"
-      }
+      },
+      "hubLawName":{
+        "type": "string"
+    },
+    "hubDsaId":{
+      "type": "string"
+    },
+    "hubLawId":{
+      "type": "string"
+    }
     },
 
     "variables": {},
@@ -295,6 +304,40 @@
 
                 ]
             }
-        }
+        },
+        {
+      "type": "Microsoft.Network/networkSecurityGroups/providers/diagnosticSettings",
+      "dependsOn": [
+          "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('hubNsgName'))]"
+          
+      ],
+      "name": "[concat(parameters('hubNsgName'), '/microsoft.insights/', parameters ('hubNsgName'),'ds')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "[parameters('hubLawName')]",
+        "storageAccountId": "[parameters('hubDsaId')]",
+        "workspaceId": "[parameters('hubLawId')]",
+        "logs": [
+          {
+            "category": "NetworkSecurityGroupEvent",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          },
+          {
+            "category": "NetworkSecurityGroupRuleCounter",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          }
+        ],
+        "metrics": []
+      }
+     
+    }
     ]
 }

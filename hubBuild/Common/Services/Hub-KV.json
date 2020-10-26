@@ -22,7 +22,16 @@
         },
     "tagCostCentreId": {
             "type": "string"
-        }
+        },
+    "hubLawName":{
+        "type": "string"
+    },
+    "hubDsaId":{
+      "type": "string"
+    },
+    "hubLawId":{
+      "type": "string"
+    }
   },
   "resources": [
     {
@@ -118,6 +127,42 @@
       "properties": {
         "value": "[parameters('windowsDefaultPassword')]"
       }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/providers/diagnosticSettings",
+      "dependsOn": [
+          "[resourceId('Microsoft.KeyVault/vaults', parameters('hubKvName'))]"
+          
+      ],
+      "name": "[concat(parameters('hubKvName'), '/microsoft.insights/', parameters ('hubKvName'),'ds')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "[parameters('hubLawName')]",
+        "storageAccountId": "[parameters('hubDsaId')]",
+        "workspaceId": "[parameters('hubLawId')]",
+        "logs": [
+          {
+            "category": "AuditEvent",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          }
+        ],
+        "metrics": [
+        {
+            "category": "AllMetrics",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          }
+
+        ]
+      }
+     
     }
   ]
 }

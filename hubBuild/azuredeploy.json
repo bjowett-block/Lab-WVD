@@ -239,9 +239,16 @@
         "tagCostCentreId":{
           "value": "[parameters('tagCostCentreId')]"
         },
-      "location": {
+        "location": {
             "value": "[parameters('location')]"
+          },
+        "hubDsaId":{
+            "value":"[variables('hubDsaId')]"
+          },
+          "hubLawId":{
+            "value":"[variables('hubLawId')]"
           }
+
 
     } 
     }
@@ -249,6 +256,10 @@
     {
       "type": "Microsoft.Resources/deployments",
       "name": "Deploy_HubNetworkSecurityGateway",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/Deploy_HubDiagnosticStorage",
+        "Microsoft.Resources/deployments/Deploy_LAWandAA"
+      ],
       "apiVersion": "2018-05-01",
       "properties": {
         "mode": "Incremental",
@@ -286,7 +297,16 @@
           },
           "hubSharedServicesSubnetRange": {
             "value": "[variables('hubSharedServicesSubnetRange')]"
-          }
+          },
+          "hubLawName":{
+            "value":"[variables('hubLawName')]"
+        },  
+        "hubLawId":{
+            "value":"[variables('hubLawId')]"
+        },
+       "hubDsaId":{
+            "value":"[variables('hubDsaId')]"
+        } 
         }
       }
     },
@@ -825,9 +845,20 @@
             "value": "[parameters('WindowsDefaultPassword')]"
         },
          "tagSalesOrderId":{
-            "value": "[parameters('tagSalesOrderId')]"        },
+            "value": "[parameters('tagSalesOrderId')]"        
+            },
         "tagCostCentreId": {
-            "value": "[parameters('tagCostCentreId')]"        }
+            "value": "[parameters('tagCostCentreId')]"        
+            },
+          "hubLawName":{
+            "value":"[variables('hubLawName')]"
+        },  
+        "hubLawId":{
+            "value":"[variables('hubLawId')]"
+        },
+       "hubDsaId":{
+            "value":"[variables('hubDsaId')]"
+        } 
         
 }
   }
