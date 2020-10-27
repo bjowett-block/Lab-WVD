@@ -197,7 +197,12 @@
     "hubUksDc02ServerName": "[concat(parameters('hubNamePrefix'),'hubadcvm02')]",
     "hubUksDc02VmIp": "[concat(parameters('lowerHubNetThirdOctet'),'.5')]",
     "hubUksDc02ServerNicName": "[concat(variables('hubUksDc02ServerName'),'-nic')]",
-
+    "hubUksCuvaVm01ServerName":"[concat(parameters('hubNamePrefix'),'hubcuvavm01')]",
+    "hubUksCuvaVm01VmIP": "[concat(parameters('upperHubNetThirdOctet'),'.5')]",
+    "hubUksCuvaVm01ServerNicName": "[concat (variables('hubUkscuvavm01ServerName'),'-nic')]",
+    "hubUksCuvaVm02ServerName":"[concat(parameters('hubNamePrefix'),'hubcuvavm02')]",
+    "hubUksCuvaVm02VmIP": "[concat(parameters('upperHubNetThirdOctet'),'.6')]",
+    "hubUksCuvaVm02ServerNicName": "[concat (variables('hubUkscuvavm02ServerName'),'-nic')]",
 
  
     "spokeDesktopIpGroup": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/ipGroups/customer-desktop-ipg')]",
@@ -289,6 +294,12 @@
           "hubUksDc02VmIp": {
             "value": "[variables('hubUksDc02VmIp')]"
           },
+          "hubUksCuvaVm01VmIP":{
+            "value":"[variables('hubUksCuvaVm01VmIP')]"
+        },
+        "hubUksCuvaVm02VmIP":{
+            "value":"[variables('hubUksCuvaVm02VmIP')]"
+        },
           "customerDesktopNetwork":{
             "value":"[parameters('customerDevUatDesktopNetwork')]"
           },
@@ -918,6 +929,12 @@
         "hubUksDc02ServerNicName":{
             "value": "[variables('hubUksDc02ServerNicName')]"
         },
+        "hubUksCuvaVm01ServerNicName":{
+            "value":"[variables('hubUksCuvaVm01ServerNicName')]"
+        },
+        "hubUksCuvaVm02ServerNicName":{
+            "value":"[variables('hubUksCuvaVm02ServerNicName')]"
+        },
         "location": {
             "value": "[parameters('location')]"
         },
@@ -929,6 +946,12 @@
         },
         "hubUksDc02VmIp": {
             "value": "[variables('hubUksDc02VmIp')]"
+        },
+        "hubUksCuvaVm01VmIP":{
+            "value":"[variables('hubUksCuvaVm01VmIP')]"
+        },
+        "hubUksCuvaVm02VmIP":{
+            "value":"[variables('hubUksCuvaVm02VmIP')]"
         },
          "hubVnetName": {
             "value": "[variables('hubVnetName')]"
