@@ -320,6 +320,9 @@
           "hubDmzSubnetRange": {
             "value": "[variables('hubDmzSubnetRange')]"
           },
+          "hubBastionSubnetRange":{
+            "value":"[variables('hubBastionSubnetRange')]"
+          },
           "hubSharedServicesSubnetRange": {
             "value": "[variables('hubSharedServicesSubnetRange')]"
           },

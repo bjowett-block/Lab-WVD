@@ -39,6 +39,9 @@
       "hubDmzSubnetRange": {
         "type": "string"
       },
+      "hubBastionSubnetRange": {
+           "Type": "String"
+      },
       "hubSharedServicesSubnetRange": {
         "Type": "String"
       },
@@ -550,19 +553,21 @@
               }
             },
             {
-              "name": "Restrict-DMZ-To-HSCN",
+              "name": "Restrict-HSCN",
               "properties": {
-                "description": "Restrict DMZ Proxy Service Access  to HSCN",
+                "description": "Restrict DMZ and bastion subnet access to HSCN",
                 "protocol": "*",
                 "sourcePortRange": "*",
                 "destinationPortRange": "*",
-                "sourceAddressPrefix": "[parameters('hubDmzSubnetRange')]",
                 "access": "Deny",
                 "priority": 100,
                 "direction": "Outbound",
                 "sourcePortRanges": [],
                 "destinationPortRanges": [],
-                "sourceAddressPrefixes": [],
+                "sourceAddressPrefixes": [
+                  "[parameters('hubDmzSubnetRange')]",
+                  "[parameters('hubBastionSubnetRange')]"
+                ],
                 "destinationAddressPrefixes": [
                   "10.207.116.0/22",
                   "10.207.112.0/22",
@@ -618,28 +623,29 @@
                 ]
               }
             },
-           
             {
-              "name": "SharedService-to-ADDS-TCP",
+              "name": "Allow-DMZ-to-AD-TCP",
               "properties": {
-                "description": "Allow Management Server  Access to Azure ADDS_TCP\n",
+                "description": "Allow DMZ Subnet to access Domain Controllers-TCP",
                 "protocol": "TCP",
                 "sourcePortRange": "*",
-                "sourceAddressPrefix": "[parameters('hubSharedServicesSubnetRange')]",
+                "sourceAddressPrefix": "[parameters('hubDmzSubnetRange')]",
                 "access": "Allow",
-                "priority": 105,
+                "priority": 110,
                 "direction": "Outbound",
                 "sourcePortRanges": [],
                 "destinationPortRanges": [
                   "53",
                   "88",
                   "135",
+                  "139",
+                  "389",
                   "445",
                   "464",
+                  "636",
                   "3268",
                   "3269",
-                  "49152-65535",
-                  "636"
+                  "49152-65535"
                 ],
                 "sourceAddressPrefixes": [],
                 "destinationAddressPrefixes": [
@@ -648,25 +654,88 @@
                 ]
               }
             },
-            {
-              "name": "SharedServices-to-ADDS-UDP",
+ {
+              "name": "Allow-DMZ-to-AD-UDP",
               "properties": {
-                "description": "Allow Management  Server  Access to Azure ADDS_UDP\n",
+                "description": "Allow DMZ Subnet to access Domain Controllers-UDP",
                 "protocol": "UDP",
                 "sourcePortRange": "*",
-                "sourceAddressPrefix": "[parameters('hubSharedServicesSubnetRange')]",
+                "sourceAddressPrefix": "[parameters('hubDmzSubnetRange')]",
                 "access": "Allow",
-                "priority": 106,
+                "priority": 111,
                 "direction": "Outbound",
                 "sourcePortRanges": [],
                 "destinationPortRanges": [
                   "53",
                   "88",
+                  "123",
                   "135",
                   "389",
                   "445",
                   "464",
+                  "636"
+
+                ],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": [
+                  "[parameters('hubUksDc01VmIp')]",
+                  "[parameters('hubUksDc02VmIp')]"
+                ]
+              }
+            },
+
+
+           
+            {
+              "name": "Allow-ManagementServer-to-AD-TCP",
+              "properties": {
+                "description": "Allow management Servers to access to Domain Controllers-TCP",
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "[parameters('hubMgmt01VmIp')]",
+                "access": "Allow",
+                "priority": 112,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "53",
+                  "88",
+                  "135",
+                  "139",
+                  "389",
+                  "445",
+                  "464",
+                  "636",
+                  "3268",
+                  "3269",
+                  "49152-65535"
+                ],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": [
+                  "[parameters('hubUksDc01VmIp')]",
+                  "[parameters('hubUksDc02VmIp')]"
+                ]
+              }
+            },
+            {
+              "name": "Allow-SharedServices-to-AD-UDP",
+              "properties": {
+                "description": "Allow management Servers to access to Domain Controllers-UDP",
+                "protocol": "UDP",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "[parameters('hubMgmt01VmIp')]",
+                "access": "Allow",
+                "priority": 113,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "53",
+                  "88",
                   "123",
+                  "135",
+                  "389",
+                  "445",
+                  "464",
                   "636"
                 ],
                 "sourceAddressPrefixes": [],
@@ -677,7 +746,7 @@
               }
             },
             {
-              "name": "Mgmt-to-Internet",
+              "name": "Allow-Mgmt-to-Internet",
               "properties": {
                 "description": "Allow Management Servers to Access internet\n",
                 "protocol": "TCP",
@@ -685,15 +754,120 @@
                 "sourceAddressPrefix": "[parameters('hubMgmt01VmIp')]",
                 "destinationAddressPrefix": "*",
                 "access": "Allow",
-                "priority": 201,
+                "priority": 200,
                 "direction": "Outbound",
                 "sourcePortRanges": [],
                 "destinationPortRanges": [
                   "80",
-                  "443"
+                  "443",
+                  "4465"
                 ],
                 "sourceAddressPrefixes": [],
                 "destinationAddressPrefixes": []
+              }
+            },
+             {
+              "name": "Allow-ICMP",
+              "properties": {
+                "description": "Allow Management Servers ping access\n",
+                "protocol": "ICMP",
+                "sourcePortRange": "*",
+                "DestinationPortRange": "*",
+                "sourceAddressPrefix": "[parameters('hubMgmt01VmIp')]",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 210,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+              }
+            },
+{
+              "name": "Allow-Bastion-to-AD-TCP",
+              "properties": {
+                "description": "Allow management Servers to access to Domain Controllers-TCP",
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "[parameters('hubBastionSubnetRange')]",
+                "access": "Allow",
+                "priority": 220,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "53",
+                  "88",
+                  "135",
+                  "139",
+                  "389",
+                  "445",
+                  "464",
+                  "636",
+                  "3268",
+                  "3269",
+                  "49152-65535"
+                ],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": [
+                  "[parameters('hubUksDc01VmIp')]",
+                  "[parameters('hubUksDc02VmIp')]"
+                ]
+              }
+            },
+            {
+              "name": "Allow-Bastion-to-AD-UDP",
+              "properties": {
+                "description": "Allow management Servers to access to Domain Controllers-UDP",
+                "protocol": "UDP",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "[parameters('hubBastionSubnetRange')]",
+                "access": "Allow",
+                "priority": 221,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "53",
+                  "88",
+                  "123",
+                  "135",
+                  "389",
+                  "445",
+                  "464",
+                  "636"
+                ],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": [
+                  "[parameters('hubUksDc01VmIp')]",
+                  "[parameters('hubUksDc02VmIp')]"
+                ]
+              }
+            },
+            {
+              "name": "Allow-Bastion-to-MgmtServer-RDP",
+              "properties": {
+                "description": "Allow Bastion Server to access to Management Server on RDP",
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "[parameters('hubBastionSubnetRange')]",
+                "access": "Allow",
+                "priority": 222,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "53",
+                  "88",
+                  "123",
+                  "135",
+                  "389",
+                  "445",
+                  "464",
+                  "636"
+                ],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefix": "[parameters('hubMgmt01VmIp')]"
+            
+                
               }
             },
             {
@@ -714,7 +888,6 @@
                 "destinationAddressPrefixes": []
               }
             }
-
                 ]
             }
         },
