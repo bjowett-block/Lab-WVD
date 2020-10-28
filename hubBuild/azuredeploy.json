@@ -587,7 +587,10 @@
       },
       "hubRt02Name":{
             "value": "[variables('hubRt02Name')]"
-      }
+      },
+      "loggingRetentionDays":{
+           "value":"[parameters('loggingRetentionDays')]"
+        } 
      
 
   }
@@ -697,7 +700,7 @@
     "tagCostCentreId": {
         "value": "[parameters('tagCostCentreId')]"
       },
-       "hubLawName":{
+      "hubLawName":{
             "value":"[variables('hubLawName')]"
         },  
         "hubLawId":{
@@ -705,6 +708,9 @@
         },
        "hubDsaId":{
             "value":"[variables('hubDsaId')]"
+        },
+        "loggingRetentionDays":{
+           "value":"[parameters('loggingRetentionDays')]"
         } 
 
 }
@@ -762,7 +768,10 @@
       },
         "hubDsaId":{
         "value":"[variables('hubDsaId')]"
-      }
+      },
+      "loggingRetentionDays":{
+           "value":"[parameters('loggingRetentionDays')]"
+        } 
 
 }
   }
@@ -908,7 +917,10 @@
         },
        "hubDsaId":{
             "value":"[variables('hubDsaId')]"
-        } 
+        },
+        "loggingRetentionDays":{
+           "value":"[parameters('loggingRetentionDays')]"
+        }  
         
 }
   }

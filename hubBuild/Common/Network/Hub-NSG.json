@@ -194,6 +194,37 @@
                 ]
               }
             },
+            {
+              "name": "[concat(parameters('hubMgmtServerName'),'-to-Active-Directory-Infra-TCP')]",
+              "properties": {
+                "description": "[concat('Allow',parameters('hubMgmtServerName'),'to connect to Active Directory services on TCP ports')]",
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "access": "Allow",
+                "priority": 401,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "53",
+                  "88",
+                  "135",
+                  "139",
+                  "389",
+                  "445",
+                  "464",
+                  "636",
+                  "3268",
+                  "3269",
+                  "49152-65535"
+                ],
+                "sourceAddressPrefix":"[parameters('hubMgmt01VmIp')]",
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": [
+                  "[parameters('hubUksDc01VmIp')]",
+                  "[parameters('hubUksDc02VmIp')]"
+                ]
+              }
+            },
 
             {
               "name": "Deny-All",
