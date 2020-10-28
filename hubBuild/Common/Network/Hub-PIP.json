@@ -28,7 +28,10 @@
     },
     "hubLawId":{
       "type": "string"
-    }
+    },
+    "loggingRetentionDays": {
+        "type": "int"
+      }
   },
   "variables":{},
   "resources": [
@@ -118,7 +121,7 @@
             "category": "DDoSProtectionNotifications",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+               "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           },
@@ -126,7 +129,7 @@
             "category": "DDoSMitigationFlowLogs",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+               "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           },
@@ -134,7 +137,7 @@
             "category": "DDoSMitigationReports",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           }
@@ -144,7 +147,7 @@
             "category": "AllMetrics",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+               "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           }
@@ -169,7 +172,7 @@
             "category": "DDoSProtectionNotifications",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+               "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           },
@@ -177,7 +180,7 @@
             "category": "DDoSMitigationFlowLogs",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+               "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           },
@@ -185,7 +188,7 @@
             "category": "DDoSMitigationReports",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+               "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           }
@@ -195,7 +198,7 @@
             "category": "AllMetrics",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+               "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           }
@@ -220,7 +223,7 @@
             "category": "DDoSProtectionNotifications",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+               "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           },
@@ -228,7 +231,7 @@
             "category": "DDoSMitigationFlowLogs",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           },
@@ -236,7 +239,7 @@
             "category": "DDoSMitigationReports",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+               "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           }
@@ -246,7 +249,7 @@
             "category": "AllMetrics",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           }

@@ -22,7 +22,10 @@
     },
     "hubLawId":{
       "type": "string"
-    }
+    },
+    "loggingRetentionDays": {
+        "type": "int"
+      }
   },
 "variables":{
 "hubLawSku" : "pergb2018",
@@ -161,7 +164,7 @@
             "category": "JobLogs",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           },
@@ -169,7 +172,7 @@
             "category": "JobStreams",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           },
@@ -177,7 +180,7 @@
             "category": "DscNodeStatus",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           }
@@ -187,7 +190,7 @@
             "category": "AllMetrics",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           }
@@ -212,7 +215,7 @@
             "category": "Audit",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           }
@@ -222,7 +225,7 @@
             "category": "AllMetrics",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+             "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           }

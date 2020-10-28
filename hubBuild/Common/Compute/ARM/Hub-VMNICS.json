@@ -20,6 +20,9 @@
     "hubUksCuvaVm02ServerNicName":{
       "type": "string"
     },
+      "hubUksAdcServerNicName":{
+            "type": "string"
+        },
      "location":{
       "type": "string"
     
@@ -42,6 +45,9 @@
     "hubUksCuvaVm02VmIP":{
       "type": "string"
     },
+    "hubUksAdcVmIp":{
+        "type": "string"
+        },
     "hubVnetName": {
       "type": "string"
     },
@@ -177,6 +183,43 @@
         "enableIPForwarding": false
       }
     },
+{
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2019-04-01",
+      "name": "[parameters('hubUksAdcServerNicName')]",
+      "location": "[parameters('location')]",
+      "tags": {
+              "Owner": "Block Solutions",
+              "Department": "Workspace and Cloud",
+              "Environment": "Production",
+              "Location": "[parameters('location')]",
+              "CostCentre": "[parameters('tagCostCentreId')]",
+              "SalesOrderId" : "[parameters('tagSalesOrderId')]"
+            },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "[parameters('hubUksAdcVmIp')]",
+              "privateIPAllocationMethod": "Static",
+              "subnet": {
+             
+                "id": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/virtualNetworks/',parameters('hubVnetName'),'/subnets/DomainServices')]"
+              },
+              "primary": true,
+              "privateIPAddressVersion": "IPv4"
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableAcceleratedNetworking": false,
+        "enableIPForwarding": false
+      }
+    },
+
     {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2019-04-01",
@@ -282,6 +325,28 @@
           "[resourceId('Microsoft.Network/networkInterfaces',parameters('hubUksDc02ServerNicName'))]"
       ],
       "name": "[concat(parameters('hubUksDc02ServerNicName'), '/microsoft.insights/', parameters ('hubUksDc02ServerNicName'),'ds')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "[parameters('hubLawName')]",
+        "storageAccountId": "[parameters('hubDsaId')]",
+        "workspaceId": "[parameters('hubLawId')]",
+        "logs": [],
+        "metrics": [{
+            "category": "AllMetrics",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": "[parameters('loggingRetentionDays')]",
+              "enabled": false
+            }
+          }]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces/providers/diagnosticSettings",
+      "dependsOn": [
+          "[resourceId('Microsoft.Network/networkInterfaces',parameters('hubUksAdcServerNicName'))]"
+      ],
+      "name": "[concat(parameters('hubUksAdcServerNicName'), '/microsoft.insights/', parameters ('hubUksAdcServerNicName'),'ds')]",
       "apiVersion": "2017-05-01-preview",
       "properties": {
         "name": "[parameters('hubLawName')]",

@@ -259,7 +259,10 @@
           },
           "hubLawId":{
             "value":"[variables('hubLawId')]"
-          }
+          },
+          "loggingRetentionDays":{
+           "value":"[parameters('loggingRetentionDays')]"
+        }
 
 
     } 
@@ -431,7 +434,10 @@
       },
       "tagCostCentreId": {
         "value": "[parameters('tagCostCentreId')]"
-      }
+      },
+      "loggingRetentionDays":{
+           "value":"[parameters('loggingRetentionDays')]"
+        }
     }
   }
 },
@@ -477,7 +483,10 @@
       },
         "hubDsaId":{
         "value":"[variables('hubDsaId')]"
-      }
+      },
+      "loggingRetentionDays":{
+           "value":"[parameters('loggingRetentionDays')]"
+        }
     
 
     }
@@ -973,6 +982,9 @@
         "hubUksCuvaVm02ServerNicName":{
             "value":"[variables('hubUksCuvaVm02ServerNicName')]"
         },
+         "hubUksAdcServerNicName":{
+            "value":"[variables('hubUksAdcServerNicName')]"
+        },
         "location": {
             "value": "[parameters('location')]"
         },
@@ -984,6 +996,9 @@
         },
         "hubUksDc02VmIp": {
             "value": "[variables('hubUksDc02VmIp')]"
+        },
+        "hubUksAdcVmIp":{
+            "value":"[variables('hubUksAdcVmIp')]"
         },
         "hubUksCuvaVm01VmIP":{
             "value":"[variables('hubUksCuvaVm01VmIP')]"

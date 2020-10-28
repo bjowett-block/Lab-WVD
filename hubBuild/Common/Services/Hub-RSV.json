@@ -24,7 +24,10 @@
         },
         "tagCostCentreId": {
             "type": "string"
-        }
+        },
+         "loggingRetentionDays": {
+        "type": "int"
+      }
 
     },
     "resources": [
@@ -64,7 +67,7 @@
             "category": "AzureBackupReport",
             "enabled": true,
             "retentionPolicy": {
-              "days": 365,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": false
             }
           }
