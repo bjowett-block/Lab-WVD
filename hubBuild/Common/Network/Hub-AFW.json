@@ -58,7 +58,10 @@
     },
      "hubDsaId":{
       "type": "string"
-    }
+    },
+    "loggingRetentionDays": {
+        "type": "int"
+      }
 
 
 
@@ -844,7 +847,7 @@
             "category": "AzureFirewallApplicationRule",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           },
@@ -852,7 +855,7 @@
             "category": "AzureFirewallNetworkRule",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+               "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           },
@@ -860,7 +863,7 @@
             "category": "AzureFirewallDnsProxy",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+               "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           }
@@ -870,8 +873,8 @@
             "category": "AllMetrics",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
-              "enabled": false
+               "days": "[parameters('loggingRetentionDays')]",
+              "enabled": true
             }
           }]
       }

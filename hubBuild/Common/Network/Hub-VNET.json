@@ -49,7 +49,19 @@
     },
     "hubRt02Name":{
       "type": "string"
-    }
+    },
+     "hubLawName":{
+        "type": "string"
+      },
+      "hubDsaId":{
+        "type": "string"
+      },
+      "hubLawId":{
+        "type": "string"
+      },
+    "loggingRetentionDays": {
+        "type": "int"
+      }
 
 
   },
@@ -174,7 +186,42 @@
             "enableDdosProtection": false,
             "enableVmProtection": false
           }
-        }
+        },
+        {
+      "type": "Microsoft.Network/virtualNetworks/providers/diagnosticSettings",
+      "dependsOn": [
+          "[resourceId('Microsoft.Network/virtualNetworks', parameters('hubVnetName'))]"
+          
+      ],
+      "name": "[concat(parameters('hubVnetName'), '/microsoft.insights/', parameters ('hubVnetName'),'ds')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "[parameters('hubLawName')]",
+        "storageAccountId": "[parameters('hubDsaId')]",
+        "workspaceId": "[parameters('hubLawId')]",
+        "logs": [
+          {
+            "category": "VMProtectionAlerts",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": "[parameters('loggingRetentionDays')]",
+              "enabled": true
+            }
+          }
+        ],
+        "metrics": [
+           {
+            "category": "AllMetrics",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": "[parameters('loggingRetentionDays')]",
+              "enabled": true
+            }
+          }
+        ]
+      }
+     
+    }
       
     ]
 }

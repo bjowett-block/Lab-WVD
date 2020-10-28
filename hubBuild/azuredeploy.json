@@ -597,7 +597,15 @@
       },
       "loggingRetentionDays":{
            "value":"[parameters('loggingRetentionDays')]"
-        } 
+        },
+        "hubLawName":{
+            "value":"[variables('hubLawName')]"
+        },  
+          "hubLawId":{
+            "value":"[variables('hubLawId')]"
+        },
+          "hubDsaId":{
+            "value":"[variables('hubDsaId')]"
      
 
   }
