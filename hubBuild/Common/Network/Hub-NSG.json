@@ -175,7 +175,7 @@
               }
             },
             {
-              "name": "[concat(parameters('hubMgmtServerName'),'to Active-Directory-Infra-RDP ')]",
+              "name": "[concat(parameters('hubMgmtServerName'),'-to-Active-Directory-Infra-RDP ')]",
               "properties": {
                 "description": "[concat('Allow management of Domain Controllers Servers from',parameters('hubMgmtServerName'))]",
                 "protocol": "TCP",
@@ -286,7 +286,7 @@
             {
               "name": "SharedService-to-ADDS-TCP",
               "properties": {
-                "description": "Allow Management  Server  Access to Azure ADDS_TCP\n",
+                "description": "Allow Management Server  Access to Azure ADDS_TCP\n",
                 "protocol": "TCP",
                 "sourcePortRange": "*",
                 "sourceAddressPrefix": "[parameters('hubSharedServicesSubnetRange')]",
