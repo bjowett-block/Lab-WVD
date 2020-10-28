@@ -31,7 +31,10 @@
     },
     "hubLawId":{
       "type": "string"
-    }
+    },
+    "loggingRetentionDays": {
+        "type": "int"
+      }
   },
   "resources": [
     {
@@ -145,7 +148,7 @@
             "category": "AuditEvent",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+               "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           }
@@ -155,7 +158,7 @@
             "category": "AllMetrics",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+               "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           }

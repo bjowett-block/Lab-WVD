@@ -35,7 +35,10 @@
         },
         "hubLawId":{
             "type": "string"
-    }
+    },
+    "loggingRetentionDays": {
+        "type": "int"
+      }
     },
     "variables": {},
     "resources": [
@@ -107,7 +110,7 @@
             "category": "GatewayDiagnosticLog",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           },
@@ -115,7 +118,7 @@
             "category": "TunnelDiagnosticLog",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+             "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           },
@@ -123,7 +126,7 @@
             "category": "RouteDiagnosticLog",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+             "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           },
@@ -131,7 +134,7 @@
             "category": "IKEDiagnosticLog",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           },
@@ -139,7 +142,7 @@
             "category": "P2SDiagnosticLog",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+             "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           }
@@ -149,7 +152,7 @@
             "category": "AllMetrics",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           }
