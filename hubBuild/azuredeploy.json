@@ -201,7 +201,7 @@
     "hubUksDc02ServerName": "[concat(parameters('hubNamePrefix'),'hubdcvm02')]",
     "hubUksDc02VmIp": "[concat(parameters('lowerHubNetThirdOctet'),'.5')]",
     "hubUksDc02ServerNicName": "[concat(variables('hubUksDc02ServerName'),'-nic')]",
-    "hubUksAdcServerNicName": "[concat(parameters('hubNamePrefix'),'hubmgmtvm01-nic')]",
+    "hubUksAdcServerNicName": "[concat(variables('hubUksAdcServerName'),'-nic')]",
     "hubUksAdcServerName": "[concat(parameters('hubNamePrefix'),'hubadcvm01')]",
     "hubUksAdcVmIp": "[concat(parameters('lowerHubNetThirdOctet'),'.6')]",
     "hubUksCuvaVm01ServerName":"[concat(parameters('hubNamePrefix'),'hubcuvavm01')]",
