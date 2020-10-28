@@ -585,6 +585,9 @@
       "hubAzureFirewallSubnetRange": {
         "value":"[variables('hubAzureFirewallSubnetRange')]"
       },
+      "hubBastionSubnetRange":{
+        "value":"[variables('hubBastionSubnetRange')]"
+      },
       "hubDc01VmIp": {
         "value":"[variables('hubUksDc01VmIp')]"
       },

@@ -54,7 +54,7 @@
         "enabledForDeployment": "True",
         "enabledForDiskEncryption": "True",
         "enabledForTemplateDeployment": "True",
-        "enableSoftDelete": "True",
+        "enableSoftDelete": "False",
         "tenantId": "[parameters('hubTenantId')]",
         "accessPolicies": [
           {

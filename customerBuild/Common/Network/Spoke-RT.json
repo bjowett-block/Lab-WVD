@@ -1,0 +1,13 @@
+{
+    "type": "Microsoft.Network/routeTables/routes",
+    "apiVersion": "2020-04-01",
+    "name": "[concat(variables('customerRtName'), '/Default-Gateway')]",
+    "dependsOn": [
+      "[resourceId('Microsoft.Network/routeTables', variables('customerRtName'))]"
+    ],
+    "properties": {
+      "addressPrefix": "0.0.0.0/0",
+      "nextHopType": "VirtualAppliance",
+      "nextHopIpAddress": "172.18.0.132"
+    }
+  },

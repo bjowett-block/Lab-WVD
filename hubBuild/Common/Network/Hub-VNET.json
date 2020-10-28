@@ -25,6 +25,9 @@
     "hubDmzSubnetRange": {
       "type": "string"
     },
+    "hubBastionSubnetRange": {
+      "type": "string"
+    },
     "hubAzureFirewallSubnetRange": {
       "type": "string"
     },
@@ -97,6 +100,21 @@
                 "name": "DomainServices",
                 "properties": {
                   "addressPrefix": "[parameters('hubDomainServicesSubnetRange')]",
+                  "routeTable":{
+                    "id":"[resourceId('Microsoft.Network/routeTables',parameters('hubRt01Name'))]"
+                  },
+                  "delegations": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled",
+                  "networkSecurityGroup":{
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups',parameters('hubNsgName'))]"
+                  }
+                }
+              },
+              {
+                "name": "BastionSubnet",
+                "properties": {
+                  "addressPrefix": "[parameters('hubBastionSubnetRange')]",
                   "routeTable":{
                     "id":"[resourceId('Microsoft.Network/routeTables',parameters('hubRt01Name'))]"
                   },

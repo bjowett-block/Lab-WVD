@@ -1,0 +1,187 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "variables": {},
+    "resources": [
+ {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2019-06-01",
+      "name": "[variables('customerSa01Name')]",
+      "location": "uksouth",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerVnetName'), variables('customerDesktopSubnetName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerVnetName'), variables('customerInfrastructureSubnetName'))]"
+      ],
+      "tags": {
+        "Owner": "Block Solutions",
+        "Customer Name": "[parameters('tagCustomerName')]",
+        "Department": "Workspace and Cloud",
+        "Environment": "Production",
+        "Location": "UK South",
+        "Cost Centre": "PCW",
+        "Sales Order ID": "[parameters('tagSalesOrderId')]"
+      },
+      "sku": {
+        "name": "Premium_LRS",
+        "tier": "Premium"
+      },
+      "kind": "FileStorage",
+      "properties": {
+        "largeFilesShareState": "Enabled",
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [
+            {
+              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerVnetName'), variables('customerDesktopSubnetName'))]",
+              "action": "Allow",
+              "state": "Succeeded"
+            },
+            {
+              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerVnetName'), variables('customerInfrastructureSubnetName'))]",
+              "action": "Allow",
+              "state": "Succeeded"
+            }
+          ],
+          "ipRules": [],
+          "defaultAction": "Deny"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
+        "accessTier": "Hot"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2019-06-01",
+      "name": "[variables('customerSa02Name')]",
+      "location": "uksouth",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerVnetName'), variables('customerDesktopSubnetName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerVnetName'), variables('customerInfrastructureSubnetName'))]"
+      ],
+      "tags": {
+        "Owner": "Block Solutions",
+        "Customer Name": "[parameters('tagCustomerName')]",
+        "Department": "Workspace and Cloud",
+        "Environment": "Production",
+        "Location": "UK South",
+        "Cost Centre": "PCW",
+        "Sales Order ID": "[parameters('tagSalesOrderId')]"
+      },
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [
+            {
+              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerVnetName'), variables('customerDesktopSubnetName'))]",
+              "action": "Allow",
+              "state": "Succeeded"
+            },
+            {
+              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerVnetName'), variables('customerInfrastructureSubnetName'))]",
+              "action": "Allow",
+              "state": "Succeeded"
+            }
+          ],
+          "ipRules": [],
+          "defaultAction": "Deny"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
+        "accessTier": "Hot"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2019-06-01",
+      "name": "[variables('customerSa03Name')]",
+      "location": "uksouth",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerVnetName'), variables('customerDesktopSubnetName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerVnetName'), variables('customerInfrastructureSubnetName'))]"
+      ],
+      "tags": {
+        "Owner": "Block Solutions",
+        "Customer Name": "[parameters('tagCustomerName')]",
+        "Department": "Workspace and Cloud",
+        "Environment": "Production",
+        "Location": "UK South",
+        "Cost Centre": "PCW",
+        "Sales Order ID": "[parameters('tagSalesOrderId')]"
+      },
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [
+            {
+              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerVnetName'), variables('customerDesktopSubnetName'))]",
+              "action": "Allow",
+              "state": "Succeeded"
+            },
+            {
+              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerVnetName'), variables('customerInfrastructureSubnetName'))]",
+              "action": "Allow",
+              "state": "Succeeded"
+            }
+          ],
+          "ipRules": [],
+          "defaultAction": "Deny"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
+        "accessTier": "Hot"
+      }
+    },
+    {
+
+
+    ],
+    "outputs": {}
+}
