@@ -1057,11 +1057,17 @@
         "hubUksDc02ServerName":{
             "value": "[variables('hubUksDc02ServerName')]"
         },
+        "hubUksAdcServerName":{
+            "value": "[variables('hubUksAdcServerName')]"
+        },
         "hubUksDc01ServerNicName":{
             "value": "[variables('hubUksDc01ServerNicName')]"
         },
          "hubUksDc02ServerNicName":{
             "value": "[variables('hubUksDc02ServerNicName')]"
+        },
+        "hubUksAdcServerNicName":{
+            "value": "[variables('hubUksAdcServerNicName')]"
         },
       "hubAvs01Name": {
         "value": "[variables('hubAvs01Name')]"
