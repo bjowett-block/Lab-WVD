@@ -58,7 +58,10 @@
           },
           "WindowsDefaultPassword":{
             "value": "Password123!"
-          } 
+          }, 
+          "loggingRetentionDays":{
+            "value": 30
+          }
         
         }
     }

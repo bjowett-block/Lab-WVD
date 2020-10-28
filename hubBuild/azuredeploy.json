@@ -82,7 +82,11 @@
     },
     "WindowsDefaultPassword":{
       "type": "securestring"
+    },
+    "loggingRetentionDays":{
+      "type": "int"
     }
+      
 
 
   },
@@ -296,10 +300,10 @@
           },
           "hubUksCuvaVm01VmIP":{
             "value":"[variables('hubUksCuvaVm01VmIP')]"
-        },
-        "hubUksCuvaVm02VmIP":{
+          },
+          "hubUksCuvaVm02VmIP":{
             "value":"[variables('hubUksCuvaVm02VmIP')]"
-        },
+          },
           "customerDesktopNetwork":{
             "value":"[parameters('customerDevUatDesktopNetwork')]"
           },
@@ -312,12 +316,15 @@
           "hubLawName":{
             "value":"[variables('hubLawName')]"
         },  
-        "hubLawId":{
+          "hubLawId":{
             "value":"[variables('hubLawId')]"
         },
-       "hubDsaId":{
+          "hubDsaId":{
             "value":"[variables('hubDsaId')]"
-        } 
+        },
+         "loggingRetentionDays":{
+           "value":"[parameters('loggingRetentionDays')]"
+         }
         }
       }
     },

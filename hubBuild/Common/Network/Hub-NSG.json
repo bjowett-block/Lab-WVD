@@ -5,8 +5,7 @@
         
     "hubNsgName": {
         "type": "String"
-    },
-
+      },
     "location": {
         "type": "string"
       },
@@ -25,10 +24,16 @@
       "hubUksDc02VmIp": {
         "type": "string"
       },
+      "hubUksCuvaVm01VmIP":{
+      "type": "string"
+      },
+      "hubUksCuvaVm02VmIP":{
+      "type": "string"
+      },
       "customerDesktopNetwork" : {
         "type": "string"
       },
-        "hubDmzSubnetRange": {
+      "hubDmzSubnetRange": {
         "type": "string"
       },
       "hubSharedServicesSubnetRange": {
@@ -46,18 +51,10 @@
     "hubMgmtServerName": {
       "type": "string"
     },
-    "hubUksCuvaVm01ServerName":{
-      "type": "string"
-    },
-    "hubUksCuvaVm02ServerName":{
-      "type": "string"
-    },
-    "hubUksCuvaVm01VmIP":{
-      "type": "string"
-    },
-    "hubUksCuvaVm02VmIP":{
-      "type": "string"
+    "loggingRetentionDays": {
+      "type": "int"
     }
+    
 
 
     },
@@ -402,7 +399,7 @@
             "category": "NetworkSecurityGroupEvent",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           },
@@ -410,7 +407,7 @@
             "category": "NetworkSecurityGroupRuleCounter",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": true
             }
           }
