@@ -24,6 +24,9 @@
       "hubUksDc02VmIp": {
         "type": "string"
       },
+      "hubUksAdcVmIp": {
+        "type": "string"
+      },
       "hubUksCuvaVm01VmIP":{
       "type": "string"
       },
@@ -225,6 +228,308 @@
                 ]
               }
             },
+            {
+              "name": "[concat(parameters('hubMgmtServerName'),'-to-Active-Directory-Infra-UDP')]",
+              "properties": {
+                "description": "[concat('Allow',parameters('hubMgmtServerName'),'to connect to Active Directory services on UDP ports')]",
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "access": "Allow",
+                "priority": 402,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "53",
+                  "88",
+                  "123",
+                  "135",
+                  "445",
+                  "464",
+                  "636"
+                  
+                ],
+                "sourceAddressPrefix":"[parameters('hubMgmt01VmIp')]",
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": [
+                  "[parameters('hubUksDc01VmIp')]",
+                  "[parameters('hubUksDc02VmIp')]"
+                ]
+              }
+            },
+             {
+              "name": "Customer-Spoke-to-Active-Directory-Infra-TCP",
+              "properties": {
+                "description": "Allow Customer Spokes to connect to Active Directory services on TCP ports",
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "access": "Allow",
+                "priority": 403,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "53",
+                  "88",
+                  "135",
+                  "139",
+                  "389",
+                  "445",
+                  "464",
+                  "636",
+                  "3268",
+                  "3269",
+                  "49152-65535"
+                ],
+                "sourceAddressPrefix": "[parameters('customerDesktopNetwork')]",
+                "destinationAddressPrefixes": [
+                  "[parameters('hubUksDc01VmIp')]",
+                  "[parameters('hubUksDc02VmIp')]"
+                ]
+              }
+            },
+            {
+              "name": "Customer-Spoke-to-Active-Directory-Infra-UDP",
+              "properties": {
+                "description": "Allow Customer Spokes to connect to Active Directory services on UDP ports",
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "access": "Allow",
+                "priority": 404,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "53",
+                  "88",
+                  "123",
+                  "135",
+                  "445",
+                  "464",
+                  "636"
+                  
+                ],
+                "sourceAddressPrefix": "[parameters('customerDesktopNetwork')]",
+                "destinationAddressPrefixes": [
+                  "[parameters('hubUksDc01VmIp')]",
+                  "[parameters('hubUksDc02VmIp')]"
+                ]
+              }
+            },
+             {
+              "name": "AD-to-AD-TCP",
+              "properties": {
+                "description": "Allow Domain Controllers to internally communicate on TCP ports",
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "access": "Allow",
+                "priority": 405,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "53",
+                  "88",
+                  "135",
+                  "139",
+                  "389",
+                  "445",
+                  "464",
+                  "636",
+                  "3268",
+                  "3269",
+                  "49152-65535"
+                ],
+                "sourceAddressPrefixes": [
+                  "[parameters('hubUksDc01VmIp')]",
+                  "[parameters('hubUksDc02VmIp')]"],
+                "destinationAddressPrefixes": [
+                  "[parameters('hubUksDc01VmIp')]",
+                  "[parameters('hubUksDc02VmIp')]"
+                ]
+              }
+            },
+            {
+              "name": "AD-to-AD-UDP",
+              "properties": {
+                "description": "Allow Domain Controllers to internally communicate on TCP ports",
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "access": "Allow",
+                "priority": 406,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "53",
+                  "88",
+                  "123",
+                  "135",
+                  "445",
+                  "464",
+                  "636"
+                  
+                ],
+                "sourceAddressPrefixes": [
+                  "[parameters('hubUksDc01VmIp')]",
+                  "[parameters('hubUksDc02VmIp')]"
+                  ],
+                "destinationAddressPrefixes": [
+                  "[parameters('hubUksDc01VmIp')]",
+                  "[parameters('hubUksDc02VmIp')]"
+                ]
+              }
+            },
+            {
+              "name": "ADC-to-AD-TCP",
+              "properties": {
+                "description": "Allow Azure AD Connect to communicate with Domain controllers on TCP ports",
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "access": "Allow",
+                "priority": 407,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "53",
+                  "88",
+                  "135",
+                  "139",
+                  "389",
+                  "445",
+                  "464",
+                  "636",
+                  "3268",
+                  "3269",
+                  "5985",
+                  "9389",
+                  "49152-65535"
+                ],
+                "sourceAddressPrefix": "[parameters('hubUksAdcVmIp')]",
+                "destinationAddressPrefixes": [
+                  "[parameters('hubUksDc01VmIp')]",
+                  "[parameters('hubUksDc02VmIp')]"
+                ]
+              }
+            },
+            {
+              "name": "ADC-to-AD-UDP",
+              "properties": {
+                "description": "Allow Azure AD Connect to communicate with Domain controllers on UDP ports",
+                "protocol": "UDP",
+                "sourcePortRange": "*",
+                "access": "Allow",
+                "priority": 408,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "53",
+                  "88",
+                  "123",
+                  "135",
+                  "445",
+                  "464",
+                  "636",
+                  "3268",
+                  "3269"
+                ],
+                "sourceAddressPrefix": "[parameters('hubUksAdcVmIp')]",
+                "destinationAddressPrefixes": [
+                  "[parameters('hubUksDc01VmIp')]",
+                  "[parameters('hubUksDc02VmIp')]"
+                ]
+              }
+            },
+            {
+              "name": "Umbrella-to-AD-DNS",
+              "properties": {
+                "description": "Allow Umbrella to communicate with Domain Controllers DNS",
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "access": "Allow",
+                "priority": 409,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRange": "53",
+                "sourceAddressPrefixes": [
+                   "[parameters('hubUksCuvaVm01VmIP')]",
+                  "[parameters('hubUksCuvaVm02VmIP')]"
+                ],
+                "destinationAddressPrefixes": [
+                  "[parameters('hubUksDc01VmIp')]",
+                  "[parameters('hubUksDc02VmIp')]"
+                ]
+              }
+            },
+             {
+              "name": "ADC-to-Umbrella",
+              "properties": {
+                "description": "Allow Azure AD Connect to communicate with Umbrella Servers on TCP ports",
+                "protocol": "tcp",
+                "sourcePortRange": "*",
+                "access": "Allow",
+                "priority": 410,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "80",
+                  "443",
+                  "8080"
+                ],
+                "sourceAddressPrefix": "[parameters('hubUksAdcVmIp')]",
+                "destinationAddressPrefixes": [
+                  "[parameters('hubUksCuvaVm01VmIP')]",
+                  "[parameters('hubUksCuvaVm02VmIP')]"
+                ]
+              }
+            },
+             {
+              "name": "AD-to-ADC",
+              "properties": {
+                "description": "Allow Domain Controllers to communicate with Azure AD Connect on TCP ports",
+                "protocol": "tcp",
+                "sourcePortRange": "*",
+                "access": "Allow",
+                "priority": 411,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [
+                  "80",
+                  "135",
+                  "443",
+                  "49152-65535"
+                ],
+                "sourceAddressPrefixes":[ 
+                "[parameters('hubUksDc01VmIp')]",
+                "[parameters('hubUksDc02VmIp')]"
+                ],
+                "destinationAddressPrefix": 
+                  "[parameters('hubUksAdcVmIp')]"
+           
+              
+              }
+            },
+             {
+              "name": "AD-to-Umbrella-DNS",
+              "properties": {
+                "description": "Allow Domain Controllers to communicate with Umbrella DNS",
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "access": "Allow",
+                "priority": 411,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRange": "53",
+            
+                
+                "sourceAddressPrefixes":[ 
+                "[parameters('hubUksDc01VmIp')]",
+                "[parameters('hubUksDc02VmIp')]"
+                ],
+                "destinationAddressPrefixes":[ 
+                  "[parameters('hubUksCuvaVm01VmIP')]",
+                  "[parameters('hubUksCuvaVm02VmIP')]"
+                ]
+              
+              }
+            },
+            
+
 
             {
               "name": "Deny-All",

@@ -195,12 +195,15 @@
     "hubVngPeerIpAddress" : "[concat(parameters('lowerHubNetThirdOctet'),'.62')]",
     "hubMgmt01VmIp": "[concat(parameters('upperHubNetThirdOctet'),'.4')]",
     "hubMgmtServerNicName": "[concat(parameters('hubNamePrefix'),'hubmgmtvm01-nic')]",
-    "hubUksDc01ServerName": "[concat(parameters('hubNamePrefix'),'hubadcvm01')]",
+    "hubUksDc01ServerName": "[concat(parameters('hubNamePrefix'),'hubdcvm01')]",
     "hubUksDc01VmIp": "[concat(parameters('lowerHubNetThirdOctet'),'.4')]",
     "hubUksDc01ServerNicName": "[concat (variables('hubUksDc01ServerName'),'-nic')]",
-    "hubUksDc02ServerName": "[concat(parameters('hubNamePrefix'),'hubadcvm02')]",
+    "hubUksDc02ServerName": "[concat(parameters('hubNamePrefix'),'hubdcvm02')]",
     "hubUksDc02VmIp": "[concat(parameters('lowerHubNetThirdOctet'),'.5')]",
     "hubUksDc02ServerNicName": "[concat(variables('hubUksDc02ServerName'),'-nic')]",
+    "hubUksAdcServerNicName": "[concat(parameters('hubNamePrefix'),'hubmgmtvm01-nic')]",
+    "hubUksAdcServerName": "[concat(parameters('hubNamePrefix'),'hubadcvm01')]",
+    "hubUksAdcVmIp": "[concat(parameters('lowerHubNetThirdOctet'),'.6')]",
     "hubUksCuvaVm01ServerName":"[concat(parameters('hubNamePrefix'),'hubcuvavm01')]",
     "hubUksCuvaVm01VmIP": "[concat(parameters('upperHubNetThirdOctet'),'.5')]",
     "hubUksCuvaVm01ServerNicName": "[concat (variables('hubUkscuvavm01ServerName'),'-nic')]",
@@ -298,6 +301,10 @@
           "hubUksDc02VmIp": {
             "value": "[variables('hubUksDc02VmIp')]"
           },
+          "hubUksAdcVmIp":{
+            "value":"[variables('hubUksAdcVmIp')]"
+          },
+          
           "hubUksCuvaVm01VmIP":{
             "value":"[variables('hubUksCuvaVm01VmIP')]"
           },
