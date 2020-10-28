@@ -322,6 +322,9 @@
           "hubDsaId":{
             "value":"[variables('hubDsaId')]"
         },
+          "hubMgmtServerName":{
+            "value":"[variables('hubMgmtServerName')]"
+        },
          "loggingRetentionDays":{
            "value":"[parameters('loggingRetentionDays')]"
          }

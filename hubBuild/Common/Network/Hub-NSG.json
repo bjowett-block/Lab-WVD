@@ -41,19 +41,19 @@
       },
       "hubLawName":{
         "type": "string"
-    },
-    "hubDsaId":{
-      "type": "string"
-    },
-    "hubLawId":{
-      "type": "string"
-    },
-    "hubMgmtServerName": {
-      "type": "string"
-    },
-    "loggingRetentionDays": {
-      "type": "int"
-    }
+      },
+      "hubDsaId":{
+        "type": "string"
+      },
+      "hubLawId":{
+        "type": "string"
+      },
+      "hubMgmtServerName": {
+        "type": "string"
+      },
+      "loggingRetentionDays": {
+        "type": "int"
+      }
     
 
 
