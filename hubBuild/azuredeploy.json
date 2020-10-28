@@ -980,6 +980,9 @@
         },
        "hubDsaId":{
             "value":"[variables('hubDsaId')]"
+        },
+        "loggingRetentionDays":{
+           "value":"[parameters('loggingRetentionDays')]"
         } 
 }  
 }

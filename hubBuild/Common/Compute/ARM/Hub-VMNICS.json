@@ -60,7 +60,10 @@
     },
     "hubDsaId":{
       "type": "string"
-    }
+    },
+    "loggingRetentionDays": {
+        "type": "int"
+      }
 
 },
   "variables": {
@@ -213,7 +216,7 @@
      {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2019-04-01",
-      "name": "[parameters('hubUksCuvaVm01ServerNicName')]",
+      "name": "[parameters('hubUksCuvaVm02ServerNicName')]",
       "location": "[parameters('location')]",
       "tags": {
               "Owner": "Block Solutions",
@@ -266,7 +269,7 @@
             "category": "AllMetrics",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": false
             }
           }]
@@ -289,7 +292,7 @@
             "category": "AllMetrics",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": false
             }
           }]
@@ -311,7 +314,7 @@
             "category": "AllMetrics",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": false
             }
           }]
@@ -334,7 +337,7 @@
             "category": "AllMetrics",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": false
             }
           }]
@@ -357,7 +360,7 @@
             "category": "AllMetrics",
             "enabled": true,
             "retentionPolicy": {
-              "days": 30,
+              "days": "[parameters('loggingRetentionDays')]",
               "enabled": false
             }
           }]
