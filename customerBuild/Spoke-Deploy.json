@@ -4,12 +4,7 @@
   "parameters": {
     
     "hubNamePrefix": {
-      "type": "string",
-      "maxLength": 3,
-      "minLength": 3,
-      "metadata": {
-        "description": "A unique three character prefix identifying the environment"
-      }
+      "type": "string" 
     },
     "location": {
       "type": "string",
@@ -145,6 +140,44 @@
     "type":"Microsoft.Resources/deployments",
     "name": "Deploy-SpokeRT",
     "apiVersion": "2018-05-01",
+    "properties": {
+      "mode":"Incremental",
+      "templateLink":{
+        "uri": "[variables('TEMPLATES')['Spoke-RT'].Link]",
+        "contentVersion": "1.0.0.0"
+      },
+      "parameters":{
+          "spokeRtName": {
+        "value": "[variables('spokeRtName')]"
+      },
+       "location": {
+            "value": "[parameters('location')]"
+        },
+       "tagCustomerName": {
+            "value": "[parameters('tagCustomerName')]"    
+        },
+        "tagCostCentreId": {
+             "value": "[parameters('tagCostCentreId')]" 
+        },
+         "tagSalesorderId":{
+          "value": "[parameters('tagSalesorderId')]" 
+        },
+        
+        "hubDefaultGatewayIp": {
+          "value": "[parameters('hubDefaultGatewayIp')]"
+        }
+
+    } 
+    }
+    },
+     {
+    "type":"Microsoft.Resources/deployments",
+    "name": "Deploy-SpokeRT",
+    "apiVersion": "2018-05-01",
+    "dependsOn": [
+      "Microsoft.Resources/deployments/Deploy-SpokeNSG')]",
+      "Microsoft.Resources/deployments/Deploy-SpokeRT')]"
+    ],
     "properties": {
       "mode":"Incremental",
       "templateLink":{

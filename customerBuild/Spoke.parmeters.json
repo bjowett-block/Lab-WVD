@@ -1,18 +1,40 @@
 
+  {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "tagCustomerName": {
-      "value": "testcustomer0101"
-    },
-    "tagSalesOrderId": {
-      "value": "123456"
+    "hubNamePrefix": {
+      "value": "acw" 
     },
     "customerDesktopPrefix": {
-      "value": "172.18.8.0/21"
+      "value":"172.18.4.0/23"
     },
     "customerInfrastructurePrefix": {
-      "value": "172.18.224.0/24"
+      "value":"172.18.200.0/24"
+    },
+    "hubUksDc01VmIp": {
+      "value": "172.18.0.4"
+    },
+    "hubUksDc02VmIp": {
+      "value": "172.18.0.5"
+    },
+    "hubMgmt01VmIp": {
+      "value": "172.18.1.4"
+    },
+    "loggingRetentionDays":{
+      "value": "int"
+    },
+    "tagCustomerName": {
+      "value": "TestCustomer"
+    },
+    "tagCostCentreId": {
+      "value": "Acute"
+    },
+    "tagSalesOrderId":{
+      "value":"123456"
+    },
+    "hubDefaultGatewayIp":{
+      "value": "string"
     }
   }
 }
