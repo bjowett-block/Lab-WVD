@@ -1,0 +1,103 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "tagCustomerName": {
+      "type": "string"
+    },
+    "hubName": {
+      "type": "string"
+    },
+    "tagSalesOrderId": {
+      "type": "string"
+    },
+    "customerDesktopPrefix": {
+      "type": "string"
+    },
+    "customerInfrastructurePrefix": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "templateLink":"https://raw.githubusercontent.com/bjowett-block/Lab-WVD/master",
+    "TEMPLATES": {
+       "Spoke-NSG": {
+        "LINK": "[concat(variables('templateLink'), '/customerBuild/Common/Network/Spoke-NSG')]"
+      },
+      "Spoke-VNET": {
+        "LINK": "[concat(variables('templateLink'), '/customerBuild/Common/Network/Spoke-VNET')]"
+      },
+      "Spoke-RT": {
+        "LINK": "[concat(variables('templateLink'), '/customerBuild/Common/Network/Spoke-RT')]"
+      },
+      "Spoke-SA": {
+        "LINK": "[concat(variables('templateLink'), '/customerBuild/Common/Storage/Spoke-SA')]"
+    }
+
+    },
+    "hubVnetName" : "[concat(parameters('hubName'), 'vnet01')]",
+    "hubRgName" : "[concat(parameters('hubName'), 'rg01')]",
+    "customerNsgName": "[concat(parameters('tagCustomerName'), 'nsg01')]",
+    "customerVnetName": "[concat(parameters('tagCustomerName'), 'vnet01')]",
+    "customerRtName": "[concat(parameters('tagCustomerName'), 'rt01')]",
+    "customerSa01Name": "[concat(parameters('tagCustomerName'), 'sa01')]",
+    "customerSa02Name": "[concat(parameters('tagCustomerName'), 'sa02')]",
+    "customerSa03Name": "[concat(parameters('tagCustomerName'), 'sa03')]",
+    "customerDesktopSubnetName": "[concat(parameters('tagCustomerName'), '-Desktop')]",
+    "customerInfrastructureSubnetName": "[concat(parameters('tagCustomerName'), '-Infrastructure')]",
+    "vnetPeerNameSpoketoHub" : "[concat(variables('customerVnetName'),'/',variables('customerVnetName'),'-to-',variables('hubVnetName'),'-vnet-peer')]"
+  },
+  "resources": [
+  
+   {
+    "type":"Microsoft.Resources/deployments",
+    "name": "Deploy-SpokeNSG",
+    "apiVersion": "2018-05-01",
+    
+    "properties": {
+      "mode":"Incremental",
+      "templateLink":{
+        "uri": "[variables('TEMPLATES')['Spoke-NSG'].Link]",
+        "contentVersion": "1.0.0.0"
+      },
+      "parameters":{
+         "hubLawName": {
+            "value":"[variables('hubLawName')]"
+        },
+        "hubaAName":{
+          "value":"[variables('hubAaName')]"
+        },
+        "tagSalesorderId":{
+          "value":"[parameters('tagSalesOrderId')]"
+        },
+        "tagCostCentreId":{
+          "value": "[parameters('tagCostCentreId')]"
+        },
+        "location": {
+            "value": "[parameters('location')]"
+          },
+        "hubDsaId":{
+            "value":"[variables('hubDsaId')]"
+          },
+          "hubLawId":{
+            "value":"[variables('hubLawId')]"
+          },
+          "loggingRetentionDays":{
+           "value":"[parameters('loggingRetentionDays')]"
+        }
+
+
+    } 
+    }
+    },  
+    
+    
+    
+    
+
+    
+    
+   
+  ],
+  }
+}

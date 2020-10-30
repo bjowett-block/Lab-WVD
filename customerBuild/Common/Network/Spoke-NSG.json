@@ -2,1017 +2,638 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "customerDesktopNetwork":{
+        
+        "customerDesktopPrefix":{
             "type": "string"
         },
-        "customerNsgName":{
+         "customerInfrastructurePrefix":{
             "type": "string"
         },
-        "hubAddsIp01": {
+        "spokeNsgName":{
             "type": "string"
         },
-        "hubAddsIp02": {
+        "hubUksDc01VmIp": {
             "type": "string"
         },
-        "hscnIpNetworks": {
+        "hubUksDc02VmIp": {
             "type": "string"
         },
-        "hubMgmtServerIp":{
+        "hubMgmt01VmIp": {
             "type": "string"
         },
         "location": {
             "type": "string"
         },
-        "customerAsgName": {
-            "type":"String"
-        }
+       
+        "tagCustomerName": {
+            "type": "string"    
+        },
+        "tagCostCentreId": {
+            "type": "string"
+        },
+         "tagSalesorderId":{
+          "type": "string"
+        },
+         "hubLawName":{
+        "type": "string"
+      },
+      "hubDsaId":{
+        "type": "string"
+      },
+      "hubLawId":{
+        "type": "string"
+      },
+      "loggingRetentionDays": {
+        "type": "int"
+      }
     },
     
     "variables": {},
     "resources": [
         {
-            "type": "Microsoft.Network/applicationSecurityGroups",
-            "apiVersion": "2019-12-01",
-            "name": "[parameters('customerAsgName')]",
-            "location": "[parameters('location')]",
-            "properties": {}
-        },
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2020-04-01",
+      "name": "[parameters('spokeNsgName')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "Owner": "Block Solutions",
+        "Customer Name": "[parameters('tagCustomerName')]",
+        "Department": "Workspace and Cloud",
+        "Environment": "Production",
+        "Location": "UK South",
+        "Cost Centre": "[parameters('tagCostCentreId')]",
+        "Sales Order ID": "[parameters('tagSalesOrderId')]"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "Restrict-East-West-Desktop-Traffic-In",
+            "properties": {
+              "description": "Restrict East West Traffic Between Production Desktop Hosts",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "[parameters('customerDesktopPrefix')]",
+              "destinationAddressPrefix": "[parameters('customerDesktopPrefix')]",
+              "access": "Deny",
+              "priority": 100,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "Restrict-East-West-Infra-Traffic-In",
+            "properties": {
+              "description": "Restrict East West Traffic Between Production Infrastructure Hosts",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "[parameters('customerInfrastructurePrefix')]",
+              "destinationAddressPrefix": "[parameters('customerInfrastructurePrefix')]",
+              "access": "Deny",
+              "priority": 101,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "Allow-MgmtServer-to-Desktops-In",
+            "properties": {
+              "description": "Allow Hub management server access to customer desktops",
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "[parameters('hubMgmt01VmIp')]",
+              "destinationAddressPrefix": "[parameters('customerDesktopPrefix')]",
+              "access": "Allow",
+              "priority": 110,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [
+                "3389",
+                "5986"
+              ],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "Allow-MgmtServer-to-Infrastructure-In",
+            "properties": {
+              "description": "Allow Hub management server access to customer infrastructure servers\n",
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "[parameters('hubMgmt01VmIp')]",
+              "destinationAddressPrefix": "[parameters('customerInfrastructurePrefix')]",
+              "access": "Allow",
+              "priority": 111,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [
+                "3389",
+                "5986"
+              ],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "Allow-MgmtServer-to-Desktop-ICMP-In",
+            "properties": {
+              "description": "Allow Hub management server to ping customer desktops\n",
+              "protocol": "ICMP",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "[parameters('hubMgmt01VmIp')]",
+              "destinationAddressPrefix": "[parameters('customerDesktopPrefix')]",
+              "access": "Allow",
+              "priority": 112,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "Allow-MgmtServer-to-Infrastructure-ICMP-In",
+            "properties": {
+              "description": "Allow Hub management server to ping customer infrastructure\n",
+              "protocol": "ICMP",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "[parameters('hubMgmt01VmIp')]",
+              "destinationAddressPrefix": "[parameters('customerInfrastructurePrefix')]",
+              "access": "Allow",
+              "priority": 113,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "Deny-Any",
+            "properties": {
+              "description": "Deny All undefined inbound traffic to customer spoke",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 1000,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "Restrict-East-West-Desktop-Traffic-Out",
+            "properties": {
+              "description": "Restrict East West Traffic Between Production Desktop Hosts\n",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "[parameters('customerDesktopPrefix')]",
+              "destinationAddressPrefix": "[parameters('customerDesktopPrefix')]",
+              "access": "Deny",
+              "priority": 100,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "Restrict-East-West-Infra-Traffic-Out",
+            "properties": {
+              "description": "Restrict East West Traffic Between Production Infrastructure Hosts\n",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "[parameters('customerInfrastructurePrefix')]",
+              "destinationAddressPrefix": "[parameters('customerInfrastructurePrefix')]",
+              "access": "Deny",
+              "priority": 101,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          },
+          {
+            "name": "Allow-Desktop-to-ADDS-TCP-Out",
+            "properties": {
+              "description": "Allow customer desktop Services to access Domain Services in hub on TCP protocols\n",
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "[parameters('customerDesktopPrefix')]",
+              "access": "Allow",
+              "priority": 110,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [
+                "53",
+                "88",
+                "135",
+                "139",
+                "389",
+                "445",
+                "464",
+                "636",
+                "3268",
+                "3269",
+                "49152-65535"
+              ],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": [
+                "[parameters('hubUksDc01VmIp')]",
+                "[parameters('hubUksDc02VmIp')]"
 
-        {
-            "type": "Microsoft.Network/networkSecurityGroups",
-            "apiVersion": "2019-12-01",
-            "name": "[parameters('customerNsgName')]",
-            "location": "[parameters('location')]",
-            "properties": {
-                "securityRules": [
-                    {
-                        "name": "Desktop-To-EMIS1",
-                        "properties": {
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "access": "Allow",
-                            "priority": 200,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [
-                                "80",
-                                "443",
-                                "8080",
-                                "33962",
-                                "33956",
-                                "33963",
-                                "33964",
-                                "33966",
-                                "33969",
-                                "33957"
-                            ],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": [
-                                "[parameters('hubAddsIp01')]",
-                                "[parameters('hubAddsIp02')]"
-                            ],
-                            "sourceApplicationSecurityGroups": [
-                                {
-                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "name": "Desktop-To-EMIS2",
-                        "properties": {
-                            "description": "Allow Customer Desktop Access to EMIS2-TCP",
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "access": "Allow",
-                            "priority": 201,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [
-                                "80",
-                                "8080",
-                                "443"
-                            ],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": [
-                                "185.13.72.0/22",
-                                "149.11.42.48"
-                            ],
-                            "sourceApplicationSecurityGroups": [
-                                {
-                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "name": "SystemOne-TCP",
-                        "properties": {
-                            "description": "Allow Customer Desktop Access to SystemOne-TCP",
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "2130-2140",
-                            "access": "Allow",
-                            "priority": 202,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": [
-                                "20.146.120.128/25",
-                                "20.146.248.128/25"
-                            ],
-                            "sourceApplicationSecurityGroups": [
-                                {
-                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "name": "SystemOne-UDP",
-                        "properties": {
-                            "description": "Allow Customer Desktop Access to SystemOne-UDP",
-                            "protocol": "UDP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "2120-2130",
-                            "access": "Allow",
-                            "priority": 203,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": [
-                                "20.146.120.128/25",
-                                "20.146.248.0/25"
-                            ],
-                            "sourceApplicationSecurityGroups": [
-                                {
-                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "name": "Restrict-HSCN-Traffic",
-                        "properties": {
-                            "description": "Restrict HSCN Traffic catch all to stop undefined traffic from Desktop environment to HSCN",
-                            "protocol": "*",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "*",
-                            "sourceAddressPrefix": "parameters('customerDesktopNetwork')]",
-                            "access": "Deny",
-                            "priority": 300,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": [
-                                "[parameters('hscnIpNetworks')]"
-                            ]
-                        }
-                    },
-                    {
-                        "name": "Outbound-Internet-Access",
-                        "properties": {
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "destinationAddressPrefix": "*",
-                            "access": "Allow",
-                            "priority": 400,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [
-                                "80",
-                                "443"
-                            ],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": [],
-                            "sourceApplicationSecurityGroups": [
-                                {
-                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "name": "Desktop-to-ADDS-TCP",
-                        "properties": {
-                            "description": "Allow Customer Desktop  Access to Azure ADDS_TCP",
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "access": "Allow",
-                            "priority": 101,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [
-                                "53",
-                                "88",
-                                "135",
-                                "445",
-                                "464",
-                                "3268",
-                                "3269",
-                                "49152-65535",
-                                "636"
-                            ],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": [
-                                "[parameters('hubAddsIp01')]",
-                                "[parameters('hubAddsIp02')]"
-                            ],
-                            "sourceApplicationSecurityGroups": [
-                                {
-                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "name": "Desktop-to-ADDS-UDP",
-                        "properties": {
-                            "description": "Allow Customer Desktop  Access to Azure ADDS_UDP",
-                            "protocol": "UDP",
-                            "sourcePortRange": "*",
-                            "access": "Allow",
-                            "priority": 102,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [
-                                "53",
-                                "88",
-                                "135",
-                                "389",
-                                "445",
-                                "464",
-                                "123",
-                                "636"
-                            ],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": [
-                                "[parameters('hubAddsIp01')]",
-                                "[parameters('hubAddsIp02')]"
-                            ],
-                            "sourceApplicationSecurityGroups": [
-                                {
-                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "name": "Inbound-MGMT-from-Infra-net",
-                        "properties": {
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "sourceAddressPrefix": "[parameters('hubMgmtServerIp')]",
-                            "access": "Allow",
-                            "priority": 101,
-                            "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [
-                                "3389",
-                                "5986"
-                            ],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": [],
-                            "destinationApplicationSecurityGroups": [
-                                {
-                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "name": "Catchall-Infra-desktop_deny",
-                        "properties": {
-                            "description": "Deny-All",
-                            "protocol": "*",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "*",
-                            "sourceAddressPrefix": "*",
-                            "destinationAddressPrefix": "*",
-                            "access": "Deny",
-                            "priority": 1000,
-                            "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    },
-                    {
-                        "name": "Restrict-Desktop-EAST_WEST",
-                        "properties": {
-                            "description": "Restrict East West Traffic Between Production Desktop Hosts",
-                            "protocol": "*",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "*",
-                            "access": "Deny",
-                            "priority": 100,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": [],
-                            "sourceApplicationSecurityGroups": [
-                                {
-                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                                }
-                            ],
-                            "destinationApplicationSecurityGroups": [
-                                {
-                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "name": "ICMP_DESKTOP-To-ADDS",
-                        "properties": {
-                            "description": "Allow Customer Desktop  Ping Access to Azure ADDS",
-                            "protocol": "ICMP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "*",
-                            "access": "Allow",
-                            "priority": 103,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": [
-                                "[parameters('hubAddsIp01')]",
-                                "[parameters('hubAddsIp02')]"
-                            ],
-                            "sourceApplicationSecurityGroups": [
-                                {
-                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "name": "Desktop-To-INTKMS",
-                        "properties": {
-                            "description": "Allow Customer Desktops to Access Internal KMS",
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "1688",
-                            "destinationAddressPrefix": "[parameters('hubMgmtServerIp')]",
-                            "access": "Allow",
-                            "priority": 104,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": [],
-                            "sourceApplicationSecurityGroups": [
-                                {
-                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "name": "Desktop-Storage",
-                        "properties": {
-                            "description": "Allow Customer Desktops File Share Access to Azure storage",
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "*",
-                            "destinationAddressPrefix": "[concat ('Storage.',parameters('location'))]",
-                            "access": "Allow",
-                            "priority": 106,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": [],
-                            "sourceApplicationSecurityGroups": [
-                                {
-                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "name": "Desktop-To-AzureKMS",
-                        "properties": {
-                            "description": "Allow Customer Desktop Access to Azure KMS",
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "1688",
-                            "destinationAddressPrefix": "*",
-                            "access": "Allow",
-                            "priority": 401,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": [],
-                            "sourceApplicationSecurityGroups": [
-                                {
-                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "name": "Deny-All-Out",
-                        "properties": {
-                            "description": "Deny-All",
-                            "protocol": "*",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "*",
-                            "sourceAddressPrefix": "*",
-                            "destinationAddressPrefix": "*",
-                            "access": "Deny",
-                            "priority": 1000,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    },
-                    {
-                        "name": "Restrict-Desktop-EAST_WEST-IN",
-                        "properties": {
-                            "description": "Restrict East West Traffic Between Production Desktop Hosts",
-                            "protocol": "*",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "*",
-                            "access": "Deny",
-                            "priority": 100,
-                            "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": [],
-                            "sourceApplicationSecurityGroups": [
-                                {
-                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                                }
-                            ],
-                            "destinationApplicationSecurityGroups": [
-                                {
-                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "name": "Allow-MGMTBOX-Desktop-ICMP",
-                        "properties": {
-                            "description": "Allow Management host access to Desktop ping",
-                            "protocol": "ICMP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "*",
-                            "sourceAddressPrefix": "[parameters('hubMgmtServerIp')]",
-                            "access": "Allow",
-                            "priority": 102,
-                            "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": [],
-                            "destinationApplicationSecurityGroups": [
-                                {
-                                    "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                                }
-                            ]
-                        }
-                    }
-                ]
+              ]
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/Allow-MGMTBOX-Desktop-ICMP')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
+          },
+          {
+            "name": "Allow-Desktop-to-ADDS-UDP-Out",
             "properties": {
-                "description": "Allow Management host access to Desktop ping",
-                "protocol": "ICMP",
-                "sourcePortRange": "*",
-                "destinationPortRange": "*",
-                "sourceAddressPrefix": "[parameters('hubMgmtServerIp')]",
-                "access": "Allow",
-                "priority": 102,
-                "direction": "Inbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": [],
-                "destinationApplicationSecurityGroups": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                    }
-                ]
+              "description": "Allow customer desktop Services to access Domain Services in hub on UDP protocols\n",
+              "protocol": "UDP",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "[parameters('customerDesktopPrefix')]",
+              "access": "Allow",
+              "priority": 111,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [
+                "53",
+                "88",
+                "123",
+                "135",
+                "389",
+                "445",
+                "464",
+                "636"
+              ],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": [
+                "[parameters('hubUksDc01VmIp')]",
+                "[parameters('hubUksDc02VmIp')]"
+              ]
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/Restrict-HSCN-Traffic')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
+          },
+          {
+            "name": "Allow-Desktop-to-ADDS-Ping-Out",
             "properties": {
-                "description": "Restrict HSCN Traffic catch all to stop undefined traffic from Desktop environment to HSCN",
-                "protocol": "*",
-                "sourcePortRange": "*",
-                "destinationPortRange": "*",
-                "sourceAddressPrefix": "[parameters('customerDesktopNetwork')]",
-                "access": "Deny",
-                "priority": 300,
-                "direction": "Outbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": [
-                 "[parameters('hscnIpNetworks')]"
-                ]
+              "description": "Allow customer desktop Services to  ping Domain Services in hub on ICMP protocols\n",
+              "protocol": "ICMP",
+              "sourcePortRange": "*",
+              "destinationPortRange": "8080",
+              "sourceAddressPrefix": "[parameters('customerDesktopPrefix')]",
+              "access": "Allow",
+              "priority": 112,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": [
+                "[parameters('hubUksDc01VmIp')]",
+                "[parameters('hubUksDc02VmIp')]"
+              ]
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/Catchall-Infra-desktop_deny')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
+          },
+          {
+            "name": "Allow-Infrastructure-to-ADDS-TCP-Out",
             "properties": {
-                "description": "Deny-All",
-                "protocol": "*",
-                "sourcePortRange": "*",
-                "destinationPortRange": "*",
-                "sourceAddressPrefix": "*",
-                "destinationAddressPrefix": "*",
-                "access": "Deny",
-                "priority": 1000,
-                "direction": "Inbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": []
+              "description": "Allow customer Infrastructure Services to access Domain Services in hub on TCP protocols\n",
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "[parameters('customerInfrastructurePrefix')]",
+              "access": "Allow",
+              "priority": 113,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [
+                "53",
+                "88",
+                "135",
+                "139",
+                "389",
+                "445",
+                "464",
+                "636",
+                "3268",
+                "3269",
+                "49152-65535"
+              ],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": [
+                "[parameters('hubUksDc01VmIp')]",
+                "[parameters('hubUksDc02VmIp')]"
+              ]
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/Deny-All-Out')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
+          },
+          {
+            "name": "Allow-Infrastructure-to-ADDS-UDP-Out",
             "properties": {
-                "description": "Deny-All",
-                "protocol": "*",
-                "sourcePortRange": "*",
-                "destinationPortRange": "*",
-                "sourceAddressPrefix": "*",
-                "destinationAddressPrefix": "*",
-                "access": "Deny",
-                "priority": 1000,
-                "direction": "Outbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": []
+              "description": "Allow customer Infrastructure Services to access Domain Services in hub on UDP protocols\n",
+              "protocol": "UDP",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "[parameters('customerInfrastructurePrefix')]",
+              "access": "Allow",
+              "priority": 114,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [
+                "53",
+                "88",
+                "123",
+                "135",
+                "389",
+                "445",
+                "464",
+                "636"
+              ],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": [
+                "[parameters('hubUksDc01VmIp')]",
+                "[parameters('hubUksDc02VmIp')]"
+              ]
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/Desktop-to-ADDS-TCP')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
+          },
+          {
+            "name": "Allow-Infrastructure-to-ADDS-Ping-Out",
             "properties": {
-                "description": "Allow Customer Desktop  Access to Azure ADDS_TCP",
-                "protocol": "TCP",
-                "sourcePortRange": "*",
-                "access": "Allow",
-                "priority": 101,
-                "direction": "Outbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [
-                    "53",
-                    "88",
-                    "135",
-                    "445",
-                    "464",
-                    "3268",
-                    "3269",
-                    "49152-65535",
-                    "636"
-                ],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": [
-                   "[parameters('hubAddsIp01')]",
-                   "[parameters('hubAddsIp02')]"
-                ],
-                "sourceApplicationSecurityGroups": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                    }
-                ]
+              "description": "Allow customer Infrastructure Services to  ping Domain Services in hub on ICMP protocols\n",
+              "protocol": "ICMP",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "[parameters('customerInfrastructurePrefix')]",
+              "access": "Allow",
+              "priority": 115,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": [
+               "[parameters('hubUksDc01VmIp')]",
+                "[parameters('hubUksDc02VmIp')]"
+              ]
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/Desktop-to-ADDS-UDP')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
+          },
+          {
+            "name": "Allow-Desktop-to-EMIS1-TCP-Out",
             "properties": {
-                "description": "Allow Customer Desktop  Access to Azure ADDS_UDP",
-                "protocol": "UDP",
-                "sourcePortRange": "*",
-                "access": "Allow",
-                "priority": 102,
-                "direction": "Outbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [
-                    "53",
-                    "88",
-                    "135",
-                    "389",
-                    "445",
-                    "464",
-                    "123",
-                    "636"
-                ],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": [
-                    "[parameters('hubAddsIp01')]",
-                    "[parameters('hubAddsIp02')]"
-                ],
-                "sourceApplicationSecurityGroups": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                    }
-                ]
+              "description": "Allow customer desktops to connect to EMIS1 Services on TCP protocols\n",
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "[parameters('customerDesktopPrefix')]",
+              "access": "Allow",
+              "priority": 120,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [
+                "80",
+                "443",
+                "8080",
+                "33962",
+                "33956",
+                "33963",
+                "33964",
+                "33966",
+                "33969",
+                "33957"
+              ],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": [
+                "10.207.112.0/22",
+                "10.207.116.0/22"
+              ]
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/Desktop-To-AzureKMS')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
+          },
+          {
+            "name": "Allow-Desktop-to-EMIS2-TCP-Out",
             "properties": {
-                "description": "Allow Customer Desktop Access to Azure KMS",
-                "protocol": "TCP",
-                "sourcePortRange": "*",
-                "destinationPortRange": "1688",
-                "destinationAddressPrefix": "*",
-                "access": "Allow",
-                "priority": 401,
-                "direction": "Outbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": [],
-                "sourceApplicationSecurityGroups": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                    }
-                ]
+              "description": "Allow customer desktops to connect to EMIS2 Services on TCP protocols\n",
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "[parameters('customerDesktopPrefix')]",
+              "access": "Allow",
+              "priority": 121,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [
+                "80",
+                "8080",
+                "443"
+              ],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": [
+                "185.13.72.0/22",
+                "149.11.42.48"
+              ]
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/Desktop-To-EMIS1')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
+          },
+          {
+            "name": "Allow-Desktop-to-SystmOne-TCP-Out",
             "properties": {
-                "protocol": "TCP",
-                "sourcePortRange": "*",
-                "access": "Allow",
-                "priority": 200,
-                "direction": "Outbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [
-                    "80",
-                    "443",
-                    "8080",
-                    "33962",
-                    "33956",
-                    "33963",
-                    "33964",
-                    "33966",
-                    "33969",
-                    "33957"
-                ],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": [
-                    "10.207.112.0/22",
-                    "10.207.116.0/22"
-                ],
-                "sourceApplicationSecurityGroups": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                    }
-                ]
+              "description": "Allow customer desktop to connect to SystmOne services on TCP Protocols\n",
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "destinationPortRange": "2130-2140",
+              "sourceAddressPrefix": "[parameters('customerDesktopPrefix')]",
+              "access": "Allow",
+              "priority": 130,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": [
+                "20.146.120.128/25",
+                "20.146.248.128/25"
+              ]
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/Desktop-To-EMIS2')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
+          },
+          {
+            "name": "Allow-Desktop-to-SystmOne-UDP-Out",
             "properties": {
-                "description": "Allow Customer Desktop Access to EMIS2-TCP",
-                "protocol": "TCP",
-                "sourcePortRange": "*",
-                "access": "Allow",
-                "priority": 201,
-                "direction": "Outbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [
-                    "80",
-                    "8080",
-                    "443"
-                ],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": [
-                    "185.13.72.0/22",
-                    "149.11.42.48"
-                ],
-                "sourceApplicationSecurityGroups": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                    }
-                ]
+              "description": "Allow customer desktop to connect to SystmOne services on UDP Protocols\n",
+              "protocol": "UDP",
+              "sourcePortRange": "*",
+              "destinationPortRange": "2120-2130",
+              "sourceAddressPrefix": "[parameters('customerDesktopPrefix')]",
+              "access": "Allow",
+              "priority": 131,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": [
+                "20.146.120.128/25",
+                "20.146.248.0/25"
+              ]
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/Desktop-To-INTKMS')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
+          },
+          {
+            "name": "Allow-Desktop-to-AzureKMS-TCP-Out",
             "properties": {
-                "description": "Allow Customer Desktops to Access Internal KMS",
-                "protocol": "TCP",
-                "sourcePortRange": "*",
-                "destinationPortRange": "1688",
-                "destinationAddressPrefix": "[parameters('hubMgmtServerIp')]",
-                "access": "Allow",
-                "priority": 104,
-                "direction": "Outbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": [],
-                "sourceApplicationSecurityGroups": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                    }
-                ]
+              "description": "Allow access from customer desktop to Azure KMS services for product activation\n",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "1688",
+              "sourceAddressPrefix": "[parameters('customerDesktopPrefix')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 310,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/Desktop-Storage')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
+          },
+          {
+            "name": "Allow-Infrastructure-to-AzureKMS-TCP-Out",
             "properties": {
-                "description": "Allow Customer Desktops File Share Access to Azure storage",
-                "protocol": "TCP",
-                "sourcePortRange": "*",
-                "destinationPortRange": "*",
-                "destinationAddressPrefix": "[concat ('Storage.',parameters('location'))]",
-                "access": "Allow",
-                "priority": 106,
-                "direction": "Outbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": [],
-                "sourceApplicationSecurityGroups": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                    }
-                ]
+              "description": "Allow access from customer infrastructure to Azure KMS services for product activation\n",
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "destinationPortRange": "1688",
+              "sourceAddressPrefix": "[parameters('customerInfrastructurePrefix')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 311,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/ICMP_DESKTOP-To-ADDS')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
+          },
+          {
+            "name": "Allow-Desktop-to-Web-TCP-Out",
             "properties": {
-                "description": "Allow Customer Desktop  Ping Access to Azure ADDS",
-                "protocol": "ICMP",
-                "sourcePortRange": "*",
-                "destinationPortRange": "*",
-                "access": "Allow",
-                "priority": 103,
-                "direction": "Outbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": [
-                    "[parameters('hubAddsIp01')]",
-                    "[parameters('hubAddsIp02')]"
-                ],
-                "sourceApplicationSecurityGroups": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                    }
-                ]
+              "description": "Allow access from customer desktop to standard web services\n",
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "[parameters('customerDesktopPrefix')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 312,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [
+                "80",
+                "443",
+                "8080"
+              ],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/Inbound-MGMT-from-Infra-net')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
+          },
+          {
+            "name": "Allow-Infrastructure-to-Web-TCP-Out",
             "properties": {
-                "protocol": "TCP",
-                "sourcePortRange": "*",
-                "sourceAddressPrefix": "[parameters('hubMgmtServerIp')]",
-                "access": "Allow",
-                "priority": 101,
-                "direction": "Inbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [
-                    "3389",
-                    "5986"
-                ],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": [],
-                "destinationApplicationSecurityGroups": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                    }
-                ]
+              "description": "Allow access from customer Infrastructure to standard web services\n",
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "[parameters('customerInfrastructurePrefix')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 313,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [
+                "80",
+                "443",
+                "8080"
+              ],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/Outbound-Internet-Access')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
+          },
+          {
+            "name": "Allow-Desktop-to-UKSouth-Storage-Out",
             "properties": {
-                "protocol": "TCP",
-                "sourcePortRange": "*",
-                "destinationAddressPrefix": "*",
-                "access": "Allow",
-                "priority": 400,
-                "direction": "Outbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [
-                    "80",
-                    "443"
-                ],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": [],
-                "sourceApplicationSecurityGroups": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                    }
-                ]
+              "description": "Allow Desktops access to UK South Storage accounts\n",
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "destinationPortRange": "445",
+              "sourceAddressPrefix": "[parameters('customerDesktopPrefix')]",
+              "destinationAddressPrefix": "Storage.UKSouth",
+              "access": "Allow",
+              "priority": 400,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/Restrict-Desktop-EAST_WEST')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
+          },
+          {
+            "name": "Allow-Desktop-to-UKWest-Storage-Out",
             "properties": {
-                "description": "Restrict East West Traffic Between Production Desktop Hosts",
-                "protocol": "*",
-                "sourcePortRange": "*",
-                "destinationPortRange": "*",
-                "access": "Deny",
-                "priority": 100,
-                "direction": "Outbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": [],
-                "sourceApplicationSecurityGroups": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                    }
-                ],
-                "destinationApplicationSecurityGroups": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                    }
-                ]
+              "description": "Allow Desktops access to UK West Storage accounts\n",
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "destinationPortRange": "445",
+              "sourceAddressPrefix": "[parameters('customerDesktopPrefix')]",
+              "destinationAddressPrefix": "Storage.UKWest",
+              "access": "Allow",
+              "priority": 401,
+              "direction": "Outbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/Restrict-Desktop-EAST_WEST-IN')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
-            "properties": {
-                "description": "Restrict East West Traffic Between Production Desktop Hosts",
-                "protocol": "*",
-                "sourcePortRange": "*",
-                "destinationPortRange": "*",
-                "access": "Deny",
-                "priority": 100,
-                "direction": "Inbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": [],
-                "sourceApplicationSecurityGroups": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                    }
-                ],
-                "destinationApplicationSecurityGroups": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                    }
-                ]
+          }
+        ]
+      }
+    },
+     {
+      "type": "Microsoft.Network/networkSecurityGroups/providers/diagnosticSettings",
+      "dependsOn": [
+          "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('spokeNsgName'))]"
+          
+      ],
+      "name": "[concat(parameters('spokeNsgName'), '/microsoft.insights/', parameters ('spokeNsgName'),'ds')]",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "name": "[parameters('hubLawName')]",
+        "storageAccountId": "[parameters('hubDsaId')]",
+        "workspaceId": "[parameters('hubLawId')]",
+        "logs": [
+          {
+            "category": "NetworkSecurityGroupEvent",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": "[parameters('loggingRetentionDays')]",
+              "enabled": true
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/SystemOne-TCP')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
-            "properties": {
-                "description": "Allow Customer Desktop Access to SystemOne-TCP",
-                "protocol": "TCP",
-                "sourcePortRange": "*",
-                "destinationPortRange": "2130-2140",
-                "access": "Allow",
-                "priority": 202,
-                "direction": "Outbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": [
-                    "20.146.120.128/25",
-                    "20.146.248.128/25"
-                ],
-                "sourceApplicationSecurityGroups": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                    }
-                ]
+          },
+          {
+            "category": "NetworkSecurityGroupRuleCounter",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": "[parameters('loggingRetentionDays')]",
+              "enabled": true
             }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('customerNsgName'), '/SystemOne-UDP')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('customerNsgName'))]"
-            ],
-            "properties": {
-                "description": "Allow Customer Desktop Access to SystemOne-UDP",
-                "protocol": "UDP",
-                "sourcePortRange": "*",
-                "destinationPortRange": "2120-2130",
-                "access": "Allow",
-                "priority": 203,
-                "direction": "Outbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": [
-                    "20.146.120.128/25",
-                    "20.146.248.0/25"
-                ],
-                "sourceApplicationSecurityGroups": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/applicationSecurityGroups/', parameters('customerAsgName'))]"
-                    }
-                ]
-            }
-        }
+          }
+        ],
+        "metrics": []
+      }
+     
+    }
     ]
 }
