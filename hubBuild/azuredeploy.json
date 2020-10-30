@@ -156,11 +156,11 @@
        }
 
     },
-    "hubAaName":"[concat(parameters('hubNamePrefix'),'hub-aa01')]",
-    "hubKvName":"[concat(parameters('hubNamePrefix'),'hub-kv01')]",
-    "hubNsgName": "[concat(parameters('hubNamePrefix'),'hub-nsg01')]",
-    "hubVnetName": "[concat(parameters('hubNamePrefix'),'hub-vnet01')]",
-    "hubLawName": "[concat(parameters('hubNamePrefix'),'hub-law01')]",
+    "hubAaName":"[concat(parameters('hubNamePrefix'),'hubaa01')]",
+    "hubKvName":"[concat(parameters('hubNamePrefix'),'hubkv01')]",
+    "hubNsgName": "[concat(parameters('hubNamePrefix'),'hubnsg01')]",
+    "hubVnetName": "[concat(parameters('hubNamePrefix'),'hubvnet01')]",
+    "hubLawName": "[concat(parameters('hubNamePrefix'),'hublaw01')]",
     "hubDsaName": "[concat(parameters('hubNamePrefix'),'hubdsa01')]",
     "hubRt01Name": "[concat(parameters('hubNamePrefix'),'hubrt01')]",
     "hubRt02Name": "[concat(parameters('hubNamePrefix'),'hubrt02')]",

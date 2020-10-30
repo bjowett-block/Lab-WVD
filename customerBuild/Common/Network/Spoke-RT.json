@@ -1,21 +1,42 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {},
+    "parameters": {
+      "spokeRtName": {
+        "type": "string"
+      },
+       "location": {
+            "type": "string"
+        },
+       "tagCustomerName": {
+            "type": "string"    
+        },
+        "tagCostCentreId": {
+            "type": "string"
+        },
+         "tagSalesorderId":{
+          "type": "string"
+        },
+        
+        "hubDefaultGatewayIp": {
+          "type": "string"
+        }
+
+    },
     "variables": {},
     "resources": [
  {
       "type": "Microsoft.Network/routeTables",
       "apiVersion": "2020-04-01",
-      "name": "[variables('customerRtName')]",
+      "name": "[parameters('spokeRtName')]",
       "location": "uksouth",
       "tags": {
         "Owner": "Block Solutions",
         "Customer Name": "[parameters('tagCustomerName')]",
         "Department": "Workspace and Cloud",
         "Environment": "Production",
-        "Location": "UK South",
-        "Cost Centre": "PCW",
+        "Location": "[parameters('location')]",
+        "Cost Centre": "[parameters('tagCostCentreId')]",
         "Sales Order ID": "[parameters('tagSalesOrderId')]"
       },
       "properties": {
@@ -26,12 +47,12 @@
             "properties": {
               "addressPrefix": "0.0.0.0/0",
               "nextHopType": "VirtualAppliance",
-              "nextHopIpAddress": "172.18.0.132"
+              "nextHopIpAddress": "[parameters('hubDefaultGatewayIp')]"
             }
           }
         ]
       }
-    },
+    }
 
     ],
     "outputs": {}

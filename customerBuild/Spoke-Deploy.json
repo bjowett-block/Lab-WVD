@@ -2,19 +2,47 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "tagCustomerName": {
-      "type": "string"
+    
+    "hubNamePrefix": {
+      "type": "string",
+      "maxLength": 3,
+      "minLength": 3,
+      "metadata": {
+        "description": "A unique three character prefix identifying the environment"
+      }
     },
-    "hubName": {
-      "type": "string"
-    },
-    "tagSalesOrderId": {
-      "type": "string"
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
     },
     "customerDesktopPrefix": {
       "type": "string"
     },
     "customerInfrastructurePrefix": {
+      "type": "string"
+    },
+    "hubUksDc01VmIp": {
+      "type": "string"
+    },
+    "hubUksDc02VmIp": {
+      "type": "string"
+    },
+    "hubMgmt01VmIp": {
+      "type": "string"
+    },
+    "loggingRetentionDays":{
+      "type": "int"
+    },
+    "tagCustomerName": {
+      "type": "string"
+    },
+    "tagCostCentreId": {
+      "type": "string"
+    },
+    "tagSalesOrderId":{
+      "type":"string"
+    },
+    "hubDefaultGatewayIp":{
       "type": "string"
     }
   },
@@ -35,17 +63,23 @@
     }
 
     },
-    "hubVnetName" : "[concat(parameters('hubName'), 'vnet01')]",
-    "hubRgName" : "[concat(parameters('hubName'), 'rg01')]",
-    "customerNsgName": "[concat(parameters('tagCustomerName'), 'nsg01')]",
-    "customerVnetName": "[concat(parameters('tagCustomerName'), 'vnet01')]",
-    "customerRtName": "[concat(parameters('tagCustomerName'), 'rt01')]",
-    "customerSa01Name": "[concat(parameters('tagCustomerName'), 'sa01')]",
-    "customerSa02Name": "[concat(parameters('tagCustomerName'), 'sa02')]",
-    "customerSa03Name": "[concat(parameters('tagCustomerName'), 'sa03')]",
-    "customerDesktopSubnetName": "[concat(parameters('tagCustomerName'), '-Desktop')]",
-    "customerInfrastructureSubnetName": "[concat(parameters('tagCustomerName'), '-Infrastructure')]",
-    "vnetPeerNameSpoketoHub" : "[concat(variables('customerVnetName'),'/',variables('customerVnetName'),'-to-',variables('hubVnetName'),'-vnet-peer')]"
+    "hubVnetName": "[concat(parameters('hubNamePrefix'),'hubvnet01')]",
+    "hubUksRgName" : "[concat(parameters('hubNamePrefix'), 'ukshubrg01')]",
+    "spokeRgName" : "[concat(parameters('hubNamePrefix'),parameters('tagCustomerName'), 'rg01')]",
+    "spokeNsgName": "[concat(parameters('hubNamePrefix'),parameters('tagCustomerName'), 'nsg01')]",
+    "spokeVnetName": "[concat(parameters('hubNamePrefix'),parameters('tagCustomerName'), 'vnet01')]",
+    "spokeRtName": "[concat(parameters('hubNamePrefix'),parameters('tagCustomerName'), 'rt01')]",
+    "customerSa01Name": "[concat(parameters('hubNamePrefix'),parameters('tagCustomerName'), 'sa01')]",
+    "customerSa02Name": "[concat(parameters('hubNamePrefix'),parameters('tagCustomerName'), 'sa02')]",
+    "customerSa03Name": "[concat(parameters('hubNamePrefix'),parameters('tagCustomerName'), 'sa03')]",
+    "customerDesktopSubnetName": "[concat(parameters('hubNamePrefix'),parameters('tagCustomerName'), '-Desktop')]",
+    "customerInfrastructureSubnetName": "[concat(parameters('hubNamePrefix'),parameters('tagCustomerName'), '-Infrastructure')]",
+    "hubLawName": "[concat(parameters('hubNamePrefix'),'hublaw01')]",
+    "hubDsaName": "[concat(parameters('hubNamePrefix'),'hubdsa01')]",
+    "hubDsaId": "[concat(subscription().id,'/resourceGroups/',variables('hubUksRgName'),'/providers/microsoft.Storage/storageAccounts/', variables('hubDsaName'))]",
+     "hubLawId": "[concat(subscription().id,'/resourceGroups/',variables('hubUksRgName'),'/providers/microsoft.operationalinsights/workspaces/', variables('hubLawName'))]",
+     "vnetPeerNameHubtoSpoke" : "[concat(variables('hubVnetName'),'/',variables('hubVnetName'),'-to-',variables('spokeVnetName'),'-vnet-peer')]",
+      "vnetPeerNameSpoketoHub" : "[concat(variables('spokeVnetName'),'/',variables('spokeVnetName'),'-to-',variables('hubVnetName'),'-vnet-peer')]"
   },
   "resources": [
   
@@ -61,35 +95,86 @@
         "contentVersion": "1.0.0.0"
       },
       "parameters":{
-         "hubLawName": {
-            "value":"[variables('hubLawName')]"
+          "customerDesktopPrefix":{
+            "value": "[parameters('customerDesktopPrefix')]"
         },
-        "hubaAName":{
-          "value":"[variables('hubAaName')]"
+         "customerInfrastructurePrefix":{
+            "value": "[parameters('customerInfrastructurePrefix')]"
         },
-        "tagSalesorderId":{
-          "value":"[parameters('tagSalesOrderId')]"
+        "spokeNsgName":{
+            "value": "[variables('spokeNsgName')]"
         },
-        "tagCostCentreId":{
-          "value": "[parameters('tagCostCentreId')]"
+        "hubUksDc01VmIp": {
+            "value": "[parameters('hubUksDc01VmIp')]"
+        },
+        "hubUksDc02VmIp": {
+            "value": "[parameters('hubUksDc02VmIp')]"
+        },
+       
+        "hubMgmt01VmIp": {
+            "value": "[parameters('hubMgmt01VmIp')]"
         },
         "location": {
             "value": "[parameters('location')]"
-          },
+        },
+        "tagCustomerName": {
+            "value": "[parameters('tagCustomerName')]" 
+        },
+        "tagCostCentreId": {
+            "value": "[parameters('tagCostCentreId')]" 
+        },
+         "tagSalesorderId":{
+            "value": "[parameters('tagSalesorderId')]" 
+        },
+        "hubLawName":{
+            "value": "[variables('hubLawName')]" 
+      },
         "hubDsaId":{
-            "value":"[variables('hubDsaId')]"
-          },
-          "hubLawId":{
-            "value":"[variables('hubLawId')]"
-          },
-          "loggingRetentionDays":{
-           "value":"[parameters('loggingRetentionDays')]"
+            "value": "[variables('hubDsaId')]" 
+      },
+        "hubLawId":{
+            "value": "[variables('hubLawId')]" 
+      },
+        "loggingRetentionDays": {
+            "value": "[parameters('loggingRetentionDays')]" 
+      }
+    } 
+    }
+    },
+    {
+    "type":"Microsoft.Resources/deployments",
+    "name": "Deploy-SpokeRT",
+    "apiVersion": "2018-05-01",
+    "properties": {
+      "mode":"Incremental",
+      "templateLink":{
+        "uri": "[variables('TEMPLATES')['Spoke-RT'].Link]",
+        "contentVersion": "1.0.0.0"
+      },
+      "parameters":{
+          "spokeRtName": {
+        "value": "[variables('spokeRtName')]"
+      },
+       "location": {
+            "value": "[parameters('location')]"
+        },
+       "tagCustomerName": {
+            "value": "[parameters('tagCustomerName')]"    
+        },
+        "tagCostCentreId": {
+             "value": "[parameters('tagCostCentreId')]" 
+        },
+         "tagSalesorderId":{
+          "value": "[parameters('tagSalesorderId')]" 
+        },
+        
+        "hubDefaultGatewayIp": {
+          "value": "[parameters('hubDefaultGatewayIp')]"
         }
-
 
     } 
     }
-    },  
+    }
     
     
     
@@ -98,6 +183,6 @@
     
     
    
-  ],
+  ]
   }
-}
+
