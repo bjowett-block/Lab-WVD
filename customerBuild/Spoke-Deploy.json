@@ -45,16 +45,16 @@
     "templateLink":"https://raw.githubusercontent.com/bjowett-block/Lab-WVD/master",
     "TEMPLATES": {
        "Spoke-NSG": {
-        "LINK": "[concat(variables('templateLink'), '/customerBuild/Common/Network/Spoke-NSG')]"
+        "LINK": "[concat(variables('templateLink'), '/customerBuild/Common/Network/Spoke-NSG.json')]"
       },
       "Spoke-VNET": {
-        "LINK": "[concat(variables('templateLink'), '/customerBuild/Common/Network/Spoke-VNET')]"
+        "LINK": "[concat(variables('templateLink'), '/customerBuild/Common/Network/Spoke-VNET.json')]"
       },
       "Spoke-RT": {
-        "LINK": "[concat(variables('templateLink'), '/customerBuild/Common/Network/Spoke-RT')]"
+        "LINK": "[concat(variables('templateLink'), '/customerBuild/Common/Network/Spoke-RT.json')]"
       },
       "Spoke-SA": {
-        "LINK": "[concat(variables('templateLink'), '/customerBuild/Common/Storage/Spoke-SA')]"
+        "LINK": "[concat(variables('templateLink'), '/customerBuild/Common/Storage/Spoke-SA.json')]"
     }
 
     },
@@ -170,7 +170,7 @@
     } 
     }
     },
-     {
+    {
     "type":"Microsoft.Resources/deployments",
     "name": "Deploy-VNET",
     "apiVersion": "2018-05-01",
@@ -239,15 +239,11 @@
         "vnetPeerNameSpoketoHub": {
           "value": "[variables('vnetPeerNameSpoketoHub')]"
         }
-
-    
-    
-    
-    
-    } 
-
+      }
     }
     }
+
+     
     
     
     
