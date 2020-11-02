@@ -22,7 +22,7 @@
       "value": "172.18.1.4"
     },
     "loggingRetentionDays":{
-      "value": "int"
+      "value": 30,
     },
     "tagCustomerName": {
       "value": "TestCustomer"

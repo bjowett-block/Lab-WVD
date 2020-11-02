@@ -172,40 +172,80 @@
     },
      {
     "type":"Microsoft.Resources/deployments",
-    "name": "Deploy-SpokeRT",
+    "name": "Deploy-VNET",
     "apiVersion": "2018-05-01",
     "dependsOn": [
-      "Microsoft.Resources/deployments/Deploy-SpokeNSG')]",
-      "Microsoft.Resources/deployments/Deploy-SpokeRT')]"
+      "Microsoft.Resources/deployments/Deploy-SpokeNSG",
+      "Microsoft.Resources/deployments/Deploy-SpokeRT"
     ],
     "properties": {
       "mode":"Incremental",
       "templateLink":{
-        "uri": "[variables('TEMPLATES')['Spoke-RT'].Link]",
+        "uri": "[variables('TEMPLATES')['Spoke-VNET'].Link]",
         "contentVersion": "1.0.0.0"
       },
       "parameters":{
-          "spokeRtName": {
+       "location": {
+        "value": "[parameters('location')]"
+      },
+      "hubRgName": {
+          "value": "[variables('hubUksRgName')]"
+      },
+      "hubVnetName":{
+        "value": "[variables('hubVnetName')]"
+      },
+      "spokeNsgName":{
+        "value": "[variables('spokeNsgName')]"
+      },
+      "spokeVnetName":{
+        "value": "[variables('spokeVnetName')]"
+      },
+      "spokeRtName":{
         "value": "[variables('spokeRtName')]"
       },
-       "location": {
-            "value": "[parameters('location')]"
-        },
-       "tagCustomerName": {
+        "tagCustomerName": {
             "value": "[parameters('tagCustomerName')]"    
         },
         "tagCostCentreId": {
-             "value": "[parameters('tagCostCentreId')]" 
+            "value": "[parameters('tagCostCentreId')]"
         },
          "tagSalesorderId":{
-          "value": "[parameters('tagSalesorderId')]" 
+          "value": "[parameters('tagSalesOrderId')]"
         },
-        
-        "hubDefaultGatewayIp": {
-          "value": "[parameters('hubDefaultGatewayIp')]"
+         "customerDesktopPrefix":{
+            "value": "[parameters('customerDesktopPrefix')]"
+        },
+         "customerInfrastructurePrefix":{
+            "value": "[parameters('customerInfrastructurePrefix')]"
+        },
+         "hubUksDc01VmIp": {
+            "value": "[parameters('hubUksDc01VmIp')]"
+        },
+        "hubUksDc02VmIp": {
+            "value": "[parameters('hubUksDc02VmIp')]"
+        },
+        "customerDesktopSubnetName": {
+          "value": "[variables('customerDesktopSubnetName')]"
+        },
+        "customerInfrastructureSubnetName": {
+          "value": "[variables('customerInfrastructureSubnetName')]"
+        },
+        "spokeRgName":{
+          "value": "[variables('spokeRgName')]"
+        },
+        "vnetPeerNameHubtoSpoke":{
+          "value": "[variables('vnetPeerNameHubtoSpoke')]"
+        },
+        "vnetPeerNameSpoketoHub": {
+          "value": "[variables('vnetPeerNameSpoketoHub')]"
         }
 
+    
+    
+    
+    
     } 
+
     }
     }
     

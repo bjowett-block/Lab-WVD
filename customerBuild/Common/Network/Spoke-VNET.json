@@ -60,8 +60,7 @@
       
     },
     "variables": {
-      "vnetPeerNameHubtoSpoke" : "[concat(parameters('hubVnetName'),'/',parameters('hubVnetName'),'-to-',parameters('spokeVnetName'),'-vnet-peer')]",
-      "vnetPeerNameSpoketoHub" : "[concat(parameters('spokeVnetName'),'/',parameters('spokeVnetName'),'-to-',parameters('hubVnetName'),'-vnet-peer')]"
+     
   
      },
     "resources": [
